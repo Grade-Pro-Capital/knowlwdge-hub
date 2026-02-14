@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { Logo } from "@/app/components/Logo";
 import type { Metadata } from "next";
 import { prisma } from "@/app/lib/db";
 import { getBaseUrl, absoluteUrl } from "@/app/lib/seo";
@@ -72,12 +73,7 @@ export default async function AuthorPage({ params }: Props) {
 
       <header className="border-b border-[rgba(255,255,255,0.1)]">
         <div className="mx-auto max-w-[1600px] px-4 py-6 sm:px-8 lg:px-16">
-          <Link
-            href="/"
-            className="text-xl font-semibold tracking-tight text-white"
-          >
-            GRAIZE <span className="text-[#FDBE35]">Insights</span>
-          </Link>
+          <Logo />
         </div>
       </header>
 

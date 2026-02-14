@@ -4,16 +4,9 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Search, ChevronRight } from "lucide-react";
 import { ImageWithFallback } from "./components/ImageWithFallback";
+import { Logo } from "./components/Logo";
 import { p1071e4a } from "./lib/svgPaths";
 import type { BlogPost } from "./data/blogData";
-
-function Logo() {
-  return (
-    <span className="text-xl font-semibold tracking-tight text-white">
-      GRAIZE <span className="text-[#FDBE35]">Insights</span>
-    </span>
-  );
-}
 
 export default function HomePage() {
   const [activeTab, setActiveTab] = useState<"all" | "professionals">("all");
@@ -44,9 +37,7 @@ export default function HomePage() {
       <header className="border-b border-[rgba(255,255,255,0.1)]">
         <div className="mx-auto max-w-[1600px] px-4 py-6 sm:px-8 lg:px-16">
           <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center sm:gap-6">
-            <Link href="/" className="flex items-center gap-3">
-              <Logo />
-            </Link>
+            <Logo />
 
             <div className="flex w-full items-center gap-3 sm:w-auto">
               <div className="relative flex-1 sm:flex-initial">
@@ -276,9 +267,9 @@ export default function HomePage() {
         <div className="mx-auto max-w-[1600px] px-4 sm:px-8 lg:px-16">
           <div className="mb-8 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
             <div className="lg:col-span-1">
-              <Logo />
+              <Logo linkToHome={true} />
               <p className="mt-4 text-sm text-[rgba(255,255,255,0.6)]">
-                © 2025 GRAIZE Insights
+                © 2025 Grade Capital
               </p>
             </div>
 

@@ -3,6 +3,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { ChevronRight, Clock, Calendar } from "lucide-react";
 import { ImageWithFallback } from "@/app/components/ImageWithFallback";
+import { Logo } from "@/app/components/Logo";
 import { ShareButtons } from "@/app/components/ShareButtons";
 import { Breadcrumb } from "@/app/components/Breadcrumb";
 import { ArticleGeo } from "@/app/components/ArticleGeo";
@@ -145,14 +146,6 @@ export async function generateMetadata({
       images: twitterImageUrl ? [twitterImageUrl] : undefined,
     },
   };
-}
-
-function Logo() {
-  return (
-    <span className="text-xl font-semibold tracking-tight text-white">
-      GRAIZE <span className="text-[#FDBE35]">Insights</span>
-    </span>
-  );
 }
 
 export default async function ArticlePage({
@@ -399,9 +392,7 @@ function Header() {
     <header className="sticky top-0 z-50 border-b border-[rgba(255,255,255,0.1)] bg-[#020100]">
       <div className="mx-auto max-w-[1600px] px-4 py-4 sm:px-8 sm:py-6 lg:px-16">
         <div className="flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-3">
-            <Logo />
-          </Link>
+          <Logo />
           <nav className="hidden md:flex md:items-center md:gap-6">
             <Link
               href="/"
@@ -473,7 +464,7 @@ function Footer() {
           <div className="lg:col-span-1">
             <Logo />
             <p className="mt-4 text-sm text-[rgba(255,255,255,0.6)]">
-              © 2025 GRAIZE Insights
+              © 2025 Grade Capital
             </p>
           </div>
           <div>
