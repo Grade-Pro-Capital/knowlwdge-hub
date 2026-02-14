@@ -1,0 +1,101 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Admin {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  username  String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Post {
+  id                     String     @id @default(auto()) @map("_id") @db.ObjectId
+  slug                   String     @unique
+  title                  String
+  excerpt                String
+  category               String
+  readTime               String?
+  authorName             String
+  authorSlug             String?    // for /author/[slug]
+  authorAvatar           String?
+  publishedAt            DateTime   @default(now())
+  imageUrl               String?
+  imageKey               String?
+  content                String?
+  isProfessional         Boolean    @default(false)
+  published              Boolean    @default(true)
+  tags                   String[]   @default([])
+  createdAt              DateTime   @default(now())
+  updatedAt              DateTime   @updatedAt
+  views                  PostView[]
+  // SEO (per article)
+  metaTitle              String?    // max 60 chars
+  metaDescription        String?    // max 160 chars
+  focusKeyword           String?
+  secondaryKeywords      String?    // comma-separated; parsed to array in app
+  canonicalUrl           String?
+  metaRobotsIndex        String?    // "index" | "noindex"
+  metaRobotsFollow       String?    // "follow" | "nofollow"
+  ogTitle                String?
+  ogDescription          String?
+  ogImage                String?
+  twitterCardTitle       String?
+  twitterCardDescription String?
+  twitterCardImage       String?
+  // GEO / AI optimization
+  aiSummary              String?    // 2-3 sentence AI crawler summary
+  keyTakeaways           String[]   @default([])
+  authoritativeCitations Json?      // [{ name, url }]
+  entityTags             String[]   @default([])
+  contentFreshnessDate   DateTime?
+  expertiseSignals       Json?      // { credentials, methodology, researchNotes }
+  // FAQ for JSON-LD (if article has FAQs)
+  faqs                   Json?      // [{ question, answer }]
+}
+
+model Category {
+  id                     String   @id @default(auto()) @map("_id") @db.ObjectId
+  slug                   String   @unique
+  name                   String
+  categorySeoTitle       String?
+  categorySeoDescription String?
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+}
+
+model Author {
+  id                String   @id @default(auto()) @map("_id") @db.ObjectId
+  slug              String   @unique
+  name              String
+  avatar            String?
+  bio               String?
+  credentials       String?
+  linkedInUrl       String?
+  twitterUrl        String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model PostView {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  postId    String   @db.ObjectId
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  viewedAt  DateTime @default(now())
+  ipHash    String?
+  userAgent String?
+}
+
+model Template {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

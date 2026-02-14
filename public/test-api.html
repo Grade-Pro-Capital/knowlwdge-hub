@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>API test – blog admin</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: system-ui, sans-serif; max-width: 640px; margin: 2rem auto; padding: 0 1rem; }
+    h1 { font-size: 1.25rem; margin-bottom: 1.5rem; }
+    label { display: block; margin-top: 0.75rem; font-weight: 500; color: #333; }
+    input, button { padding: 0.5rem 0.75rem; font-size: 1rem; }
+    input[type="text"], input[type="password"] { width: 100%; margin-top: 0.25rem; }
+    button { margin-top: 0.75rem; cursor: pointer; background: #1a1a1a; color: #fff; border: none; border-radius: 6px; }
+    button:hover { background: #333; }
+    section { margin-bottom: 2rem; padding: 1rem; border: 1px solid #ddd; border-radius: 8px; background: #fafafa; }
+    section h2 { margin: 0 0 0.75rem; font-size: 1rem; }
+    pre { margin: 0.75rem 0 0; padding: 1rem; background: #1e1e1e; color: #e0e0e0; border-radius: 6px; font-size: 0.85rem; overflow: auto; max-height: 240px; }
+    .ok { color: #0a0; }
+    .err { color: #c00; }
+  </style>
+</head>
+<body>
+  <h1>Blog API test</h1>
+  <p>Open this page at <strong>http://localhost:3000/test-api.html</strong> (with dev server running) to avoid CORS.</p>
+
+  <label>Base URL</label>
+  <input type="text" id="baseUrl" value="http://localhost:3000" />
+
+  <section>
+    <h2>1. Login</h2>
+    <label>Username</label>
+    <input type="text" id="loginUser" value="admin" />
+    <label>Password</label>
+    <input type="password" id="loginPass" value="admin123" />
+    <button type="button" id="btnLogin">Login</button>
+    <pre id="loginOut">—</pre>
+  </section>
+
+  <section>
+    <h2>2. Public posts (no auth)</h2>
+    <button type="button" id="btnPosts">GET /api/posts</button>
+    <pre id="postsOut">—</pre>
+  </section>
+
+  <section>
+    <h2>3. Add admin (API key)</h2>
+    <label>API key (X-Admin-API-Key)</label>
+    <input type="text" id="apiKey" placeholder="e.g. mysecretkey123" />
+    <label>New username</label>
+    <input type="text" id="newUser" value="testadmin" />
+    <label>New password</label>
+    <input type="password" id="newPass" value="testadmin123" />
+    <button type="button" id="btnAddAdmin">POST /api/admin/admins</button>
+    <pre id="addAdminOut">—</pre>
+  </section>
+
+  <section>
+    <h2>4. Admin check (API key)</h2>
+    <button type="button" id="btnCheck">GET /api/admin/check</button>
+    <pre id="checkOut">—</pre>
+  </section>
+
+  <script>
+    function base() { return document.getElementById('baseUrl').value.replace(/\/$/, ''); }
+    function out(id, text, isErr) {
+      var el = document.getElementById(id);
+      el.textContent = text;
+      el.className = isErr ? 'err' : 'ok';
+    }
+
+    document.getElementById('btnLogin').onclick = async function() {
+      var u = document.getElementById('loginUser').value, p = document.getElementById('loginPass').value;
+      out('loginOut', 'Loading…');
+      try {
+        var r = await fetch(base() + '/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: u, password: p }),
+          credentials: 'include'
+        });
+        var j = await r.json();
+        out('loginOut', JSON.stringify(j, null, 2), !r.ok);
+      } catch (e) {
+        out('loginOut', 'Error: ' + e.message, true);
+      }
+    };
+
+    document.getElementById('btnPosts').onclick = async function() {
+      out('postsOut', 'Loading…');
+      try {
+        var r = await fetch(base() + '/api/posts');
+        var j = await r.json();
+        out('postsOut', JSON.stringify(j, null, 2), !r.ok);
+      } catch (e) {
+        out('postsOut', 'Error: ' + e.message, true);
+      }
+    };
+
+    document.getElementById('btnAddAdmin').onclick = async function() {
+      var key = document.getElementById('apiKey').value.trim();
+      var u = document.getElementById('newUser').value, p = document.getElementById('newPass').value;
+      if (!key) { out('addAdminOut', 'Set API key first', true); return; }
+      out('addAdminOut', 'Loading…');
+      try {
+        var r = await fetch(base() + '/api/admin/admins', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Admin-API-Key': key
+          },
+          body: JSON.stringify({ username: u, password: p })
+        });
+        var j = await r.json();
+        out('addAdminOut', JSON.stringify(j, null, 2), !r.ok);
+      } catch (e) {
+        out('addAdminOut', 'Error: ' + e.message, true);
+      }
+    };
+
+    document.getElementById('btnCheck').onclick = async function() {
+      var key = document.getElementById('apiKey').value.trim();
+      if (!key) { out('checkOut', 'Set API key above first', true); return; }
+      out('checkOut', 'Loading…');
+      try {
+        var r = await fetch(base() + '/api/admin/check', {
+          headers: { 'X-Admin-API-Key': key }
+        });
+        var j = await r.json();
+        out('checkOut', JSON.stringify(j, null, 2), !r.ok);
+      } catch (e) {
+        out('checkOut', 'Error: ' + e.message, true);
+      }
+    };
+  </script>
+</body>
+</html>
