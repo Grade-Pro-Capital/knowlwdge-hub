@@ -8,6 +8,7 @@ import { ShareButtons } from "@/app/components/ShareButtons";
 import { Breadcrumb } from "@/app/components/Breadcrumb";
 import { ArticleGeo } from "@/app/components/ArticleGeo";
 import { RelatedArticles } from "@/app/components/RelatedArticles";
+import { NewsletterForm } from "@/app/components/NewsletterForm";
 import { RecordView } from "@/app/blog/RecordView";
 import { JsonLdScript } from "@/app/components/JsonLdScript";
 import { prisma } from "@/app/lib/db";
@@ -440,15 +441,8 @@ function NewsletterSection() {
             Get weekly crypto insights delivered to your inbox—market analysis,
             regulatory updates, and institutional trends
           </p>
-          <div className="mx-auto flex max-w-md flex-col gap-4 sm:flex-row">
-            <input
-              type="email"
-              placeholder="Enter your email address"
-              className="flex-1 rounded-lg border border-[rgba(255,255,255,0.2)] bg-[rgba(255,255,255,0.1)] px-4 py-3 text-white placeholder-[rgba(255,255,255,0.5)] focus:border-[#d4af37] focus:outline-none"
-            />
-            <button className="whitespace-nowrap rounded-lg bg-gradient-to-r from-[#FDBE35] to-[#FDDA93] px-8 py-3 text-[#020100] shadow-[0px_0px_30px_0px_rgba(212,175,55,0.5)] transition-all hover:shadow-[0px_0px_40px_0px_rgba(212,175,55,0.7)]">
-              Subscribe
-            </button>
+          <div className="mx-auto max-w-md">
+            <NewsletterForm source="article" />
           </div>
         </div>
       </div>
@@ -464,9 +458,10 @@ function Footer() {
           <div className="lg:col-span-1">
             <Logo />
             <p className="mt-4 text-sm text-[rgba(255,255,255,0.6)]">
-              © 2025 Grade Capital
+              © {new Date().getFullYear()} Grade Capital
             </p>
           </div>
+          {/* Footer links - commented out for now
           <div>
             <h4 className="mb-4 text-white">Insights</h4>
             <ul className="space-y-2 text-sm text-[rgba(255,255,255,0.6)]">
@@ -522,6 +517,7 @@ function Footer() {
               </li>
             </ul>
           </div>
+          */}
         </div>
       </div>
     </footer>

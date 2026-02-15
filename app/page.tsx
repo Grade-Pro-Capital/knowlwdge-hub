@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Search, ChevronRight } from "lucide-react";
 import { ImageWithFallback } from "./components/ImageWithFallback";
 import { Logo } from "./components/Logo";
+import { NewsletterForm } from "./components/NewsletterForm";
 import { p1071e4a } from "./lib/svgPaths";
 import type { BlogPost } from "./data/blogData";
 
@@ -50,9 +51,12 @@ export default function HomePage() {
                 />
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[rgba(255,255,255,0.6)]" />
               </div>
-              <button className="whitespace-nowrap rounded-lg bg-gradient-to-r from-[#FDBE35] to-[#FDDA93] px-6 py-2 text-[#020100] shadow-[0px_0px_30px_0px_rgba(212,175,55,0.5)] transition-all hover:shadow-[0px_0px_40px_0px_rgba(212,175,55,0.7)]">
+              <a
+                href="#newsletter"
+                className="whitespace-nowrap rounded-lg bg-gradient-to-r from-[#FDBE35] to-[#FDDA93] px-6 py-2 text-[#020100] shadow-[0px_0px_30px_0px_rgba(212,175,55,0.5)] transition-all hover:shadow-[0px_0px_40px_0px_rgba(212,175,55,0.7)]"
+              >
                 Subscribe
-              </button>
+              </a>
             </div>
           </div>
         </div>
@@ -79,10 +83,13 @@ export default function HomePage() {
               institutional investors, wealth advisors, and financial
               decision-makers navigating digital assets in India
             </p>
-            <button className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-[#FDBE35] to-[#FDDA93] px-8 py-3 text-[#020100] shadow-[0px_0px_30px_0px_rgba(212,175,55,0.5)] transition-all hover:shadow-[0px_0px_40px_0px_rgba(212,175,55,0.7)]">
+            <a
+              href="#insights"
+              className="inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-[#FDBE35] to-[#FDDA93] px-5 py-2 text-sm font-medium text-[#020100] shadow-[0px_0px_30px_0px_rgba(212,175,55,0.5)] transition-all hover:shadow-[0px_0px_40px_0px_rgba(212,175,55,0.7)]"
+            >
               Explore Insights
-              <ChevronRight className="h-5 w-5" />
-            </button>
+              <ChevronRight className="h-4 w-4" />
+            </a>
 
             <div className="mt-12 grid grid-cols-3 gap-4 sm:gap-8">
               <div>
@@ -142,7 +149,7 @@ export default function HomePage() {
       </section>
 
       {/* Insights Section */}
-      <section className="py-12 sm:py-16">
+      <section id="insights" className="py-12 sm:py-16">
         <div className="mx-auto max-w-[1600px] px-4 sm:px-8 lg:px-16">
           <div className="mb-8 flex items-center gap-4 border-b border-[rgba(255,255,255,0.1)]">
             <button
@@ -235,7 +242,7 @@ export default function HomePage() {
       </section>
 
       {/* Newsletter Section */}
-      <section className="py-16 sm:py-20">
+      <section id="newsletter" className="py-16 sm:py-20">
         <div className="mx-auto max-w-[1600px] px-4 sm:px-8 lg:px-16">
           <div className="rounded-2xl bg-gradient-to-br from-[rgba(212,175,55,0.1)] to-[rgba(0,150,200,0.05)] p-8 text-center sm:p-12">
             <h2 className="mb-4 text-3xl sm:text-4xl">
@@ -245,15 +252,8 @@ export default function HomePage() {
               Weekly insights on crypto markets, regulatory updates, and
               institutional trends—delivered every Monday
             </p>
-            <div className="mx-auto flex max-w-md flex-col gap-4 sm:flex-row">
-              <input
-                type="email"
-                placeholder="Enter your email address"
-                className="flex-1 rounded-lg border border-[rgba(255,255,255,0.2)] bg-[rgba(255,255,255,0.1)] px-4 py-3 text-white placeholder-[rgba(255,255,255,0.5)] focus:border-[#d4af37] focus:outline-none"
-              />
-              <button className="whitespace-nowrap rounded-lg bg-gradient-to-r from-[#FDBE35] to-[#FDDA93] px-8 py-3 text-[#020100] shadow-[0px_0px_30px_0px_rgba(212,175,55,0.5)] transition-all hover:shadow-[0px_0px_40px_0px_rgba(212,175,55,0.7)]">
-                Subscribe
-              </button>
+            <div className="mx-auto max-w-md">
+              <NewsletterForm source="homepage" />
             </div>
             <p className="mt-4 text-xs text-[rgba(255,255,255,0.5)]">
               Your privacy is important to us. Unsubscribe at any time.
@@ -269,10 +269,11 @@ export default function HomePage() {
             <div className="lg:col-span-1">
               <Logo linkToHome={true} />
               <p className="mt-4 text-sm text-[rgba(255,255,255,0.6)]">
-                © 2025 Grade Capital
+                © {new Date().getFullYear()} Grade Capital
               </p>
             </div>
 
+            {/* Footer links - commented out for now
             <div>
               <h4 className="mb-4 text-white">Insights</h4>
               <ul className="space-y-2 text-sm text-[rgba(255,255,255,0.6)]">
@@ -325,8 +326,11 @@ export default function HomePage() {
                 </li>
               </ul>
             </div>
+            */}
+
           </div>
 
+          {/* Bottom footer links - commented out for now
           <div className="flex flex-col items-center justify-between gap-4 border-t border-[rgba(255,255,255,0.05)] pt-8 text-sm text-[rgba(255,255,255,0.6)] sm:flex-row">
             <div className="flex items-center gap-4">
               <Link href="/" className="transition-colors hover:text-white">
@@ -342,6 +346,7 @@ export default function HomePage() {
               </Link>
             </div>
           </div>
+          */}
         </div>
       </footer>
     </div>

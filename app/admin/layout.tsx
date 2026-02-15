@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Logo } from "@/app/components/Logo";
 import { LogoutButton } from "./LogoutButton";
 
 export default function AdminLayout({
@@ -10,9 +11,7 @@ export default function AdminLayout({
     <div className="min-h-screen bg-[#020100] text-white">
       <header className="border-b border-[rgba(255,255,255,0.1)]">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
-          <Link href="/admin" className="text-lg font-semibold text-[#FDBE35]">
-            GRAIZE Admin
-          </Link>
+          <Logo href="/admin" />
           <nav className="flex items-center gap-6">
             <Link
               href="/admin"

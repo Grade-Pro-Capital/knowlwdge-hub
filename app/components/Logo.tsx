@@ -3,25 +3,31 @@ import Image from "next/image";
 
 type LogoProps = {
   className?: string;
-  /** When false, renders without link (e.g. in footer). Default true */
+  /** When false, renders without link. Default true */
   linkToHome?: boolean;
+  /** Custom link href. Default "/" for main site, use "/admin" for dashboard */
+  href?: string;
 };
 
-export function Logo({ className = "", linkToHome = true }: LogoProps) {
+export function Logo({
+  className = "",
+  linkToHome = true,
+  href = "/",
+}: LogoProps) {
   const img = (
     <Image
-      src="/logo.png"
+      src="/favicon.png"
       alt="Grade Capital"
-      width={160}
-      height={40}
-      className={`h-8 w-auto object-contain sm:h-10 ${className}`}
+      width={48}
+      height={48}
+      className={`h-8 w-auto object-contain sm:h-9 ${className}`}
       priority
     />
   );
 
   if (linkToHome) {
     return (
-      <Link href="/" className="flex items-center">
+      <Link href={href} className="flex items-center">
         {img}
       </Link>
     );
