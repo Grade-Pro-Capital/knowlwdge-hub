@@ -2,6 +2,10 @@ import { MetadataRoute } from "next";
 import { prisma } from "@/app/lib/db";
 import { getBaseUrl, slugify } from "@/app/lib/seo";
 
+// Always generate sitemap from current DB (no cache) so deleted/unpublished posts drop off immediately
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = getBaseUrl();
 
