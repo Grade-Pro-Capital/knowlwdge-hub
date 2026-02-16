@@ -218,6 +218,9 @@ export default async function BlogPage({
     ? row.imageUrl
     : `https://source.unsplash.com/1200x800/?${row.imageUrl || row.imageKey || "crypto"}`;
 
+  const canonical =
+    row.canonicalUrl?.trim() ? absoluteUrl(row.canonicalUrl) : `${baseUrl}/blog/${row.slug}`;
+
   return (
     <div className="min-h-screen bg-[#020100] text-white">
       <RecordView slug={slug} />
@@ -276,7 +279,7 @@ export default async function BlogPage({
                 <Clock className="h-4 w-4" />
                 <span>{readTime}</span>
               </div>
-              <ShareButtons />
+              <ShareButtons url={canonical} title={row.title} />
             </div>
 
             <div className="relative mb-12 h-[300px] overflow-hidden rounded-xl sm:h-[400px] lg:h-[500px]">

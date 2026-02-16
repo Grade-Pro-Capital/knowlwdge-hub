@@ -3,15 +3,53 @@
 import { useState } from "react";
 import { Copy, Check, Twitter, Linkedin } from "lucide-react";
 
-export function ShareButtons() {
+type ShareButtonsProps = {
+  /** URL to share (defaults to current page) */
+  url?: string;
+  /** Title/text for the share (e.g. article title; defaults to document title) */
+  title?: string;
+};
+
+export function ShareButtons({ url, title }: ShareButtonsProps = {}) {
   const [copied, setCopied] = useState(false);
+
+  const getShareUrl = () =>
+    typeof window !== "undefined" ? url ?? window.location.href : "";
+  const getShareTitle = () =>
+    typeof window !== "undefined" ? title ?? document.title ?? "" : "";
 
   const handleCopyLink = () => {
     if (typeof window !== "undefined") {
-      navigator.clipboard.writeText(window.location.href);
+      const link = url ?? window.location.href;
+      navigator.clipboard.writeText(link);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     }
+  };
+
+  const handleShareTwitter = () => {
+    const u = getShareUrl();
+    const t = getShareTitle();
+    if (!u) return;
+    const params = new URLSearchParams({
+      url: u,
+      ...(t && { text: t }),
+    });
+    window.open(
+      `https://twitter.com/intent/tweet?${params.toString()}`,
+      "_blank",
+      "noopener,noreferrer"
+    );
+  };
+
+  const handleShareLinkedIn = () => {
+    const u = getShareUrl();
+    if (!u) return;
+    window.open(
+      `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(u)}`,
+      "_blank",
+      "noopener,noreferrer"
+    );
   };
 
   return (
@@ -33,6 +71,7 @@ export function ShareButtons() {
       </button>
       <button
         type="button"
+        onClick={handleShareTwitter}
         className="rounded-lg bg-[rgba(255,255,255,0.05)] p-2 transition-colors hover:bg-[rgba(255,255,255,0.1)]"
         title="Share on Twitter"
       >
@@ -40,6 +79,7 @@ export function ShareButtons() {
       </button>
       <button
         type="button"
+        onClick={handleShareLinkedIn}
         className="rounded-lg bg-[rgba(255,255,255,0.05)] p-2 transition-colors hover:bg-[rgba(255,255,255,0.1)]"
         title="Share on LinkedIn"
       >
