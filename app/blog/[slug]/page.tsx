@@ -365,6 +365,38 @@ export default async function BlogPage({
           </div>
         </div>
 
+        {/* FAQs - visible section when post has faqs */}
+        {faqs && faqs.length > 0 && (
+          <div className="mx-auto max-w-[900px] px-4 pb-16 sm:px-8">
+            <section
+              className="rounded-xl border border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.03)] p-6 sm:p-8"
+              aria-label="Frequently asked questions"
+            >
+              <h2 className="mb-6 flex items-center gap-2 text-xl font-semibold text-white sm:text-2xl">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#FDBE35] text-[#020100]">
+                  ?
+                </span>
+                Frequently Asked Questions
+              </h2>
+              <dl className="space-y-6">
+                {faqs.map((faq, i) => (
+                  <div
+                    key={i}
+                    className="border-b border-[rgba(255,255,255,0.08)] pb-6 last:border-0 last:pb-0"
+                  >
+                    <dt className="mb-2 text-base font-medium text-[#FDBE35]">
+                      {faq.question}
+                    </dt>
+                    <dd className="text-[rgba(255,255,255,0.85)] leading-relaxed">
+                      {faq.answer}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+            </section>
+          </div>
+        )}
+
         {/* GEO: About the Author - after content */}
         <div className="mx-auto max-w-[900px] px-4 pb-16 sm:px-8">
           <ArticleGeo

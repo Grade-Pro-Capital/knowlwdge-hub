@@ -132,10 +132,25 @@ export function PostForm({
     try {
       const fd = new FormData();
       fd.set("file", file);
-      const res = await fetch("/api/admin/upload", { method: "POST", body: fd });
-      const data = await res.json();
+      const res = await fetch("/api/admin/upload", {
+        method: "POST",
+        body: fd,
+        credentials: "same-origin",
+      });
+      const text = await res.text();
+      let data: { url?: string; key?: string; error?: string };
+      try {
+        data = text ? JSON.parse(text) : {};
+      } catch {
+        // Server returned non-JSON (e.g. HTML error page)
+        throw new Error(
+          res.status === 401
+            ? "Session expired. Please log in again and try uploading."
+            : "Upload failed. Please log in again if needed, or try a smaller image (max 5MB, JPEG/PNG/WebP/GIF)."
+        );
+      }
       if (!res.ok) throw new Error(data.error ?? "Upload failed");
-      update({ imageUrl: data.url, imageKey: data.key });
+      if (data.url) update({ imageUrl: data.url, imageKey: data.key });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Upload failed");
     } finally {
