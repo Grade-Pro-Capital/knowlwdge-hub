@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { getBaseUrl } from "@/app/lib/seo";
 import { JsonLdScript } from "@/app/components/JsonLdScript";
 import { organizationJsonLd, webSiteJsonLd } from "@/app/lib/jsonLd";
@@ -59,7 +60,7 @@ export default function HomeLayout({
     <>
       <JsonLdScript data={organizationJsonLd()} />
       <JsonLdScript data={webSiteJsonLd()} />
-      {children}
+      <Suspense fallback={null}>{children}</Suspense>
     </>
   );
 }
