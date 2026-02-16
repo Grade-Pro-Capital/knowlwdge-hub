@@ -87,7 +87,7 @@ export const blogPosts: BlogPost[] = [
   {
     id: "2",
     slug: "bitcoin-february-2025-key-events",
-    title: "Bitcoin in February 2025: Key Events to Watch",
+    title: "Bitcoin in February 2026: Key Events to Watch",
     excerpt: "After another volatile start, what are the market events to keep an eye on?",
     category: "Market Updates",
     readTime: "4 min read",

@@ -128,11 +128,15 @@ export async function generateMetadata({
     alternates: { canonical },
     robots,
     keywords: keywords.length ? keywords : undefined,
+    other: {
+      "twitter:site": "@GradeCapital",
+      "twitter:creator": "@GradeCapital",
+    },
     openGraph: {
       title: ogTitle,
       description: ogDescription,
       url: canonical,
-      siteName: "GRAIZE Insights",
+      siteName: "Grade Capital Knowledge Hub",
       images: ogImageUrl
         ? [{ url: ogImageUrl, width: 1200, height: 630, alt: ogTitle }]
         : undefined,
@@ -142,6 +146,8 @@ export async function generateMetadata({
     },
     twitter: {
       card: "summary_large_image",
+      site: "@GradeCapital",
+      creator: "@GradeCapital",
       title: twitterTitle,
       description: twitterDescription,
       images: twitterImageUrl ? [twitterImageUrl] : undefined,
@@ -185,7 +191,7 @@ export default async function ArticlePage({
 
   const breadcrumbItems = [
     { name: "Home", url: "/" },
-    { name: "Insights", url: "/" },
+    { name: "Insights", url: "/#insights" },
     { name: row.category, url: `/category/${categorySlug}` },
     { name: row.title, url: `/article/${row.slug}` },
   ];
@@ -396,7 +402,7 @@ function Header() {
           <Logo />
           <nav className="hidden md:flex md:items-center md:gap-6">
             <Link
-              href="/"
+              href="/#insights"
               className="text-sm text-[rgba(255,255,255,0.7)] transition-colors hover:text-white"
             >
               Insights
@@ -408,17 +414,12 @@ function Header() {
               Research
             </Link>
             <Link
-              href="/"
+              href="/?tab=professionals#insights"
               className="text-sm text-[rgba(255,255,255,0.7)] transition-colors hover:text-white"
             >
               For Professionals
             </Link>
-            <Link
-              href="/"
-              className="text-sm text-[rgba(255,255,255,0.7)] transition-colors hover:text-white"
-            >
-              About
-            </Link>
+           
           </nav>
           <button className="rounded-lg bg-gradient-to-r from-[#FDBE35] to-[#FDDA93] px-4 py-2 text-sm text-[#020100] shadow-[0px_0px_20px_0px_rgba(212,175,55,0.4)] transition-all hover:shadow-[0px_0px_30px_0px_rgba(212,175,55,0.6)] sm:px-6">
             Subscribe

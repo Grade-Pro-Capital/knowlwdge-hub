@@ -27,7 +27,7 @@ export type ArticleJsonLdInput = {
 
 export function articleJsonLd(input: ArticleJsonLdInput): object {
   const base = getBaseUrl();
-  const publisher: PublisherInput = input.publisher ?? { name: "GRAIZE Insights" };
+  const publisher: PublisherInput = input.publisher ?? { name: "Grade Capital" };
   const logoUrl = publisher.logo
     ? absoluteUrl(publisher.logo)
     : `${base}/og-default.png`;
@@ -116,9 +116,40 @@ export function webSiteJsonLd(): object {
   return {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    name: "GRAIZE Insights",
+    name: "Grade Capital Knowledge Hub",
     url: base,
     description:
       "Intelligence-driven insights for the Crypto Economy. Research, analysis, and market intelligence for institutional investors.",
+    potentialAction: {
+      "@type": "SearchAction",
+      target: {
+        "@type": "EntryPoint",
+        urlTemplate: `${base}/search?q={search_term_string}`,
+      },
+      "query-input": "required name=search_term_string",
+    },
+  };
+}
+
+export function organizationJsonLd(): object {
+  const base = getBaseUrl();
+  return {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "Grade Capital",
+    url: "https://www.grade.capital",
+    logo: `${base}/logo.png`,
+    description:
+      "India's leading crypto investment platform offering professionally managed crypto baskets and portfolios.",
+    sameAs: [
+      "https://twitter.com/GradeCapital",
+      "https://www.linkedin.com/company/gradecapital",
+      "https://www.instagram.com/gradecapital",
+    ],
+    contactPoint: {
+      "@type": "ContactPoint",
+      contactType: "customer service",
+      url: "https://www.grade.capital/contact",
+    },
   };
 }

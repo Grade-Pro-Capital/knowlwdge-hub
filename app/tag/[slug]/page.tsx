@@ -16,7 +16,7 @@ export async function generateMetadata({
   const { slug } = await params;
   const name = slug.charAt(0).toUpperCase() + slug.slice(1);
 
-  const title = `${name} | GRAIZE Insights`;
+  const title = `${name} | Grade Capital`;
   const description = `Explore articles tagged with ${name} on crypto, finance, and institutional adoption.`;
 
   return {
@@ -47,7 +47,7 @@ export default async function TagPage({ params }: Props) {
 
   const breadcrumbItems = [
     { name: "Home", url: "/" },
-    { name: "Insights", url: "/" },
+    { name: "Insights", url: "/#insights" },
     { name: `Tag: ${name}`, url: `/tag/${slug}` },
   ];
 

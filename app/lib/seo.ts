@@ -1,7 +1,7 @@
 /**
  * SEO utilities for canonical URLs, metadata validation, and absolute URL resolution.
  */
-const DEFAULT_BASE = process.env.NEXT_PUBLIC_SITE_URL || "https://graize-insights.com";
+const DEFAULT_BASE = process.env.NEXT_PUBLIC_SITE_URL || "https://blogs.grade.capital";
 
 export function getBaseUrl(): string {
   return DEFAULT_BASE.replace(/\/$/, "");

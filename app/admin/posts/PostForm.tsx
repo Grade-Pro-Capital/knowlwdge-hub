@@ -466,7 +466,7 @@ export function PostForm({
               type="url"
               value={form.canonicalUrl}
               onChange={(e) => update({ canonicalUrl: e.target.value })}
-              placeholder="https://yoursite.com/blog/this-post"
+              placeholder="https://blogs.grade.capital/article/this-post"
               className="w-full rounded-lg border border-[rgba(255,255,255,0.2)] bg-[rgba(255,255,255,0.05)] px-4 py-2 text-white focus:border-[#FDBE35] focus:outline-none"
             />
           </div>

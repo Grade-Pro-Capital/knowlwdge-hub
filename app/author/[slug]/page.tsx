@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const name = author?.name ?? posts[0]?.authorName ?? slug;
 
-  const title = `${name} | Author | GRAIZE Insights`;
+  const title = `${name} | Author | Grade Capital`;
   const description =
     author?.bio?.trim() ||
     `Read articles by ${name} on crypto, finance, and institutional adoption.`;
@@ -56,7 +56,7 @@ export default async function AuthorPage({ params }: Props) {
 
   const breadcrumbItems = [
     { name: "Home", url: "/" },
-    { name: "Insights", url: "/" },
+    { name: "Insights", url: "/#insights" },
     { name, url: `/author/${slug}` },
   ];
 

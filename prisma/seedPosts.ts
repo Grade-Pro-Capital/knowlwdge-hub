@@ -6,34 +6,34 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://graize-insights.com";
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://blogs.grade.capital";
 
 const CATEGORIES = [
   {
     slug: "analysis",
     name: "Analysis",
-    categorySeoTitle: "Crypto Analysis | GRAIZE Insights",
+    categorySeoTitle: "Crypto Analysis | Grade Capital",
     categorySeoDescription:
       "In-depth crypto and institutional adoption analysis for India. Market trends, regulatory insights, and investment research.",
   },
   {
     slug: "regulation",
     name: "Regulation",
-    categorySeoTitle: "Crypto Regulation India | GRAIZE Insights",
+    categorySeoTitle: "Crypto Regulation India | Grade Capital",
     categorySeoDescription:
       "Latest crypto regulation updates in India. Tax, compliance, and policy analysis for institutional and retail investors.",
   },
   {
     slug: "market-updates",
     name: "Market Updates",
-    categorySeoTitle: "Crypto Market Updates | GRAIZE Insights",
+    categorySeoTitle: "Crypto Market Updates | Grade Capital",
     categorySeoDescription:
       "Weekly crypto market updates. Bitcoin, Ethereum, and altcoin price analysis and key events.",
   },
   {
     slug: "research",
     name: "Research",
-    categorySeoTitle: "Crypto Research | GRAIZE Insights",
+    categorySeoTitle: "Crypto Research | Grade Capital",
     categorySeoDescription:
       "Original crypto and DeFi research. Layer 2, institutional allocation, and market structure studies.",
   },
@@ -103,7 +103,7 @@ const POSTS = [
     isProfessional: false,
     published: true,
     tags: ["bitcoin", "institutional", "india"],
-    metaTitle: "Institutional Crypto Adoption India 2025 | GRAIZE",
+    metaTitle: "Institutional Crypto Adoption India 2025 | Grade Capital",
     metaDescription:
       "Explore how institutional investors are driving the next wave of crypto adoption in India. Pension funds, regulatory clarity, and market trends.",
     focusKeyword: "institutional crypto adoption India",
@@ -111,7 +111,7 @@ const POSTS = [
     canonicalUrl: `${BASE_URL}/article/next-trillion-dollars-crypto-institutions`,
     metaRobotsIndex: "index",
     metaRobotsFollow: "follow",
-    ogTitle: "Institutional Crypto Adoption India | GRAIZE Insights",
+    ogTitle: "Institutional Crypto Adoption India | Grade Capital",
     ogDescription: "Deep dive into institutional crypto trends and India's regulatory path.",
     twitterCardTitle: "Institutional Crypto Adoption India",
     twitterCardDescription: "Pension funds, regulation, and the next trillion in crypto.",
@@ -146,7 +146,7 @@ const POSTS = [
   },
   {
     slug: "bitcoin-february-2025-key-events",
-    title: "Bitcoin in February 2025: Key Events to Watch",
+    title: "Bitcoin in February 2026: Key Events to Watch",
     excerpt: "After another volatile start, what are the market events to keep an eye on?",
     category: "Market Updates",
     authorName: "Priya Sharma",
@@ -156,10 +156,10 @@ const POSTS = [
     isProfessional: false,
     published: true,
     tags: ["bitcoin", "market-updates"],
-    metaTitle: "Bitcoin February 2025 Events | GRAIZE",
-    metaDescription: "Key Bitcoin events and market catalysts to watch in February 2025.",
-    focusKeyword: "Bitcoin February 2025",
-    aiSummary: "February 2025 brings several catalysts for Bitcoin. This note outlines key events, levels, and what to watch.",
+    metaTitle: "Bitcoin February 2026 Events | Grade Capital",
+    metaDescription: "Key Bitcoin events and market catalysts to watch in February 2026.",
+    focusKeyword: "Bitcoin February 2026",
+    aiSummary: "February 2026 brings several catalysts for Bitcoin. This note outlines key events, levels, and what to watch.",
     keyTakeaways: ["ETF flows remain a key driver", "Halving effects may persist", "Macro data could shift sentiment"],
     entityTags: ["Bitcoin", "ETF"],
   },
@@ -175,7 +175,7 @@ const POSTS = [
     isProfessional: true,
     published: true,
     tags: ["regulation", "india", "tax"],
-    metaTitle: "India Crypto Tax Budget 2025 | GRAIZE",
+    metaTitle: "India Crypto Tax Budget 2025 | Grade Capital",
     metaDescription: "India's Budget 2025 crypto tax changes explained for investors.",
     focusKeyword: "India crypto tax 2025",
     aiSummary: "Budget 2025 introduced changes to crypto taxation. We break down implications for retail and institutional investors.",
@@ -196,7 +196,7 @@ const POSTS = [
     isProfessional: true,
     published: true,
     tags: ["ethereum", "layer2", "arbitrum", "optimism"],
-    metaTitle: "Ethereum Layer 2 Comparison 2025 | GRAIZE",
+    metaTitle: "Ethereum Layer 2 Comparison 2025 | Grade Capital",
     metaDescription: "Compare Arbitrum, Optimism, and other L2s. Gas, speed, security analysis.",
     focusKeyword: "Ethereum Layer 2",
     entityTags: ["Ethereum", "Arbitrum", "Optimism"],

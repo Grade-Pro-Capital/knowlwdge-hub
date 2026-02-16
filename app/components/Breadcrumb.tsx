@@ -43,12 +43,12 @@ export function Breadcrumb({ items, withJsonLd = true }: BreadcrumbProps) {
                       {item.name}
                     </span>
                   ) : (
-                    <Link
+                    <a
                       href={item.url}
                       className="transition-colors hover:text-white"
                     >
                       {item.name}
-                    </Link>
+                    </a>
                   )}
                 </li>
               );

@@ -28,7 +28,7 @@ export async function generateMetadata({
   });
 
   const title =
-    categoryRow?.categorySeoTitle?.trim() || `${name} | GRAIZE Insights`;
+    categoryRow?.categorySeoTitle?.trim() || `${name} | Grade Capital`;
   const description =
     categoryRow?.categorySeoDescription?.trim() ||
     `Explore ${name} articles and insights on crypto, finance, and institutional adoption.`;
@@ -72,7 +72,7 @@ export default async function CategoryPage({ params }: Props) {
 
   const breadcrumbItems = [
     { name: "Home", url: "/" },
-    { name: "Insights", url: "/" },
+    { name: "Insights", url: "/#insights" },
     { name, url: `/category/${slug}` },
   ];
 

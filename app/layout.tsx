@@ -1,7 +1,13 @@
 import type { Metadata } from "next";
 import "./globals.css";
 
+const metadataBase =
+  typeof process.env.NEXT_PUBLIC_SITE_URL === "string"
+    ? new URL(process.env.NEXT_PUBLIC_SITE_URL)
+    : new URL("https://blogs.grade.capital");
+
 export const metadata: Metadata = {
+  metadataBase,
   title: "Knowledge Hub for Crypto | Grade Capital",
   description:
     "Intelligence-driven insights for the Crypto Economy. Research, analysis, and market intelligence for institutional investors and financial decision-makers.",

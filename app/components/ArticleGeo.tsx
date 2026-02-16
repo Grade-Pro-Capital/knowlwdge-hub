@@ -165,7 +165,7 @@ export function ArticleGeo({
               !expertiseSignals?.methodology &&
               !expertiseSignals?.researchNotes && (
                 <p className="text-sm leading-relaxed text-[rgba(255,255,255,0.7)]">
-                  {authorName} is a senior analyst at GRAIZE Insights,
+                  {authorName} is a senior analyst at Grade Capital,
                   specializing in institutional crypto adoption and regulatory
                   frameworks. With extensive experience in traditional finance
                   and digital assets, they provide in-depth analysis on market
