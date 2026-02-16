@@ -8,22 +8,22 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       {
         userAgent: "*",
-        allow: "/",
+        allow: ["/", "/article/", "/category/", "/tag/", "/author/"],
         disallow: ["/admin/", "/api/"],
       },
       {
         userAgent: "GPTBot",
-        allow: "/",
+        allow: ["/", "/article/", "/category/", "/tag/", "/author/"],
         disallow: ["/admin/", "/api/"],
       },
       {
         userAgent: "ChatGPT-User",
-        allow: "/",
+        allow: ["/", "/article/", "/category/", "/tag/", "/author/"],
         disallow: ["/admin/", "/api/"],
       },
       {
         userAgent: "Google-Extended",
-        allow: "/",
+        allow: ["/", "/article/", "/category/", "/tag/", "/author/"],
         disallow: ["/admin/", "/api/"],
       },
     ],
