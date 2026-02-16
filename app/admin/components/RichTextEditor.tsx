@@ -4,6 +4,10 @@ import { useEditor, EditorContent, type Editor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
 import Placeholder from "@tiptap/extension-placeholder";
+import { Table } from "@tiptap/extension-table";
+import TableRow from "@tiptap/extension-table-row";
+import TableCell from "@tiptap/extension-table-cell";
+import TableHeader from "@tiptap/extension-table-header";
 import { useCallback, useEffect, useState } from "react";
 import {
   Bold,
@@ -17,6 +21,10 @@ import {
   Undo,
   Redo,
   Code,
+  Table as TableIcon,
+  TableRowsSplit,
+  TableColumnsSplit,
+  Trash2,
 } from "lucide-react";
 
 const buttonClass =
@@ -26,6 +34,9 @@ const activeClass = "!border-[#FDBE35] !bg-[#FDBE35]/20 !text-[#FDBE35]";
 function Toolbar({ editor }: { editor: Editor | null }) {
   const [linkUrl, setLinkUrl] = useState("");
   const [showLinkInput, setShowLinkInput] = useState(false);
+  const [showTableMenu, setShowTableMenu] = useState(false);
+
+  const inTable = editor?.isActive("table") ?? false;
 
   const setLink = useCallback(() => {
     if (!editor) return;
@@ -110,6 +121,85 @@ function Toolbar({ editor }: { editor: Editor | null }) {
       <div className="relative">
         <button
           type="button"
+          onClick={() => setShowTableMenu((v) => !v)}
+          className={`${buttonClass} ${inTable ? activeClass : ""}`}
+          title="Table"
+        >
+          <TableIcon className="h-4 w-4" />
+        </button>
+        {showTableMenu && (
+          <div className="absolute left-0 top-full z-10 mt-1 flex flex-col gap-0.5 rounded-lg border border-[rgba(255,255,255,0.2)] bg-[#1a1a1a] p-1.5 shadow-xl">
+            <span className="px-2 py-1 text-xs text-[rgba(255,255,255,0.6)]">Insert table</span>
+            {[
+              { rows: 2, cols: 2, label: "2×2" },
+              { rows: 3, cols: 3, label: "3×3" },
+              { rows: 3, cols: 4, label: "3×4" },
+              { rows: 4, cols: 3, label: "4×3" },
+            ].map(({ rows, cols, label }) => (
+              <button
+                key={label}
+                type="button"
+                onClick={() => {
+                  editor.chain().focus().insertTable({ rows, cols, withHeaderRow: true }).run();
+                  setShowTableMenu(false);
+                }}
+                className="rounded px-2 py-1.5 text-left text-sm text-white hover:bg-[rgba(255,255,255,0.1)]"
+              >
+                {label}
+              </button>
+            ))}
+            {inTable && (
+              <>
+                <span className="mt-1 border-t border-[rgba(255,255,255,0.15)] px-2 pt-1.5 text-xs text-[rgba(255,255,255,0.6)]">Edit table</span>
+                <button
+                  type="button"
+                  onClick={() => { editor.chain().focus().addColumnAfter().run(); setShowTableMenu(false); }}
+                  className="flex items-center gap-2 rounded px-2 py-1.5 text-sm text-white hover:bg-[rgba(255,255,255,0.1)]"
+                  title="Add column"
+                >
+                  <TableColumnsSplit className="h-3.5 w-3.5" /> Add column
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { editor.chain().focus().addRowAfter().run(); setShowTableMenu(false); }}
+                  className="flex items-center gap-2 rounded px-2 py-1.5 text-sm text-white hover:bg-[rgba(255,255,255,0.1)]"
+                  title="Add row"
+                >
+                  <TableRowsSplit className="h-3.5 w-3.5" /> Add row
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { editor.chain().focus().deleteColumn().run(); setShowTableMenu(false); }}
+                  className="flex items-center gap-2 rounded px-2 py-1.5 text-sm text-red-300 hover:bg-[rgba(255,255,255,0.1)]"
+                  title="Delete column"
+                >
+                  <Trash2 className="h-3.5 w-3.5" /> Delete column
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { editor.chain().focus().deleteRow().run(); setShowTableMenu(false); }}
+                  className="flex items-center gap-2 rounded px-2 py-1.5 text-sm text-red-300 hover:bg-[rgba(255,255,255,0.1)]"
+                  title="Delete row"
+                >
+                  <Trash2 className="h-3.5 w-3.5" /> Delete row
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { editor.chain().focus().deleteTable().run(); setShowTableMenu(false); }}
+                  className="flex items-center gap-2 rounded px-2 py-1.5 text-sm text-red-300 hover:bg-[rgba(255,255,255,0.1)]"
+                  title="Delete table"
+                >
+                  <Trash2 className="h-3.5 w-3.5" /> Delete table
+                </button>
+              </>
+            )}
+          </div>
+        )}
+      </div>
+      <span className="mx-1 h-5 w-px bg-[rgba(255,255,255,0.2)]" />
+      <div className="relative">
+        <button
+          type="button"
           onClick={() => setShowLinkInput((v) => !v)}
           className={`${buttonClass} ${editor.isActive("link") ? activeClass : ""}`}
           title="Link"
@@ -178,6 +268,12 @@ export function RichTextEditor({
         HTMLAttributes: { class: "text-[#FDBE35] underline" },
       }),
       Placeholder.configure({ placeholder }),
+      Table.configure({
+        HTMLAttributes: { class: "blog-editor-table" },
+      }),
+      TableRow,
+      TableCell,
+      TableHeader,
     ],
     content: value || "",
     editorProps: {
@@ -228,6 +324,9 @@ export function RichTextEditor({
         .ProseMirror ul, .ProseMirror ol { margin-bottom: 0.75rem; padding-left: 1.5rem; }
         .ProseMirror blockquote { border-left: 4px solid #FDBE35; padding-left: 1rem; margin: 1rem 0; color: rgba(255,255,255,0.85); }
         .ProseMirror code { background: rgba(255,255,255,0.1); padding: 0.2em 0.4em; border-radius: 4px; font-size: 0.9em; }
+        .ProseMirror .blog-editor-table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+        .ProseMirror .blog-editor-table th, .ProseMirror .blog-editor-table td { border: 1px solid rgba(255,255,255,0.25); padding: 0.5rem 0.75rem; text-align: left; }
+        .ProseMirror .blog-editor-table th { background: rgba(253,190,53,0.2); color: #FDBE35; font-weight: 600; }
       `}</style>
     </div>
   );

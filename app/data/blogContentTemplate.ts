@@ -29,6 +29,27 @@ export const BLOG_CONTENT_TEMPLATE = `
 <h2 id="key-metrics">[Key metrics or data]</h2>
 
 <p>[Highlight the main numbers or metrics that support your argument.]</p>
+<table>
+  <thead>
+    <tr>
+      <th>[Column 1 header]</th>
+      <th>[Column 2 header]</th>
+      <th>[Column 3 header]</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>[Data cell]</td>
+      <td>[Data cell]</td>
+      <td>[Data cell]</td>
+    </tr>
+    <tr>
+      <td>[Data cell]</td>
+      <td>[Data cell]</td>
+      <td>[Data cell]</td>
+    </tr>
+  </tbody>
+</table>
 <ul>
   <li><strong>[Metric]:</strong> [Value or insight.]</li>
   <li><strong>[Metric]:</strong> [Value or insight.]</li>

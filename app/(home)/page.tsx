@@ -207,7 +207,7 @@ export default function HomePage() {
               {filteredPosts.map((post) => (
                 <Link
                   key={post.id}
-                  href={`/article/${post.slug}`}
+                  href={`/blog/${post.slug}`}
                   className="group overflow-hidden rounded-lg border border-[rgba(255,255,255,0.05)] bg-[rgba(255,255,255,0.03)] transition-all hover:border-[rgba(212,175,55,0.3)] hover:bg-[rgba(255,255,255,0.06)]"
                 >
                   <div className="relative h-48 overflow-hidden">

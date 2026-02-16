@@ -448,7 +448,7 @@ export function PostForm({
               URL Slug (auto-generated, editable)
             </label>
             <div className="flex items-center gap-2">
-              <span className="text-sm text-[rgba(255,255,255,0.5)]">/article/</span>
+              <span className="text-sm text-[rgba(255,255,255,0.5)]">/blog/</span>
               <input
                 type="text"
                 value={form.slug}
@@ -466,7 +466,7 @@ export function PostForm({
               type="url"
               value={form.canonicalUrl}
               onChange={(e) => update({ canonicalUrl: e.target.value })}
-              placeholder="https://blogs.grade.capital/article/this-post"
+              placeholder="https://blogs.grade.capital/blog/this-post"
               className="w-full rounded-lg border border-[rgba(255,255,255,0.2)] bg-[rgba(255,255,255,0.05)] px-4 py-2 text-white focus:border-[#FDBE35] focus:outline-none"
             />
           </div>

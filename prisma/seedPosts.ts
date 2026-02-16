@@ -108,7 +108,7 @@ const POSTS = [
       "Explore how institutional investors are driving the next wave of crypto adoption in India. Pension funds, regulatory clarity, and market trends.",
     focusKeyword: "institutional crypto adoption India",
     secondaryKeywords: "pension funds crypto, regulatory clarity India, institutional adoption",
-    canonicalUrl: `${BASE_URL}/article/next-trillion-dollars-crypto-institutions`,
+    canonicalUrl: `${BASE_URL}/blog/next-trillion-dollars-crypto-institutions`,
     metaRobotsIndex: "index",
     metaRobotsFollow: "follow",
     ogTitle: "Institutional Crypto Adoption India | Grade Capital",
@@ -256,7 +256,7 @@ async function main() {
   console.log("  GET /api/posts/next-trillion-dollars-crypto-institutions");
   console.log("  POST /api/posts/next-trillion-dollars-crypto-institutions/view");
   console.log("\nPage URLs:");
-  console.log("  /article/next-trillion-dollars-crypto-institutions");
+  console.log("  /blog/next-trillion-dollars-crypto-institutions");
   console.log("  /category/analysis");
   console.log("  /tag/bitcoin");
   console.log("  /author/ravi-kumar");

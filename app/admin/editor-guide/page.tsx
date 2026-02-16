@@ -11,6 +11,7 @@ import {
   Undo,
   Redo,
   Code,
+  Table,
 } from "lucide-react";
 
 const buttons = [
@@ -76,6 +77,13 @@ const buttons = [
     description: "Turn selected text into a link. Click the button, then enter the URL.",
     example: "<a href=\"https://…\">link text</a>",
     onBlog: "Gold, underlined; hover lighter gold.",
+  },
+  {
+    icon: Table,
+    name: "Table",
+    description: "Insert a table (choose 2×2, 3×3, 3×4, or 4×3). When the cursor is inside a table, the menu also lets you add or delete columns and rows.",
+    example: "<table>…<thead>…<tbody>…",
+    onBlog: "Bordered table; header row in gold tint, data cells in light grey.",
   },
   {
     icon: Undo,
