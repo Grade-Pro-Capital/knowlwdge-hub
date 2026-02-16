@@ -26,7 +26,7 @@ import {
   faqJsonLd,
 } from "@/app/lib/jsonLd";
 import { calculateReadingTime, countWords } from "@/app/lib/readingTime";
-import { getTocFromContent } from "@/app/lib/tocFromContent";
+import { getTocFromContent, ensureHeadingIds } from "@/app/lib/tocFromContent";
 import type { Citation, ExpertiseSignals, FaqItem } from "@/app/lib/types";
 
 const baseUrl = getBaseUrl();
@@ -181,7 +181,8 @@ export default async function BlogPage({
   });
 
   const content = row.content ?? "";
-  const tocItems = getTocFromContent(content);
+  const contentWithIds = ensureHeadingIds(content);
+  const tocItems = getTocFromContent(contentWithIds);
   const citations = parseCitations(row.authoritativeCitations);
   const expertise = parseExpertise(row.expertiseSignals);
   const faqs = parseFaqs(row.faqs);
@@ -333,7 +334,7 @@ export default async function BlogPage({
                     <nav className="space-y-1.5" aria-label="Article sections">
                       {tocItems.length === 0 ? (
                         <p className="text-sm text-[rgba(255,255,255,0.5)]">
-                          No sections (add H2 with id in content)
+                          No sections (add H2 headings in content)
                         </p>
                       ) : (
                         tocItems.map((item) => (
@@ -354,7 +355,7 @@ export default async function BlogPage({
               <div className="lg:col-span-9">
                 <div
                   className="article-content article-wrapper"
-                  dangerouslySetInnerHTML={{ __html: content }}
+                  dangerouslySetInnerHTML={{ __html: contentWithIds }}
                 />
               </div>
             </div>
