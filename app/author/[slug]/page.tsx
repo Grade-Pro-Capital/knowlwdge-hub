@@ -30,18 +30,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     `Read articles by ${name} on crypto, finance, and institutional adoption.`;
 
   const base = getBaseUrl();
+  const canonical = `${base}/author/${slug}`;
   const defaultOgImage = `${base}/og-default.png`;
 
   return {
     title,
     description,
+    alternates: { canonical },
     openGraph: {
       locale: "en_IN",
       siteName: SITE_NAME_OG,
       type: "website",
       title,
       description,
-      url: `${base}/author/${slug}`,
+      url: canonical,
       images: [{ url: defaultOgImage, width: 1200, height: 630, alt: SITE_NAME_OG }],
     },
   };

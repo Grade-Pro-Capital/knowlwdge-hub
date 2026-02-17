@@ -103,9 +103,7 @@ export async function generateMetadata({
   const title = sanitizeTitleForBrand(rawTitle) || rawTitle;
   const description =
     validateMetaDescription(row.metaDescription) ?? row.excerpt;
-  const canonical = row.canonicalUrl?.trim()
-    ? absoluteUrl(row.canonicalUrl)
-    : `${baseUrl}/blog/${row.slug}`;
+  const canonical = `${baseUrl}/blog/${row.slug}`;
   const robotsIndex = row.metaRobotsIndex?.trim() || "index";
   const robotsFollow = row.metaRobotsFollow?.trim() || "follow";
   const robots = {
@@ -233,8 +231,7 @@ export default async function BlogPage({
     ? row.imageUrl
     : `https://source.unsplash.com/1200x800/?${row.imageUrl || row.imageKey || "crypto"}`;
 
-  const canonical =
-    row.canonicalUrl?.trim() ? absoluteUrl(row.canonicalUrl) : `${baseUrl}/blog/${row.slug}`;
+  const canonical = `${baseUrl}/blog/${row.slug}`;
 
   return (
     <div className="min-h-screen bg-[#020100] text-white">

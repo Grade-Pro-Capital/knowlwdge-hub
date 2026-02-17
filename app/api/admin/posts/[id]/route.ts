@@ -134,8 +134,12 @@ export async function PATCH(
         ...(focusKeyword !== undefined && { focusKeyword: focusKeyword ?? null }),
         ...(secondaryKeywords !== undefined && { secondaryKeywords: secondaryKeywords ?? null }),
         ...(canonicalUrl !== undefined && { canonicalUrl: canonicalUrl ?? null }),
-        ...(metaRobotsIndex !== undefined && { metaRobotsIndex: metaRobotsIndex ?? null }),
-        ...(metaRobotsFollow !== undefined && { metaRobotsFollow: metaRobotsFollow ?? null }),
+        ...(metaRobotsIndex !== undefined && {
+          metaRobotsIndex: (metaRobotsIndex?.trim() || "index") as string,
+        }),
+        ...(metaRobotsFollow !== undefined && {
+          metaRobotsFollow: (metaRobotsFollow?.trim() || "follow") as string,
+        }),
         ...(ogTitle !== undefined && { ogTitle: ogTitle ?? null }),
         ...(ogDescription !== undefined && { ogDescription: ogDescription ?? null }),
         ...(ogImage !== undefined && { ogImage: ogImage ?? null }),

@@ -36,18 +36,20 @@ export async function generateMetadata({
     `Explore ${name} articles and insights on crypto, finance, and institutional adoption.`;
 
   const base = getBaseUrl();
+  const canonical = `${base}/category/${slug}`;
   const defaultOgImage = `${base}/og-default.png`;
 
   return {
     title,
     description,
+    alternates: { canonical },
     openGraph: {
       locale: "en_IN",
       siteName: SITE_NAME_OG,
       type: "website",
       title,
       description,
-      url: `${base}/category/${slug}`,
+      url: canonical,
       images: [{ url: defaultOgImage, width: 1200, height: 630, alt: SITE_NAME_OG }],
     },
   };
