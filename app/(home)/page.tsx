@@ -3,9 +3,10 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Search, ChevronRight } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { ImageWithFallback } from "@/app/components/ImageWithFallback";
 import { Logo } from "@/app/components/Logo";
+import { SearchDropdown } from "@/app/components/SearchDropdown";
 import { NewsletterForm } from "@/app/components/NewsletterForm";
 import { p1071e4a } from "@/app/lib/svgPaths";
 import type { BlogPost } from "@/app/data/blogData";
@@ -35,9 +36,11 @@ export default function HomePage() {
   const filteredPosts = posts.filter((post) => {
     const matchesTab =
       activeTab === "all" ? !post.isProfessional : post.isProfessional;
-    const matchesSearch = post.title
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase());
+    const q = searchQuery.trim().toLowerCase();
+    const matchesSearch =
+      !q ||
+      post.title.toLowerCase().includes(q) ||
+      (Array.isArray(post.tags) && post.tags.some((t) => t.toLowerCase().includes(q)));
     return matchesTab && matchesSearch;
   });
 
@@ -50,16 +53,15 @@ export default function HomePage() {
             <Logo />
 
             <div className="flex w-full items-center gap-3 sm:w-auto">
-              <div className="relative flex-1 sm:flex-initial">
-                <input
-                  type="text"
-                  placeholder="Search"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full rounded-lg border border-[rgba(255,255,255,0.2)] bg-transparent px-4 py-2 pl-10 text-sm text-white placeholder-[rgba(255,255,255,0.6)] focus:border-[#d4af37] focus:outline-none sm:w-[200px]"
-                />
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[rgba(255,255,255,0.6)]" />
-              </div>
+              <SearchDropdown
+                posts={posts}
+                query={searchQuery}
+                onQueryChange={setSearchQuery}
+                filter={(post) =>
+                  activeTab === "all" ? !post.isProfessional : !!post.isProfessional
+                }
+                placeholder="Search by title or tags…"
+              />
               <a
                 href="#newsletter"
                 className="whitespace-nowrap rounded-lg bg-gradient-to-r from-[#FDBE35] to-[#FDDA93] px-6 py-2 text-[#020100] shadow-[0px_0px_30px_0px_rgba(212,175,55,0.5)] transition-all hover:shadow-[0px_0px_40px_0px_rgba(212,175,55,0.7)]"

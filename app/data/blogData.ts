@@ -13,6 +13,7 @@ export interface BlogPost {
   image: string;
   content?: string;
   isProfessional?: boolean;
+  tags?: string[];
 }
 
 export const blogPosts: BlogPost[] = [
