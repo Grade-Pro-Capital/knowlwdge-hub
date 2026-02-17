@@ -212,8 +212,8 @@ export function PostForm({
         focusKeyword: form.focusKeyword || undefined,
         secondaryKeywords: form.secondaryKeywords || undefined,
         canonicalUrl: form.canonicalUrl || undefined,
-        metaRobotsIndex: form.metaRobotsIndex || undefined,
-        metaRobotsFollow: form.metaRobotsFollow || undefined,
+        metaRobotsIndex: form.metaRobotsIndex?.trim() || "index",
+        metaRobotsFollow: form.metaRobotsFollow?.trim() || "follow",
         ogTitle: form.ogTitle || undefined,
         ogDescription: form.ogDescription || undefined,
         ogImage: form.ogImage || undefined,
@@ -493,11 +493,10 @@ export function PostForm({
                 Meta Robots — Index
               </label>
               <select
-                value={form.metaRobotsIndex || ""}
+                value={form.metaRobotsIndex || "index"}
                 onChange={(e) => update({ metaRobotsIndex: e.target.value })}
                 className="w-full rounded-lg border border-[rgba(255,255,255,0.2)] bg-[rgba(255,255,255,0.05)] px-4 py-2 text-white focus:border-[#FDBE35] focus:outline-none"
               >
-                <option value="">Default (index)</option>
                 <option value="index">index</option>
                 <option value="noindex">noindex</option>
               </select>
@@ -507,11 +506,10 @@ export function PostForm({
                 Meta Robots — Follow
               </label>
               <select
-                value={form.metaRobotsFollow || ""}
+                value={form.metaRobotsFollow || "follow"}
                 onChange={(e) => update({ metaRobotsFollow: e.target.value })}
                 className="w-full rounded-lg border border-[rgba(255,255,255,0.2)] bg-[rgba(255,255,255,0.05)] px-4 py-2 text-white focus:border-[#FDBE35] focus:outline-none"
               >
-                <option value="">Default (follow)</option>
                 <option value="follow">follow</option>
                 <option value="nofollow">nofollow</option>
               </select>
