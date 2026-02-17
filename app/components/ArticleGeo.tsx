@@ -102,7 +102,7 @@ export function ArticleGeo({
                   <a
                     href={c.url}
                     target="_blank"
-                    rel="nofollow noopener noreferrer"
+                    rel="noopener"
                     className="text-[#FDBE35] underline transition-colors hover:text-[#FDDA93]"
                   >
                     {c.name}
