@@ -11,11 +11,10 @@ type FaqAccordionProps = {
 };
 
 /**
- * FAQ section: all answers are expanded by default so content is visible to users and crawlers
- * (Google requires FAQPage schema content to be visible). Users can collapse items if desired.
+ * FAQ section: all items start collapsed. Users expand by clicking.
  */
 export function FaqAccordion({ items, headingId = "faq-heading" }: FaqAccordionProps) {
-  const [openIndices, setOpenIndices] = useState<Set<number>>(() => new Set(items.map((_, i) => i)));
+  const [openIndices, setOpenIndices] = useState<Set<number>>(() => new Set());
 
   const toggle = (i: number) => {
     setOpenIndices((prev) => {
