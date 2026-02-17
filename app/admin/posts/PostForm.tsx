@@ -204,7 +204,13 @@ export function PostForm({
         content: form.content || undefined,
         isProfessional: form.isProfessional,
         published: form.published,
-        tags: form.tags ? form.tags.split(",").map((t) => t.trim()).filter(Boolean) : undefined,
+        tags: form.tags
+          ? form.tags
+              .split(",")
+              .map((t) => t.trim())
+              .filter(Boolean)
+              .map((t) => slugify(t))
+          : undefined,
         metaTitle: form.metaTitle || undefined,
         metaDescription: form.metaDescription || undefined,
         focusKeyword: form.focusKeyword || undefined,
@@ -364,10 +370,19 @@ export function PostForm({
           type="text"
           value={form.tags}
           onChange={(e) => update({ tags: e.target.value })}
+          onBlur={() => {
+            const slugified = form.tags
+              .split(",")
+              .map((t) => t.trim())
+              .filter(Boolean)
+              .map((t) => slugify(t))
+              .join(", ");
+            if (slugified !== form.tags) update({ tags: slugified });
+          }}
           placeholder="bitcoin,regulation,institutional"
           className="w-full rounded-lg border border-[rgba(255,255,255,0.2)] bg-[rgba(255,255,255,0.05)] px-4 py-2 text-white focus:border-[#FDBE35] focus:outline-none"
         />
-        <p className="mt-1 text-xs text-[rgba(255,255,255,0.5)]">Comma-separated</p>
+        <p className="mt-1 text-xs text-[rgba(255,255,255,0.5)]">Comma-separated; spaces become hyphens, lowercase</p>
       </div>
 
       <div>
