@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { SITE_TITLE, SITE_DESCRIPTION } from "@/app/lib/siteConfig";
 
 const metadataBase =
   typeof process.env.NEXT_PUBLIC_SITE_URL === "string"
@@ -8,9 +9,8 @@ const metadataBase =
 
 export const metadata: Metadata = {
   metadataBase,
-  title: "Knowledge Hub for Crypto | Grade Capital",
-  description:
-    "Intelligence-driven insights for the Crypto Economy. Research, analysis, and market intelligence for institutional investors and financial decision-makers.",
+  title: SITE_TITLE,
+  description: SITE_DESCRIPTION,
   icons: {
     icon: "/favicon.png",
     shortcut: "/favicon.png",

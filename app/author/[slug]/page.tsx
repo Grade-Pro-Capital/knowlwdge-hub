@@ -4,6 +4,7 @@ import { Logo } from "@/app/components/Logo";
 import type { Metadata } from "next";
 import { prisma } from "@/app/lib/db";
 import { getBaseUrl, absoluteUrl } from "@/app/lib/seo";
+import { SITE_TITLE_SUFFIX, sanitizeTitleForBrand } from "@/app/lib/siteConfig";
 import { authorJsonLd } from "@/app/lib/jsonLd";
 import { JsonLdScript } from "@/app/components/JsonLdScript";
 import { Breadcrumb } from "@/app/components/Breadcrumb";
@@ -22,8 +23,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   });
 
   const name = author?.name ?? posts[0]?.authorName ?? slug;
-
-  const title = `${name} | Author | Grade Capital`;
+  const rawTitle = `${name} | Author | ${SITE_TITLE_SUFFIX}`;
+  const title = sanitizeTitleForBrand(rawTitle) || rawTitle;
   const description =
     author?.bio?.trim() ||
     `Read articles by ${name} on crypto, finance, and institutional adoption.`;

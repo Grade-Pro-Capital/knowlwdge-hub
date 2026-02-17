@@ -4,6 +4,7 @@ import { Logo } from "@/app/components/Logo";
 import type { Metadata } from "next";
 import { prisma } from "@/app/lib/db";
 import { getBaseUrl, slugify } from "@/app/lib/seo";
+import { SITE_TITLE_SUFFIX, sanitizeTitleForBrand } from "@/app/lib/siteConfig";
 import { calculateReadingTime } from "@/app/lib/readingTime";
 import { Breadcrumb } from "@/app/components/Breadcrumb";
 import { ImageWithFallback } from "@/app/components/ImageWithFallback";
@@ -17,7 +18,8 @@ export async function generateMetadata({
   const normalizedSlug = slugify(slug);
   const name = normalizedSlug.charAt(0).toUpperCase() + normalizedSlug.slice(1).replace(/-/g, " ");
 
-  const title = `${name} | Grade Capital`;
+  const rawTitle = `${name} | ${SITE_TITLE_SUFFIX}`;
+  const title = sanitizeTitleForBrand(rawTitle) || rawTitle;
   const description = `Explore articles tagged with ${name} on crypto, finance, and institutional adoption.`;
 
   return {

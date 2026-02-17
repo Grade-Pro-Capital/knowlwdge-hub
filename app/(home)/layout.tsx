@@ -1,17 +1,19 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { getBaseUrl } from "@/app/lib/seo";
+import { SITE_TITLE, SITE_NAME_OG } from "@/app/lib/siteConfig";
 import { JsonLdScript } from "@/app/components/JsonLdScript";
 import { organizationJsonLd, webSiteJsonLd } from "@/app/lib/jsonLd";
 
 const base = getBaseUrl();
 const canonical = `${base}/`;
 const ogImage = `${base}/og-homepage.png`;
+const homeDescription =
+  "Research, analysis, and market intelligence for crypto investors in India. Expert insights on Bitcoin, Ethereum, and digital asset regulations.";
 
 export const metadata: Metadata = {
-  title: "Knowledge Hub for Crypto | Grade Capital",
-  description:
-    "Research, analysis, and market intelligence for crypto investors in India. Expert insights on Bitcoin, Ethereum, and digital asset regulations.",
+  title: SITE_TITLE,
+  description: homeDescription,
   keywords: [
     "crypto India",
     "bitcoin research",
@@ -28,16 +30,15 @@ export const metadata: Metadata = {
   },
   openGraph: {
     locale: "en_IN",
-    title: "Knowledge Hub for Crypto | Grade Capital",
-    description:
-      "Research, analysis, and market intelligence for crypto investors in India.",
+    title: SITE_TITLE,
+    description: homeDescription,
     url: canonical,
     images: [
       {
         url: ogImage,
         width: 1200,
         height: 630,
-        alt: "Grade Capital Knowledge Hub",
+        alt: SITE_NAME_OG,
       },
     ],
     type: "website",
@@ -45,9 +46,8 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     site: "@GradeCapital",
-    title: "Knowledge Hub for Crypto | Grade Capital",
-    description:
-      "Research, analysis, and market intelligence for crypto investors in India.",
+    title: SITE_TITLE,
+    description: homeDescription,
     images: [ogImage],
   },
 };

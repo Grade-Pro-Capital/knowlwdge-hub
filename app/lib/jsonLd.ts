@@ -3,6 +3,7 @@
  * All schemas follow schema.org types.
  */
 import { absoluteUrl, getBaseUrl } from "./seo";
+import { SITE_NAME_OG, SITE_DESCRIPTION } from "./siteConfig";
 
 export type AuthorInput = {
   name: string;
@@ -116,10 +117,9 @@ export function webSiteJsonLd(): object {
   return {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    name: "Grade Capital Knowledge Hub",
+    name: SITE_NAME_OG,
     url: base,
-    description:
-      "Intelligence-driven insights for the Crypto Economy. Research, analysis, and market intelligence for institutional investors.",
+    description: SITE_DESCRIPTION,
     potentialAction: {
       "@type": "SearchAction",
       target: {

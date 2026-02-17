@@ -8,6 +8,14 @@ const prisma = new PrismaClient();
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://blogs.grade.capital";
 
+/** Ensure every category SEO title ends with Grade Capital. */
+const TITLE_SUFFIX = " | Grade Capital";
+function categorySeoTitleWithBrand(name: string, seoTitle?: string | null): string {
+  const base = (seoTitle?.trim() || name);
+  return base.endsWith("Grade Capital") ? base : base.replace(/\s*\|\s*$/, "").trim() + TITLE_SUFFIX;
+}
+
+// Add new categories here. categorySeoTitle will get " | Grade Capital" appended if missing.
 const CATEGORIES = [
   {
     slug: "analysis",
@@ -213,12 +221,13 @@ async function main() {
   console.log("Seeding test data...\n");
 
   for (const cat of CATEGORIES) {
+    const categorySeoTitle = categorySeoTitleWithBrand(cat.name, cat.categorySeoTitle);
     await prisma.category.upsert({
       where: { slug: cat.slug },
-      create: cat,
-      update: cat,
+      create: { ...cat, categorySeoTitle },
+      update: { ...cat, categorySeoTitle },
     });
-    console.log("Category:", cat.name);
+    console.log("Category:", cat.name, "→", categorySeoTitle);
   }
 
   for (const author of AUTHORS) {

@@ -4,6 +4,7 @@ import { Logo } from "@/app/components/Logo";
 import type { Metadata } from "next";
 import { prisma } from "@/app/lib/db";
 import { slugify, getBaseUrl } from "@/app/lib/seo";
+import { SITE_TITLE_SUFFIX, sanitizeTitleForBrand } from "@/app/lib/siteConfig";
 import { calculateReadingTime } from "@/app/lib/readingTime";
 import { Breadcrumb } from "@/app/components/Breadcrumb";
 import { ImageWithFallback } from "@/app/components/ImageWithFallback";
@@ -27,8 +28,9 @@ export async function generateMetadata({
     where: { slug },
   });
 
-  const title =
-    categoryRow?.categorySeoTitle?.trim() || `${name} | Grade Capital`;
+  const rawTitle =
+    categoryRow?.categorySeoTitle?.trim() || `${name} | ${SITE_TITLE_SUFFIX}`;
+  const title = sanitizeTitleForBrand(rawTitle) || `${name} | ${SITE_TITLE_SUFFIX}`;
   const description =
     categoryRow?.categorySeoDescription?.trim() ||
     `Explore ${name} articles and insights on crypto, finance, and institutional adoption.`;

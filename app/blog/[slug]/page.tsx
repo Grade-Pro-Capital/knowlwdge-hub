@@ -23,6 +23,7 @@ import {
   parseSecondaryKeywords,
   safeDateModified,
 } from "@/app/lib/seo";
+import { SITE_NAME_OG, sanitizeTitleForBrand } from "@/app/lib/siteConfig";
 import {
   articleJsonLd,
   breadcrumbJsonLd,
@@ -97,8 +98,9 @@ export async function generateMetadata({
   });
   if (!row) return { title: "Article not found" };
 
-  const title =
+  const rawTitle =
     validateMetaTitle(row.metaTitle) ?? (normalizeMetaTitle(row.title) || row.title);
+  const title = sanitizeTitleForBrand(rawTitle) || rawTitle;
   const description =
     validateMetaDescription(row.metaDescription) ?? row.excerpt;
   const canonical = row.canonicalUrl?.trim()
@@ -137,7 +139,7 @@ export async function generateMetadata({
       title: ogTitle,
       description: ogDescription,
       url: canonical,
-      siteName: "Grade Capital Knowledge Hub",
+      siteName: SITE_NAME_OG,
       images: ogImageUrl
         ? [{ url: ogImageUrl, width: 1200, height: 630, alt: ogTitle }]
         : undefined,
