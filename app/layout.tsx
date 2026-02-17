@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { SITE_TITLE, SITE_DESCRIPTION } from "@/app/lib/siteConfig";
+import { SITE_TITLE, SITE_DESCRIPTION, SITE_NAME_OG } from "@/app/lib/siteConfig";
 
 const metadataBase =
   typeof process.env.NEXT_PUBLIC_SITE_URL === "string"
     ? new URL(process.env.NEXT_PUBLIC_SITE_URL)
     : new URL("https://blogs.grade.capital");
+const base = metadataBase.origin;
+const defaultOgImage = `${base}/og-default.png`;
 
 export const metadata: Metadata = {
   metadataBase,
@@ -18,6 +20,9 @@ export const metadata: Metadata = {
   },
   openGraph: {
     locale: "en_IN",
+    siteName: SITE_NAME_OG,
+    type: "website",
+    images: [{ url: defaultOgImage, width: 1200, height: 630, alt: SITE_NAME_OG }],
   },
 };
 

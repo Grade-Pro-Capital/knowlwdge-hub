@@ -115,12 +115,13 @@ export async function generateMetadata({
 
   const ogTitle = row.ogTitle?.trim() || title;
   const ogDescription = row.ogDescription?.trim() || description;
-  const ogImage = row.ogImage?.trim() || row.imageUrl || undefined;
-  const ogImageUrl = ogImage ? absoluteUrl(ogImage) : undefined;
+  // OG image = main image (article hero): ogImage or row.imageUrl, same as page hero
+  const mainImage = row.ogImage?.trim() || row.imageUrl || undefined;
+  const ogImageUrl = mainImage ? absoluteUrl(mainImage) : undefined;
 
   const twitterTitle = row.twitterCardTitle?.trim() || ogTitle;
   const twitterDescription = row.twitterCardDescription?.trim() || ogDescription;
-  const twitterImage = row.twitterCardImage?.trim() || row.ogImage?.trim() || row.imageUrl || undefined;
+  const twitterImage = row.twitterCardImage?.trim() || mainImage || undefined;
   const twitterImageUrl = twitterImage ? absoluteUrl(twitterImage) : ogImageUrl;
 
   const keywords = [
@@ -136,14 +137,19 @@ export async function generateMetadata({
     keywords: keywords.length ? keywords : undefined,
     openGraph: {
       locale: "en_IN",
+      siteName: SITE_NAME_OG,
+      type: "article",
       title: ogTitle,
       description: ogDescription,
       url: canonical,
-      siteName: SITE_NAME_OG,
-      images: ogImageUrl
-        ? [{ url: ogImageUrl, width: 1200, height: 630, alt: ogTitle }]
-        : undefined,
-      type: "article",
+      images: [
+        {
+          url: ogImageUrl || `${baseUrl}/og-default.png`,
+          width: 1200,
+          height: 630,
+          alt: ogTitle,
+        },
+      ],
       publishedTime: row.publishedAt?.toISOString?.(),
       modifiedTime: safeDateModified(row.contentFreshnessDate, row.updatedAt, row.publishedAt),
     },

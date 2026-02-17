@@ -26,6 +26,21 @@ export default function robots(): MetadataRoute.Robots {
         allow: ["/", "/blog/", "/category/", "/tag/", "/author/"],
         disallow: ["/admin/", "/api/"],
       },
+      {
+        userAgent: "PerplexityBot",
+        allow: ["/", "/blog/", "/category/", "/tag/", "/author/"],
+        disallow: ["/admin/", "/api/"],
+      },
+      {
+        userAgent: "Claude-Web",
+        allow: ["/", "/blog/", "/category/", "/tag/", "/author/"],
+        disallow: ["/admin/", "/api/"],
+      },
+      {
+        userAgent: "anthropic-ai",
+        allow: ["/", "/blog/", "/category/", "/tag/", "/author/"],
+        disallow: ["/admin/", "/api/"],
+      },
     ],
     sitemap: `${base}/sitemap.xml`,
   };

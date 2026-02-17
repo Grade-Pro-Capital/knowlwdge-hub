@@ -4,7 +4,7 @@ import { Logo } from "@/app/components/Logo";
 import type { Metadata } from "next";
 import { prisma } from "@/app/lib/db";
 import { getBaseUrl, slugify } from "@/app/lib/seo";
-import { SITE_TITLE_SUFFIX, sanitizeTitleForBrand } from "@/app/lib/siteConfig";
+import { SITE_TITLE_SUFFIX, SITE_NAME_OG, sanitizeTitleForBrand } from "@/app/lib/siteConfig";
 import { calculateReadingTime } from "@/app/lib/readingTime";
 import { Breadcrumb } from "@/app/components/Breadcrumb";
 import { ImageWithFallback } from "@/app/components/ImageWithFallback";
@@ -22,14 +22,20 @@ export async function generateMetadata({
   const title = sanitizeTitleForBrand(rawTitle) || rawTitle;
   const description = `Explore articles tagged with ${name} on crypto, finance, and institutional adoption.`;
 
+  const base = getBaseUrl();
+  const defaultOgImage = `${base}/og-default.png`;
+
   return {
     title,
     description,
     openGraph: {
       locale: "en_IN",
+      siteName: SITE_NAME_OG,
+      type: "website",
       title,
       description,
-      url: `${getBaseUrl()}/tag/${normalizedSlug}`,
+      url: `${base}/tag/${normalizedSlug}`,
+      images: [{ url: defaultOgImage, width: 1200, height: 630, alt: SITE_NAME_OG }],
     },
   };
 }

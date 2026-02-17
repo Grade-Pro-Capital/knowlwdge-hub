@@ -30,6 +30,8 @@ export const metadata: Metadata = {
   },
   openGraph: {
     locale: "en_IN",
+    siteName: SITE_NAME_OG,
+    type: "website",
     title: SITE_TITLE,
     description: homeDescription,
     url: canonical,
@@ -41,7 +43,6 @@ export const metadata: Metadata = {
         alt: SITE_NAME_OG,
       },
     ],
-    type: "website",
   },
   twitter: {
     card: "summary_large_image",

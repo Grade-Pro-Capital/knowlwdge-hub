@@ -4,7 +4,7 @@ import { Logo } from "@/app/components/Logo";
 import type { Metadata } from "next";
 import { prisma } from "@/app/lib/db";
 import { getBaseUrl, absoluteUrl } from "@/app/lib/seo";
-import { SITE_TITLE_SUFFIX, sanitizeTitleForBrand } from "@/app/lib/siteConfig";
+import { SITE_TITLE_SUFFIX, SITE_NAME_OG, sanitizeTitleForBrand } from "@/app/lib/siteConfig";
 import { authorJsonLd } from "@/app/lib/jsonLd";
 import { JsonLdScript } from "@/app/components/JsonLdScript";
 import { Breadcrumb } from "@/app/components/Breadcrumb";
@@ -29,14 +29,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     author?.bio?.trim() ||
     `Read articles by ${name} on crypto, finance, and institutional adoption.`;
 
+  const base = getBaseUrl();
+  const defaultOgImage = `${base}/og-default.png`;
+
   return {
     title,
     description,
     openGraph: {
       locale: "en_IN",
+      siteName: SITE_NAME_OG,
+      type: "website",
       title,
       description,
-      url: `${getBaseUrl()}/author/${slug}`,
+      url: `${base}/author/${slug}`,
+      images: [{ url: defaultOgImage, width: 1200, height: 630, alt: SITE_NAME_OG }],
     },
   };
 }
