@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/app/lib/admin";
 import { prisma } from "@/app/lib/db";
-import { parseContentFreshnessDate } from "@/app/lib/seo";
+import { parseContentFreshnessDate, slugify } from "@/app/lib/seo";
 
 export async function GET(request: Request) {
   const auth = await requireAdmin(request);
@@ -72,11 +72,13 @@ export async function POST(request: Request) {
       );
     }
 
-    const tagsArr = Array.isArray(tags)
-      ? tags.filter((t): t is string => typeof t === "string")
-      : typeof tags === "string"
-        ? tags.split(",").map((t) => t.trim()).filter(Boolean)
-        : [];
+    const tagsArr = (
+      Array.isArray(tags)
+        ? tags.filter((t): t is string => typeof t === "string")
+        : typeof tags === "string"
+          ? tags.split(",").map((t) => t.trim()).filter(Boolean)
+          : []
+    ).map((t) => slugify(t));
     const keyTakeawaysArr = Array.isArray(keyTakeaways)
       ? keyTakeaways.filter((k): k is string => typeof k === "string")
       : typeof keyTakeaways === "string"
