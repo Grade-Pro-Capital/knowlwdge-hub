@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { requireAdmin } from "@/app/lib/admin";
 import { prisma } from "@/app/lib/db";
 import { deleteFromSpaces } from "@/app/lib/upload";
-import { parseContentFreshnessDate, slugify } from "@/app/lib/seo";
+import { parseContentFreshnessDate } from "@/app/lib/seo";
 
 export async function GET(
   request: Request,
@@ -76,13 +76,11 @@ export async function PATCH(
 
     const tagsArr =
       tags !== undefined
-        ? (
-            Array.isArray(tags)
-              ? tags.filter((t): t is string => typeof t === "string")
-              : typeof tags === "string"
-                ? tags.split(",").map((t) => t.trim()).filter(Boolean)
-                : post.tags ?? []
-          ).map((t) => slugify(t))
+        ? Array.isArray(tags)
+          ? tags.filter((t): t is string => typeof t === "string").map((t) => t.trim()).filter(Boolean)
+          : typeof tags === "string"
+            ? tags.split(",").map((t) => t.trim()).filter(Boolean)
+            : post.tags ?? []
         : undefined;
     const keyTakeawaysArr =
       keyTakeaways !== undefined

@@ -37,13 +37,14 @@ export default async function TagPage({ params }: Props) {
   const normalizedSlug = slugify(slug);
   if (normalizedSlug !== slug) redirect(`/tag/${normalizedSlug}`);
 
-  const posts = await prisma.post.findMany({
-    where: {
-      published: true,
-      tags: { has: normalizedSlug },
-    },
+  // DB stores tags with spaces (e.g. "Crypto Basket"); URL uses slug (e.g. crypto-basket)
+  const allWithTags = await prisma.post.findMany({
+    where: { published: true, tags: { isEmpty: false } },
     orderBy: { publishedAt: "desc" },
   });
+  const posts = allWithTags.filter((post) =>
+    post.tags.some((t) => slugify(t) === normalizedSlug)
+  );
 
   if (posts.length === 0) notFound();
 
