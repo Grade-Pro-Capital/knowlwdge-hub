@@ -30,6 +30,7 @@ export async function generateMetadata({
     title,
     description,
     alternates: { canonical },
+    robots: { index: true, follow: true },
     openGraph: {
       locale: "en_IN",
       siteName: SITE_NAME_OG,
@@ -38,6 +39,13 @@ export async function generateMetadata({
       description,
       url: canonical,
       images: [{ url: defaultOgImage, width: 1200, height: 630, alt: SITE_NAME_OG }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      site: "@GradeCapital",
+      title,
+      description,
+      images: [defaultOgImage],
     },
   };
 }
