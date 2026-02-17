@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/app/lib/admin";
 import { prisma } from "@/app/lib/db";
+import { parseContentFreshnessDate } from "@/app/lib/seo";
 
 export async function GET(request: Request) {
   const auth = await requireAdmin(request);
@@ -124,9 +125,10 @@ export async function POST(request: Request) {
             ? authoritativeCitations
             : null,
         entityTags: entityTagsArr,
-        contentFreshnessDate: contentFreshnessDate
-          ? new Date(contentFreshnessDate)
-          : null,
+        contentFreshnessDate:
+          contentFreshnessDate !== undefined
+            ? parseContentFreshnessDate(contentFreshnessDate)
+            : null,
         expertiseSignals:
           expertiseSignals != null &&
           typeof expertiseSignals === "object"

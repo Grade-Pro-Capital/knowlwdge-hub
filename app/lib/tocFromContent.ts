@@ -67,3 +67,46 @@ export function ensureHeadingIds(html: string): string {
     return `<h2 id="${id}"${cleanAttrs ? ` ${cleanAttrs}` : ""}>${content}</h2>`;
   });
 }
+
+function isOwnDomain(href: string): boolean {
+  try {
+    const url = new URL(href, "https://blogs.grade.capital");
+    const host = url.hostname.toLowerCase().replace(/^www\./, "");
+    return host === "grade.capital" || host === "blogs.grade.capital";
+  } catch {
+    return false;
+  }
+}
+
+const A_TAG_REGEX = /<a\s+([^>]*)>/gi;
+
+/**
+ * Normalize links in article HTML: own-domain (grade.capital) links use HTTPS and rel="noopener" only
+ * (no nofollow) so Google can pass link equity to the main site. External links are unchanged.
+ */
+export function normalizeArticleLinks(html: string): string {
+  if (!html || typeof html !== "string") return html;
+
+  return html.replace(A_TAG_REGEX, (match, attrs) => {
+    const hrefMatch = attrs.match(/href\s*=\s*["']([^"']*)["']/i);
+    const href = hrefMatch ? hrefMatch[1].trim() : "";
+    if (!href || !isOwnDomain(href)) return match;
+
+    try {
+      const url = new URL(href, "https://blogs.grade.capital");
+      const secureHref =
+        url.protocol === "https:"
+          ? url.toString()
+          : `https://${url.hostname}${url.pathname}${url.search}${url.hash}`;
+
+      let newAttrs = attrs
+        .replace(/\brel\s*=\s*["'][^"']*["']/gi, 'rel="noopener"')
+        .replace(/\bhref\s*=\s*["'][^"']*["']/gi, `href="${secureHref}"`);
+
+      if (!/\brel\s*=/i.test(newAttrs)) newAttrs = `${newAttrs.trim()} rel="noopener"`;
+      return `<a ${newAttrs.trim()}>`;
+    } catch {
+      return match;
+    }
+  });
+}

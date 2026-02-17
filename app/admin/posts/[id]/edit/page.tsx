@@ -51,7 +51,7 @@ export default async function EditPostPage({
         : "",
     entityTags: Array.isArray(post.entityTags) ? post.entityTags.join(", ") : "",
     contentFreshnessDate: post.contentFreshnessDate
-      ? post.contentFreshnessDate.toString().slice(0, 10)
+      ? new Date(post.contentFreshnessDate).toISOString().slice(0, 10)
       : "",
     expertiseCredentials: expertise?.credentials ?? "",
     expertiseMethodology: expertise?.methodology ?? "",

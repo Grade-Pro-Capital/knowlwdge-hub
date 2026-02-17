@@ -27,6 +27,7 @@ export const metadata: Metadata = {
     follow: true,
   },
   openGraph: {
+    locale: "en_IN",
     title: "Knowledge Hub for Crypto | Grade Capital",
     description:
       "Research, analysis, and market intelligence for crypto investors in India.",

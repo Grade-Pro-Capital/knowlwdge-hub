@@ -16,6 +16,9 @@ export const metadata: Metadata = {
     shortcut: "/favicon.png",
     apple: "/favicon.png",
   },
+  openGraph: {
+    locale: "en_IN",
+  },
 };
 
 export default function RootLayout({
@@ -24,7 +27,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en-IN" className="dark">
       <body
         className="min-h-screen bg-[#020100] text-white antialiased"
         suppressHydrationWarning

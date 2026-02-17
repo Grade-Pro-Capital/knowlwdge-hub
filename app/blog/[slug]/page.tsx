@@ -7,6 +7,7 @@ import { Logo } from "@/app/components/Logo";
 import { ShareButtons } from "@/app/components/ShareButtons";
 import { Breadcrumb } from "@/app/components/Breadcrumb";
 import { ArticleGeo } from "@/app/components/ArticleGeo";
+import { FaqAccordion } from "@/app/components/FaqAccordion";
 import { RelatedArticles } from "@/app/components/RelatedArticles";
 import { NewsletterForm } from "@/app/components/NewsletterForm";
 import { RecordView } from "@/app/blog/RecordView";
@@ -16,9 +17,11 @@ import {
   absoluteUrl,
   getBaseUrl,
   slugify,
+  normalizeMetaTitle,
   validateMetaTitle,
   validateMetaDescription,
   parseSecondaryKeywords,
+  safeDateModified,
 } from "@/app/lib/seo";
 import {
   articleJsonLd,
@@ -26,7 +29,7 @@ import {
   faqJsonLd,
 } from "@/app/lib/jsonLd";
 import { calculateReadingTime, countWords } from "@/app/lib/readingTime";
-import { getTocFromContent, ensureHeadingIds } from "@/app/lib/tocFromContent";
+import { getTocFromContent, ensureHeadingIds, normalizeArticleLinks } from "@/app/lib/tocFromContent";
 import type { Citation, ExpertiseSignals, FaqItem } from "@/app/lib/types";
 
 const baseUrl = getBaseUrl();
@@ -94,7 +97,8 @@ export async function generateMetadata({
   });
   if (!row) return { title: "Article not found" };
 
-  const title = validateMetaTitle(row.metaTitle) ?? row.title;
+  const title =
+    validateMetaTitle(row.metaTitle) ?? (normalizeMetaTitle(row.title) || row.title);
   const description =
     validateMetaDescription(row.metaDescription) ?? row.excerpt;
   const canonical = row.canonicalUrl?.trim()
@@ -128,11 +132,8 @@ export async function generateMetadata({
     alternates: { canonical },
     robots,
     keywords: keywords.length ? keywords : undefined,
-    other: {
-      "twitter:site": "@GradeCapital",
-      "twitter:creator": "@GradeCapital",
-    },
     openGraph: {
+      locale: "en_IN",
       title: ogTitle,
       description: ogDescription,
       url: canonical,
@@ -142,7 +143,7 @@ export async function generateMetadata({
         : undefined,
       type: "article",
       publishedTime: row.publishedAt?.toISOString?.(),
-      modifiedTime: row.contentFreshnessDate?.toISOString?.() ?? row.updatedAt?.toISOString?.(),
+      modifiedTime: safeDateModified(row.contentFreshnessDate, row.updatedAt, row.publishedAt),
     },
     twitter: {
       card: "summary_large_image",
@@ -182,6 +183,7 @@ export default async function BlogPage({
 
   const content = row.content ?? "";
   const contentWithIds = ensureHeadingIds(content);
+  const contentForRender = normalizeArticleLinks(contentWithIds);
   const tocItems = getTocFromContent(contentWithIds);
   const citations = parseCitations(row.authoritativeCitations);
   const expertise = parseExpertise(row.expertiseSignals);
@@ -197,13 +199,18 @@ export default async function BlogPage({
     { name: row.title, url: `/blog/${row.slug}` },
   ];
 
+  const safeModifiedIso = safeDateModified(
+    row.contentFreshnessDate,
+    row.updatedAt,
+    row.publishedAt
+  );
+
   const articleLd = articleJsonLd({
     headline: row.title,
     description: row.metaDescription ?? row.excerpt,
     image: row.ogImage ?? row.imageUrl,
     datePublished: row.publishedAt.toISOString(),
-    dateModified:
-      row.contentFreshnessDate?.toISOString() ?? row.updatedAt.toISOString(),
+    dateModified: safeModifiedIso,
     author: {
       name: row.authorName,
       url: row.authorSlug ? `/author/${row.authorSlug}` : undefined,
@@ -300,7 +307,7 @@ export default async function BlogPage({
               aiSummary={row.aiSummary}
               keyTakeaways={keyTakeaways}
               authoritativeCitations={citations}
-              contentFreshnessDate={row.contentFreshnessDate}
+              contentFreshnessDate={safeModifiedIso}
               authorName={row.authorName}
               authorSlug={row.authorSlug}
               authorAvatar={row.authorAvatar}
@@ -358,42 +365,22 @@ export default async function BlogPage({
               <div className="lg:col-span-9">
                 <div
                   className="article-content article-wrapper"
-                  dangerouslySetInnerHTML={{ __html: contentWithIds }}
+                  dangerouslySetInnerHTML={{ __html: contentForRender }}
                 />
               </div>
             </div>
           </div>
         </div>
 
-        {/* FAQs - visible section when post has faqs */}
+        {/* FAQs - visible section required when FAQPage schema is present */}
         {faqs && faqs.length > 0 && (
-          <div className="mx-auto max-w-[900px] px-4 pb-16 sm:px-8">
-            <section
-              className="rounded-xl border border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.03)] p-6 sm:p-8"
-              aria-label="Frequently asked questions"
-            >
-              <h2 className="mb-6 flex items-center gap-2 text-xl font-semibold text-white sm:text-2xl">
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#FDBE35] text-[#020100]">
-                  ?
-                </span>
-                Frequently Asked Questions
-              </h2>
-              <dl className="space-y-6">
-                {faqs.map((faq, i) => (
-                  <div
-                    key={i}
-                    className="border-b border-[rgba(255,255,255,0.08)] pb-6 last:border-0 last:pb-0"
-                  >
-                    <dt className="mb-2 text-base font-medium text-[#FDBE35]">
-                      {faq.question}
-                    </dt>
-                    <dd className="text-[rgba(255,255,255,0.85)] leading-relaxed">
-                      {faq.answer}
-                    </dd>
-                  </div>
-                ))}
-              </dl>
-            </section>
+          <div
+            id="faq"
+            className="mx-auto max-w-[900px] px-4 pb-16 sm:px-8"
+            role="region"
+            aria-labelledby="faq-heading"
+          >
+            <FaqAccordion items={faqs} headingId="faq-heading" />
           </div>
         )}
 

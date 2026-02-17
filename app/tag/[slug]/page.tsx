@@ -23,6 +23,7 @@ export async function generateMetadata({
     title,
     description,
     openGraph: {
+      locale: "en_IN",
       title,
       description,
       url: `${getBaseUrl()}/tag/${slug}`,

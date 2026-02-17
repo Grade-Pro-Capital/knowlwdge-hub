@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { requireAdmin } from "@/app/lib/admin";
 import { prisma } from "@/app/lib/db";
 import { deleteFromSpaces } from "@/app/lib/upload";
+import { parseContentFreshnessDate } from "@/app/lib/seo";
 
 export async function GET(
   request: Request,
@@ -152,9 +153,7 @@ export async function PATCH(
         }),
         ...(entityTagsArr !== undefined && { entityTags: entityTagsArr }),
         ...(contentFreshnessDate !== undefined && {
-          contentFreshnessDate: contentFreshnessDate
-            ? new Date(contentFreshnessDate)
-            : null,
+          contentFreshnessDate: parseContentFreshnessDate(contentFreshnessDate),
         }),
         ...(expertiseSignals !== undefined && {
           expertiseSignals:
