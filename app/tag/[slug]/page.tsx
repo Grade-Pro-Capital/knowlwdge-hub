@@ -1,9 +1,9 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { Logo } from "@/app/components/Logo";
 import type { Metadata } from "next";
 import { prisma } from "@/app/lib/db";
-import { getBaseUrl } from "@/app/lib/seo";
+import { getBaseUrl, slugify } from "@/app/lib/seo";
 import { calculateReadingTime } from "@/app/lib/readingTime";
 import { Breadcrumb } from "@/app/components/Breadcrumb";
 import { ImageWithFallback } from "@/app/components/ImageWithFallback";
@@ -14,7 +14,8 @@ export async function generateMetadata({
   params,
 }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const name = slug.charAt(0).toUpperCase() + slug.slice(1);
+  const normalizedSlug = slugify(slug);
+  const name = normalizedSlug.charAt(0).toUpperCase() + normalizedSlug.slice(1).replace(/-/g, " ");
 
   const title = `${name} | Grade Capital`;
   const description = `Explore articles tagged with ${name} on crypto, finance, and institutional adoption.`;
@@ -26,30 +27,32 @@ export async function generateMetadata({
       locale: "en_IN",
       title,
       description,
-      url: `${getBaseUrl()}/tag/${slug}`,
+      url: `${getBaseUrl()}/tag/${normalizedSlug}`,
     },
   };
 }
 
 export default async function TagPage({ params }: Props) {
   const { slug } = await params;
+  const normalizedSlug = slugify(slug);
+  if (normalizedSlug !== slug) redirect(`/tag/${normalizedSlug}`);
 
   const posts = await prisma.post.findMany({
     where: {
       published: true,
-      tags: { has: slug },
+      tags: { has: normalizedSlug },
     },
     orderBy: { publishedAt: "desc" },
   });
 
   if (posts.length === 0) notFound();
 
-  const name = slug.charAt(0).toUpperCase() + slug.slice(1);
+  const name = normalizedSlug.charAt(0).toUpperCase() + normalizedSlug.slice(1).replace(/-/g, " ");
 
   const breadcrumbItems = [
     { name: "Home", url: "/" },
     { name: "Insights", url: "/#insights" },
-    { name: `Tag: ${name}`, url: `/tag/${slug}` },
+    { name: `Tag: ${name}`, url: `/tag/${normalizedSlug}` },
   ];
 
   return (

@@ -54,7 +54,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     select: { tags: true },
   });
 
-  const tagSlugs = [...new Set(tags.flatMap((t) => t.tags))];
+  const tagSlugs = [...new Set(tags.flatMap((t) => t.tags).map((t) => slugify(t)))];
 
   const tagUrls: MetadataRoute.Sitemap = tagSlugs.map((slug) => ({
     url: `${base}/tag/${slug}`,
