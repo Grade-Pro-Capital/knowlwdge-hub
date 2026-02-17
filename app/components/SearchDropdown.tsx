@@ -12,6 +12,7 @@ export type SearchPost = {
   category: string;
   readTime: string;
   tags?: string[];
+  isProfessional?: boolean;
 };
 
 type SearchDropdownProps = {
