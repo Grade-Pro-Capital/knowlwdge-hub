@@ -38,12 +38,16 @@ export async function POST(request: Request) {
     );
   }
 
-  const ext = file.name.split(".").pop() || "jpg";
-  const key = `blog/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+  const key = `blog/${Date.now()}-${Math.random().toString(36).slice(2)}.webp`;
 
   try {
-    const buffer = Buffer.from(await file.arrayBuffer());
-    const url = await uploadToSpaces(key, buffer, file.type);
+    const inputBuffer = Buffer.from(await file.arrayBuffer());
+    const sharp = (await import("sharp")).default;
+    const outputBuffer = await sharp(inputBuffer)
+      .resize(1200, undefined, { withoutEnlargement: true })
+      .webp({ quality: 75 })
+      .toBuffer();
+    const url = await uploadToSpaces(key, outputBuffer, "image/webp");
     return NextResponse.json({
       url,
       key,

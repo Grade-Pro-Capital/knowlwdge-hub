@@ -1,40 +1,68 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 
 const ERROR_IMG_SRC =
-  "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODgiIGhlaWdodD0iODgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgc3Ryb2tlPSIjMDAwIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBvcGFjaXR5PSIuMyIgZmlsbD0ibm9uZSIgc3Ryb2tlLXdpZHRoPSIzLjciPjxyZWN0IHg9IjE2IiB5PSIxNiIgd2lkdGg9IjU2IiBoZWlnaHQ9IjU2IiByeD0iNiIvPjxwYXRoIGQ9Im0xNiA1OCAxNi0xOCAzMiAzMiIvPjxjaXJjbGUgY3g9IjUzIiBjeT0iMzUiIHI9IjciLz48L3N2Zz4=";
+  "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODgiIGhlaWdodD0iODgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgc3Ryb2tlPSIjMDAwIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBvcGFjaXR5PSIuMyIgZmlsbD0ibm9uZSIgc3Ryb2tlLXdpZHRoPSIzLjciPjxyZWN0IHg9IjE2IiB5PSI2IiB3aWR0aD0iNTYiIGhlaWdodD0iNTYiIHJ4PSI2Ii8+PHBhdGggZD0ibTE2IDU4IDE2LTE4IDMyIDMyIi8+PGNpcmNsZSBjeD0iNTMiIGN5PSIzNSIgcj0iNyIvPjwvc3ZnPg==";
 
-export function ImageWithFallback(
-  props: React.ImgHTMLAttributes<HTMLImageElement>
-) {
+type ImageWithFallbackProps = {
+  src: string;
+  alt: string;
+  /** Use fill layout (parent must be position relative with explicit size). Default true. */
+  fill?: boolean;
+  width?: number;
+  height?: number;
+  sizes?: string;
+  priority?: boolean;
+  className?: string;
+  style?: React.CSSProperties;
+};
+
+export function ImageWithFallback({
+  src,
+  alt,
+  fill = true,
+  width,
+  height,
+  sizes = "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw",
+  priority = false,
+  className,
+  style,
+}: ImageWithFallbackProps) {
   const [didError, setDidError] = useState(false);
 
-  const handleError = () => setDidError(true);
-
-  const { src, alt, style, className, ...rest } = props;
-
-  return didError ? (
-    <div
-      className={`inline-block bg-[rgba(255,255,255,0.05)] text-center align-middle ${className ?? ""}`}
-      style={style}
-    >
-      <div className="flex items-center justify-center w-full h-full min-h-[120px]">
-        <img
+  if (didError) {
+    return (
+      <div
+        className={`relative h-full w-full min-h-[120px] flex items-center justify-center bg-[rgba(255,255,255,0.05)] ${className ?? ""}`}
+        style={style}
+      >
+        <Image
           src={ERROR_IMG_SRC}
           alt={alt || "Error loading image"}
-          {...rest}
+          fill
+          sizes="96px"
+          className="opacity-30 object-contain"
+          unoptimized
         />
       </div>
-    </div>
-  ) : (
-    <img
+    );
+  }
+
+  return (
+    <Image
       src={src}
-      alt={alt ?? ""}
+      alt={alt}
+      fill={fill}
+      width={fill ? undefined : width}
+      height={fill ? undefined : height}
+      sizes={fill ? sizes : undefined}
+      priority={priority}
       className={className}
       style={style}
-      {...rest}
-      onError={handleError}
+      onError={() => setDidError(true)}
+      unoptimized={src.startsWith("data:")}
     />
   );
 }

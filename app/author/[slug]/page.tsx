@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { Logo } from "@/app/components/Logo";
 import type { Metadata } from "next";
 import { prisma } from "@/app/lib/db";
@@ -101,9 +102,11 @@ export default async function AuthorPage({ params }: Props) {
         <section className="mb-12 flex flex-col gap-6 sm:flex-row sm:items-start">
           <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[rgba(253,190,53,0.2)] text-4xl text-[#FDBE35]">
             {avatar ? (
-              <img
+              <Image
                 src={avatar}
                 alt={name}
+                width={96}
+                height={96}
                 className="h-full w-full object-cover"
               />
             ) : (

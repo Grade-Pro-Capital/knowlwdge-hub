@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import type { Metadata } from "next";
 import { Clock, Calendar } from "lucide-react";
 import { ImageWithFallback } from "@/app/components/ImageWithFallback";
@@ -261,9 +262,11 @@ export default async function BlogPage({
               <div className="flex items-center gap-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[rgba(253,190,53,0.2)] text-[#FDBE35]">
                   {row.authorAvatar ? (
-                    <img
+                    <Image
                       src={row.authorAvatar}
                       alt={row.authorName}
+                      width={40}
+                      height={40}
                       className="h-full w-full rounded-full object-cover"
                     />
                   ) : (
@@ -299,6 +302,8 @@ export default async function BlogPage({
                 src={imageSrc}
                 alt={row.title}
                 className="h-full w-full object-cover"
+                sizes="(max-width: 1024px) 100vw, 900px"
+                priority
               />
             </div>
 

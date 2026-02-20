@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { RichTextEditorDynamic } from "../components/RichTextEditorDynamic";
 import { BLOG_CONTENT_TEMPLATE } from "@/app/data/blogContentTemplate";
 
@@ -390,9 +391,11 @@ export function PostForm({
             </span>
           )}
           {form.imageUrl && (
-            <img
+            <Image
               src={form.imageUrl}
               alt="Cover"
+              width={96}
+              height={96}
               className="h-24 w-auto rounded border border-[rgba(255,255,255,0.1)] object-cover"
             />
           )}
