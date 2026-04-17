@@ -55,6 +55,7 @@ export async function POST(request: Request) {
       contentFreshnessDate,
       expertiseSignals,
       faqs,
+      additionalImages,
     } = body;
 
     if (!slug || !title || !excerpt || !category || !authorName) {
@@ -100,6 +101,10 @@ export async function POST(request: Request) {
         authorAvatar: authorAvatar ?? null,
         imageUrl: imageUrl ?? null,
         imageKey: imageKey ?? null,
+        additionalImages:
+          additionalImages != null && Array.isArray(additionalImages)
+            ? additionalImages
+            : null,
         content: content ?? null,
         isProfessional: Boolean(isProfessional),
         published: published !== false,

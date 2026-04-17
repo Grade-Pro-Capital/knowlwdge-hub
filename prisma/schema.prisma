@@ -28,6 +28,7 @@ model Post {
   publishedAt            DateTime   @default(now())
   imageUrl               String?
   imageKey               String?
+  additionalImages       Json?      // [{ id, url, key }]
   content                String?
   isProfessional         Boolean    @default(false)
   published              Boolean    @default(true)

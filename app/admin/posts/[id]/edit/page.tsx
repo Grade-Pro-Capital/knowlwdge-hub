@@ -13,6 +13,59 @@ export default async function EditPostPage({
   if (!post) notFound();
 
   const expertise = post.expertiseSignals as { credentials?: string; methodology?: string; researchNotes?: string } | null;
+
+  // Parse FAQs into structured array
+  const parsedFaqs: { question: string; answer: string }[] = (() => {
+    if (!post.faqs) return [];
+    try {
+      const raw = typeof post.faqs === "string" ? JSON.parse(post.faqs) : post.faqs;
+      if (Array.isArray(raw)) {
+        return raw
+          .filter(
+            (f: unknown): f is { question: string; answer: string } =>
+              typeof f === "object" &&
+              f !== null &&
+              "question" in f &&
+              "answer" in f
+          )
+          .map((f) => ({ question: String(f.question), answer: String(f.answer) }));
+      }
+      return [];
+    } catch {
+      return [];
+    }
+  })();
+
+  // Parse additional images
+  const parsedAdditionalImages: { id: string; url: string; key: string }[] = (() => {
+    if (!post.additionalImages) return [];
+    try {
+      const raw =
+        typeof post.additionalImages === "string"
+          ? JSON.parse(post.additionalImages)
+          : post.additionalImages;
+      if (Array.isArray(raw)) {
+        return raw
+          .filter(
+            (img: unknown): img is { id: string; url: string; key: string } =>
+              typeof img === "object" &&
+              img !== null &&
+              "id" in img &&
+              "url" in img &&
+              "key" in img
+          )
+          .map((img) => ({
+            id: String(img.id),
+            url: String(img.url),
+            key: String(img.key),
+          }));
+      }
+      return [];
+    } catch {
+      return [];
+    }
+  })();
+
   const initial = {
     slug: post.slug,
     title: post.title,
@@ -56,12 +109,6 @@ export default async function EditPostPage({
     expertiseCredentials: expertise?.credentials ?? "",
     expertiseMethodology: expertise?.methodology ?? "",
     expertiseResearchNotes: expertise?.researchNotes ?? "",
-    faqs:
-      post.faqs != null
-        ? typeof post.faqs === "string"
-          ? post.faqs
-          : JSON.stringify(post.faqs, null, 2)
-        : "",
   };
 
   return (
@@ -82,7 +129,12 @@ export default async function EditPostPage({
       </div>
       <h1 className="mb-8 text-2xl font-semibold">Edit: {post.title}</h1>
       <div className="rounded-xl border border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.03)] p-6">
-        <PostForm postId={id} initial={initial} />
+        <PostForm
+          postId={id}
+          initial={initial}
+          initialFaqs={parsedFaqs}
+          initialAdditionalImages={parsedAdditionalImages}
+        />
       </div>
     </div>
   );

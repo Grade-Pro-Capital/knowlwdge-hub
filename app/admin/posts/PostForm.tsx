@@ -5,8 +5,12 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { RichTextEditorDynamic } from "../components/RichTextEditorDynamic";
 import { BLOG_CONTENT_TEMPLATE } from "@/app/data/blogContentTemplate";
+import { Plus, Trash2, Copy, Check } from "lucide-react";
 
 type SavedTemplate = { id: string; name: string; content: string };
+
+type FaqItem = { question: string; answer: string };
+type AdditionalImage = { id: string; url: string; key: string };
 
 type PostFormData = {
   slug: string;
@@ -44,7 +48,6 @@ type PostFormData = {
   expertiseCredentials: string;
   expertiseMethodology: string;
   expertiseResearchNotes: string;
-  faqs: string;
 };
 
 const defaults: PostFormData = {
@@ -83,22 +86,31 @@ const defaults: PostFormData = {
   expertiseCredentials: "",
   expertiseMethodology: "",
   expertiseResearchNotes: "",
-  faqs: "",
 };
 
 export function PostForm({
   postId,
   initial,
+  initialFaqs,
+  initialAdditionalImages,
 }: {
   postId?: string;
   initial?: Partial<PostFormData>;
+  initialFaqs?: FaqItem[];
+  initialAdditionalImages?: AdditionalImage[];
 }) {
   const router = useRouter();
   const [form, setForm] = useState<PostFormData>({ ...defaults, ...initial });
+  const [faqs, setFaqs] = useState<FaqItem[]>(initialFaqs ?? []);
+  const [additionalImages, setAdditionalImages] = useState<AdditionalImage[]>(
+    initialAdditionalImages ?? []
+  );
   const [uploading, setUploading] = useState(false);
+  const [uploadingAdditional, setUploadingAdditional] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [templates, setTemplates] = useState<SavedTemplate[]>([]);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
 
   useEffect(() => {
     if (postId) return;
@@ -123,6 +135,10 @@ export function PostForm({
       else if (f.title !== undefined && !postId) next.slug = slugify(f.title);
       return next;
     });
+  }
+
+  function generateImageId(): string {
+    return "img-" + Math.random().toString(36).slice(2, 8);
   }
 
   async function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -159,6 +175,79 @@ export function PostForm({
     }
   }
 
+  async function handleAdditionalImageUpload(
+    e: React.ChangeEvent<HTMLInputElement>
+  ) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (additionalImages.length >= 3) {
+      setError("Maximum 3 additional images allowed");
+      return;
+    }
+    setUploadingAdditional(true);
+    setError("");
+    try {
+      const fd = new FormData();
+      fd.set("file", file);
+      const res = await fetch("/api/admin/upload", {
+        method: "POST",
+        body: fd,
+        credentials: "same-origin",
+      });
+      const text = await res.text();
+      let data: { url?: string; key?: string; error?: string };
+      try {
+        data = text ? JSON.parse(text) : {};
+      } catch {
+        throw new Error(
+          res.status === 401
+            ? "Session expired. Please log in again and try uploading."
+            : "Upload failed. Please log in again if needed, or try a smaller image (max 5MB, JPEG/PNG/WebP/GIF)."
+        );
+      }
+      if (!res.ok) throw new Error(data.error ?? "Upload failed");
+      if (data.url && data.key) {
+        const newImg: AdditionalImage = {
+          id: generateImageId(),
+          url: data.url,
+          key: data.key,
+        };
+        setAdditionalImages((prev) => [...prev, newImg]);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Upload failed");
+    } finally {
+      setUploadingAdditional(false);
+      // Reset the file input
+      e.target.value = "";
+    }
+  }
+
+  function removeAdditionalImage(id: string) {
+    setAdditionalImages((prev) => prev.filter((img) => img.id !== id));
+  }
+
+  function copyImageId(id: string) {
+    navigator.clipboard.writeText(id);
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 2000);
+  }
+
+  // ----- FAQ helpers -----
+  function addFaq() {
+    setFaqs((prev) => [...prev, { question: "", answer: "" }]);
+  }
+
+  function updateFaq(index: number, field: "question" | "answer", value: string) {
+    setFaqs((prev) =>
+      prev.map((faq, i) => (i === index ? { ...faq, [field]: value } : faq))
+    );
+  }
+
+  function removeFaq(index: number) {
+    setFaqs((prev) => prev.filter((_, i) => i !== index));
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
@@ -181,15 +270,13 @@ export function PostForm({
             .filter(Boolean);
         }
       })();
-      const faqs = (() => {
-        if (!form.faqs?.trim()) return undefined;
-        try {
-          const parsed = JSON.parse(form.faqs);
-          return Array.isArray(parsed) ? parsed : undefined;
-        } catch {
-          return undefined;
-        }
-      })();
+
+      // Build FAQs array from the visual builder (filter out empty entries)
+      const faqsPayload = faqs
+        .filter((f) => f.question.trim() && f.answer.trim())
+        .length > 0
+        ? faqs.filter((f) => f.question.trim() && f.answer.trim())
+        : undefined;
 
       const body = {
         slug: form.slug,
@@ -202,6 +289,8 @@ export function PostForm({
         authorAvatar: form.authorAvatar || undefined,
         imageUrl: form.imageUrl || undefined,
         imageKey: form.imageKey || undefined,
+        additionalImages:
+          additionalImages.length > 0 ? additionalImages : undefined,
         content: form.content || undefined,
         isProfessional: form.isProfessional,
         published: form.published,
@@ -240,7 +329,7 @@ export function PostForm({
                 researchNotes: form.expertiseResearchNotes || undefined,
               }
             : undefined,
-        faqs,
+        faqs: faqsPayload,
       };
       const res = await fetch(url, {
         method,
@@ -373,9 +462,10 @@ export function PostForm({
         <p className="mt-1 text-xs text-[rgba(255,255,255,0.5)]">Comma-separated. URLs use hyphens (e.g. /tag/crypto-basket)</p>
       </div>
 
+      {/* ===== Cover Image ===== */}
       <div>
         <label className="mb-1 block text-sm text-[rgba(255,255,255,0.7)]">
-          Cover image
+          Cover image (main)
         </label>
         <div className="flex flex-wrap items-center gap-4">
           <input
@@ -400,6 +490,86 @@ export function PostForm({
             />
           )}
         </div>
+      </div>
+
+      {/* ===== Additional Images ===== */}
+      <div className="rounded-xl border border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.02)] p-6">
+        <div className="mb-4 flex items-center justify-between">
+          <h3 className="text-base font-medium text-white">
+            Additional Images{" "}
+            <span className="text-sm font-normal text-[rgba(255,255,255,0.5)]">
+              ({additionalImages.length}/3)
+            </span>
+          </h3>
+          {additionalImages.length < 3 && (
+            <label className="flex cursor-pointer items-center gap-2 rounded-lg bg-[#FDBE35] px-3 py-1.5 text-sm font-medium text-[#020100] transition-colors hover:bg-[#FDDA93]">
+              <Plus className="h-4 w-4" />
+              Upload Image
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleAdditionalImageUpload}
+                disabled={uploadingAdditional}
+                className="hidden"
+              />
+            </label>
+          )}
+        </div>
+        {uploadingAdditional && (
+          <p className="mb-3 text-sm text-[rgba(255,255,255,0.5)]">
+            Uploading…
+          </p>
+        )}
+        <p className="mb-4 text-xs text-[rgba(255,255,255,0.4)]">
+          Upload images, copy their ID, then use the 📷 button in the editor to insert them into your content.
+        </p>
+        {additionalImages.length === 0 ? (
+          <p className="text-sm text-[rgba(255,255,255,0.3)]">
+            No additional images uploaded yet.
+          </p>
+        ) : (
+          <div className="grid gap-3 sm:grid-cols-3">
+            {additionalImages.map((img) => (
+              <div
+                key={img.id}
+                className="relative flex flex-col items-center gap-2 rounded-lg border border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.03)] p-3"
+              >
+                <img
+                  src={img.url}
+                  alt={img.id}
+                  className="h-20 w-full rounded object-cover"
+                />
+                <div className="flex w-full items-center justify-between gap-1">
+                  <span className="truncate font-mono text-xs text-[#FDBE35]">
+                    {img.id}
+                  </span>
+                  <div className="flex gap-1">
+                    <button
+                      type="button"
+                      onClick={() => copyImageId(img.id)}
+                      className="flex h-6 w-6 items-center justify-center rounded border border-[rgba(255,255,255,0.2)] text-[rgba(255,255,255,0.6)] hover:text-white"
+                      title="Copy ID"
+                    >
+                      {copiedId === img.id ? (
+                        <Check className="h-3 w-3 text-green-400" />
+                      ) : (
+                        <Copy className="h-3 w-3" />
+                      )}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => removeAdditionalImage(img.id)}
+                      className="flex h-6 w-6 items-center justify-center rounded border border-red-500/30 text-red-400 hover:bg-red-500/10"
+                      title="Remove"
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="rounded-xl border border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.02)] p-6">
@@ -675,15 +845,83 @@ export function PostForm({
               />
             </div>
           </div>
-          <div>
-            <label className="mb-1 block text-sm text-[rgba(255,255,255,0.7)]">FAQs (JSON)</label>
-            <textarea
-              value={form.faqs}
-              onChange={(e) => update({ faqs: e.target.value })}
-              rows={4}
-              placeholder='[{"question":"...","answer":"..."}]'
-              className="w-full rounded-lg border border-[rgba(255,255,255,0.2)] bg-[rgba(255,255,255,0.05)] px-4 py-2 font-mono text-sm text-white focus:border-[#FDBE35] focus:outline-none"
-            />
+
+          {/* ===== FAQ Visual Builder ===== */}
+          <div className="mt-2 rounded-lg border border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.02)] p-4">
+            <div className="mb-3 flex items-center justify-between">
+              <label className="text-sm font-medium text-[rgba(255,255,255,0.7)]">
+                FAQs{" "}
+                <span className="font-normal text-[rgba(255,255,255,0.4)]">
+                  (for JSON-LD schema)
+                </span>
+              </label>
+              <button
+                type="button"
+                onClick={addFaq}
+                className="flex items-center gap-1.5 rounded-lg bg-[#FDBE35] px-3 py-1.5 text-sm font-medium text-[#020100] transition-colors hover:bg-[#FDDA93]"
+              >
+                <Plus className="h-3.5 w-3.5" />
+                Add FAQ
+              </button>
+            </div>
+            {faqs.length === 0 ? (
+              <p className="text-sm text-[rgba(255,255,255,0.3)]">
+                No FAQs added yet. Click &quot;Add FAQ&quot; to add a question and answer.
+              </p>
+            ) : (
+              <div className="space-y-4">
+                {faqs.map((faq, index) => (
+                  <div
+                    key={index}
+                    className="relative rounded-lg border border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.03)] p-4"
+                  >
+                    <div className="mb-1 flex items-center justify-between">
+                      <span className="text-xs font-medium text-[rgba(255,255,255,0.5)]">
+                        FAQ #{index + 1}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => removeFaq(index)}
+                        className="flex h-6 w-6 items-center justify-center rounded border border-red-500/30 text-red-400 hover:bg-red-500/10"
+                        title="Remove FAQ"
+                      >
+                        <Trash2 className="h-3 w-3" />
+                      </button>
+                    </div>
+                    <div className="space-y-3">
+                      <div>
+                        <label className="mb-1 block text-xs text-[rgba(255,255,255,0.5)]">
+                          Question
+                        </label>
+                        <input
+                          type="text"
+                          value={faq.question}
+                          onChange={(e) =>
+                            updateFaq(index, "question", e.target.value)
+                          }
+                          placeholder="e.g. What is crypto regulation in India?"
+                          className="w-full rounded-lg border border-[rgba(255,255,255,0.2)] bg-[rgba(255,255,255,0.05)] px-3 py-2 text-sm text-white focus:border-[#FDBE35] focus:outline-none"
+                        />
+                      </div>
+                      <div>
+                        <label className="mb-1 block text-xs text-[rgba(255,255,255,0.5)]">
+                          Answer
+                        </label>
+                        <textarea
+                          value={faq.answer}
+                          onChange={(e) =>
+                            updateFaq(index, "answer", e.target.value)
+                          }
+                          rows={2}
+                          placeholder="Enter the answer..."
+                          className="w-full rounded-lg border border-[rgba(255,255,255,0.2)] bg-[rgba(255,255,255,0.05)] px-3 py-2 text-sm text-white focus:border-[#FDBE35] focus:outline-none"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -736,6 +974,7 @@ export function PostForm({
           onChange={(html) => update({ content: html })}
           placeholder="Write your post content…"
           minHeight="320px"
+          additionalImages={additionalImages}
         />
       </div>
 

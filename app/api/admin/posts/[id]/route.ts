@@ -72,6 +72,7 @@ export async function PATCH(
       contentFreshnessDate,
       expertiseSignals,
       faqs,
+      additionalImages,
     } = body;
 
     const tagsArr =
@@ -125,6 +126,12 @@ export async function PATCH(
         ...(authorAvatar !== undefined && { authorAvatar: authorAvatar ?? null }),
         ...(imageUrl !== undefined && { imageUrl: imageUrl ?? null }),
         ...(imageKey !== undefined && { imageKey: imageKey ?? null }),
+        ...(additionalImages !== undefined && {
+          additionalImages:
+            additionalImages != null && Array.isArray(additionalImages)
+              ? additionalImages
+              : null,
+        }),
         ...(content !== undefined && { content: content ?? null }),
         ...(isProfessional !== undefined && { isProfessional: Boolean(isProfessional) }),
         ...(published !== undefined && { published: Boolean(published) }),
@@ -201,7 +208,19 @@ export async function DELETE(
       try {
         await deleteFromSpaces(post.imageKey);
       } catch (e) {
-        console.warn("Failed to delete image from Spaces:", e);
+        console.warn("Failed to delete cover image from Spaces:", e);
+      }
+    }
+    // Clean up additional images
+    if (post.additionalImages && Array.isArray(post.additionalImages)) {
+      for (const img of post.additionalImages as { key?: string }[]) {
+        if (img.key) {
+          try {
+            await deleteFromSpaces(img.key);
+          } catch (e) {
+            console.warn("Failed to delete additional image from Spaces:", e);
+          }
+        }
       }
     }
     await prisma.post.delete({ where: { id } });

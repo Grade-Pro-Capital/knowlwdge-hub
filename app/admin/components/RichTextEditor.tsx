@@ -4,6 +4,7 @@ import { useEditor, EditorContent, type Editor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
 import Placeholder from "@tiptap/extension-placeholder";
+import Image from "@tiptap/extension-image";
 import { Table } from "@tiptap/extension-table";
 import TableRow from "@tiptap/extension-table-row";
 import TableCell from "@tiptap/extension-table-cell";
@@ -25,16 +26,26 @@ import {
   TableRowsSplit,
   TableColumnsSplit,
   Trash2,
+  ImagePlus,
 } from "lucide-react";
+
+export type AdditionalImage = { id: string; url: string; key: string };
 
 const buttonClass =
   "flex h-8 w-8 items-center justify-center rounded border border-[rgba(255,255,255,0.2)] bg-[rgba(255,255,255,0.05)] text-[rgba(255,255,255,0.8)] hover:bg-[rgba(255,255,255,0.1)] hover:text-white disabled:opacity-40";
 const activeClass = "!border-[#FDBE35] !bg-[#FDBE35]/20 !text-[#FDBE35]";
 
-function Toolbar({ editor }: { editor: Editor | null }) {
+function Toolbar({
+  editor,
+  additionalImages,
+}: {
+  editor: Editor | null;
+  additionalImages?: AdditionalImage[];
+}) {
   const [linkUrl, setLinkUrl] = useState("");
   const [showLinkInput, setShowLinkInput] = useState(false);
   const [showTableMenu, setShowTableMenu] = useState(false);
+  const [showImageMenu, setShowImageMenu] = useState(false);
 
   const inTable = editor?.isActive("table") ?? false;
 
@@ -197,6 +208,41 @@ function Toolbar({ editor }: { editor: Editor | null }) {
         )}
       </div>
       <span className="mx-1 h-5 w-px bg-[rgba(255,255,255,0.2)]" />
+      {/* Insert Image button */}
+      <div className="relative">
+        <button
+          type="button"
+          onClick={() => setShowImageMenu((v) => !v)}
+          className={`${buttonClass} ${editor.isActive("image") ? activeClass : ""}`}
+          title="Insert Image"
+        >
+          <ImagePlus className="h-4 w-4" />
+        </button>
+        {showImageMenu && (
+          <div className="absolute left-0 top-full z-10 mt-1 flex min-w-[220px] flex-col gap-0.5 rounded-lg border border-[rgba(255,255,255,0.2)] bg-[#1a1a1a] p-1.5 shadow-xl">
+            <span className="px-2 py-1 text-xs text-[rgba(255,255,255,0.6)]">Insert uploaded image</span>
+            {(!additionalImages || additionalImages.length === 0) ? (
+              <span className="px-2 py-2 text-xs text-[rgba(255,255,255,0.4)]">No additional images uploaded yet</span>
+            ) : (
+              additionalImages.map((img) => (
+                <button
+                  key={img.id}
+                  type="button"
+                  onClick={() => {
+                    editor.chain().focus().setImage({ src: img.url, alt: img.id }).run();
+                    setShowImageMenu(false);
+                  }}
+                  className="flex items-center gap-2 rounded px-2 py-1.5 text-sm text-white hover:bg-[rgba(255,255,255,0.1)]"
+                >
+                  <img src={img.url} alt={img.id} className="h-8 w-8 rounded object-cover" />
+                  <span className="font-mono text-xs text-[#FDBE35]">{img.id}</span>
+                </button>
+              ))
+            )}
+          </div>
+        )}
+      </div>
+      <span className="mx-1 h-5 w-px bg-[rgba(255,255,255,0.2)]" />
       <div className="relative">
         <button
           type="button"
@@ -250,6 +296,7 @@ type RichTextEditorProps = {
   onChange: (html: string) => void;
   placeholder?: string;
   minHeight?: string;
+  additionalImages?: AdditionalImage[];
 };
 
 export function RichTextEditor({
@@ -257,6 +304,7 @@ export function RichTextEditor({
   onChange,
   placeholder = "Write your post content…",
   minHeight = "320px",
+  additionalImages,
 }: RichTextEditorProps) {
   const editor = useEditor({
     extensions: [
@@ -265,7 +313,12 @@ export function RichTextEditor({
       }),
       Link.configure({
         openOnClick: false,
+        autolink: true,
+        linkOnPaste: true,
         HTMLAttributes: { class: "text-[#FDBE35] underline" },
+      }),
+      Image.configure({
+        HTMLAttributes: { class: "blog-editor-image" },
       }),
       Placeholder.configure({ placeholder }),
       Table.configure({
@@ -298,7 +351,7 @@ export function RichTextEditor({
 
   return (
     <div className="rounded-lg border border-[rgba(255,255,255,0.2)] bg-[rgba(255,255,255,0.03)]">
-      <Toolbar editor={editor} />
+      <Toolbar editor={editor} additionalImages={additionalImages} />
       <div
         className="rounded-b-lg border border-[rgba(255,255,255,0.2)] border-t-0"
         style={{ minHeight }}
@@ -327,6 +380,8 @@ export function RichTextEditor({
         .ProseMirror .blog-editor-table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
         .ProseMirror .blog-editor-table th, .ProseMirror .blog-editor-table td { border: 1px solid rgba(255,255,255,0.25); padding: 0.5rem 0.75rem; text-align: left; }
         .ProseMirror .blog-editor-table th { background: rgba(253,190,53,0.2); color: #FDBE35; font-weight: 600; }
+        .ProseMirror .blog-editor-image { max-width: 100%; height: auto; border-radius: 8px; margin: 1rem 0; }
+        .ProseMirror a { color: #FDBE35; text-decoration: underline; cursor: pointer; }
       `}</style>
     </div>
   );
