@@ -29,7 +29,7 @@ import {
   ImagePlus,
 } from "lucide-react";
 
-export type AdditionalImage = { id: string; url: string; key: string };
+export type AdditionalImage = { id: string; url: string; key: string; alt: string };
 
 const buttonClass =
   "flex h-8 w-8 items-center justify-center rounded border border-[rgba(255,255,255,0.2)] bg-[rgba(255,255,255,0.05)] text-[rgba(255,255,255,0.8)] hover:bg-[rgba(255,255,255,0.1)] hover:text-white disabled:opacity-40";
@@ -229,7 +229,7 @@ function Toolbar({
                   key={img.id}
                   type="button"
                   onClick={() => {
-                    editor.chain().focus().setImage({ src: img.url, alt: img.id }).run();
+                    editor.chain().focus().setImage({ src: img.url, alt: img.alt }).run();
                     setShowImageMenu(false);
                   }}
                   className="flex items-center gap-2 rounded px-2 py-1.5 text-sm text-white hover:bg-[rgba(255,255,255,0.1)]"

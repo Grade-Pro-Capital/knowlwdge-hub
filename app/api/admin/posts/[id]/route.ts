@@ -72,6 +72,7 @@ export async function PATCH(
       contentFreshnessDate,
       expertiseSignals,
       faqs,
+      imageAlt,
       additionalImages,
     } = body;
 
@@ -126,6 +127,7 @@ export async function PATCH(
         ...(authorAvatar !== undefined && { authorAvatar: authorAvatar ?? null }),
         ...(imageUrl !== undefined && { imageUrl: imageUrl ?? null }),
         ...(imageKey !== undefined && { imageKey: imageKey ?? null }),
+        ...(imageAlt !== undefined && { imageAlt: imageAlt ?? null }),
         ...(additionalImages !== undefined && {
           additionalImages:
             additionalImages != null && Array.isArray(additionalImages)

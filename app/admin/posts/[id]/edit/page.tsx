@@ -37,7 +37,7 @@ export default async function EditPostPage({
   })();
 
   // Parse additional images
-  const parsedAdditionalImages: { id: string; url: string; key: string }[] = (() => {
+  const parsedAdditionalImages: { id: string; url: string; key: string; alt: string }[] = (() => {
     if (!post.additionalImages) return [];
     try {
       const raw =
@@ -47,7 +47,7 @@ export default async function EditPostPage({
       if (Array.isArray(raw)) {
         return raw
           .filter(
-            (img: unknown): img is { id: string; url: string; key: string } =>
+            (img: unknown): img is { id: string; url: string; key: string; alt: string } =>
               typeof img === "object" &&
               img !== null &&
               "id" in img &&
@@ -58,6 +58,7 @@ export default async function EditPostPage({
             id: String(img.id),
             url: String(img.url),
             key: String(img.key),
+            alt: String(img.alt || img.id),
           }));
       }
       return [];
@@ -77,6 +78,7 @@ export default async function EditPostPage({
     authorAvatar: post.authorAvatar ?? "",
     imageUrl: post.imageUrl ?? "",
     imageKey: post.imageKey ?? "",
+    imageAlt: post.imageAlt ?? "",
     content: post.content ?? "",
     isProfessional: post.isProfessional,
     published: post.published,

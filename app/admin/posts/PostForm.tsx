@@ -10,7 +10,7 @@ import { Plus, Trash2, Copy, Check } from "lucide-react";
 type SavedTemplate = { id: string; name: string; content: string };
 
 type FaqItem = { question: string; answer: string };
-type AdditionalImage = { id: string; url: string; key: string };
+type AdditionalImage = { id: string; url: string; key: string; alt: string };
 
 type PostFormData = {
   slug: string;
@@ -23,6 +23,7 @@ type PostFormData = {
   authorAvatar: string;
   imageUrl: string;
   imageKey: string;
+  imageAlt: string;
   content: string;
   isProfessional: boolean;
   published: boolean;
@@ -61,6 +62,7 @@ const defaults: PostFormData = {
   authorAvatar: "",
   imageUrl: "",
   imageKey: "",
+  imageAlt: "",
   content: "",
   isProfessional: false,
   published: true,
@@ -207,10 +209,12 @@ export function PostForm({
       }
       if (!res.ok) throw new Error(data.error ?? "Upload failed");
       if (data.url && data.key) {
+        const id = generateImageId();
         const newImg: AdditionalImage = {
-          id: generateImageId(),
+          id: id,
           url: data.url,
           key: data.key,
+          alt: id, // Default alt to the image ID
         };
         setAdditionalImages((prev) => [...prev, newImg]);
       }
@@ -221,6 +225,12 @@ export function PostForm({
       // Reset the file input
       e.target.value = "";
     }
+  }
+
+  function updateAdditionalImageAlt(id: string, alt: string) {
+    setAdditionalImages((prev) =>
+      prev.map((img) => (img.id === id ? { ...img, alt: alt } : img))
+    );
   }
 
   function removeAdditionalImage(id: string) {
@@ -289,6 +299,7 @@ export function PostForm({
         authorAvatar: form.authorAvatar || undefined,
         imageUrl: form.imageUrl || undefined,
         imageKey: form.imageKey || undefined,
+        imageAlt: form.imageAlt || undefined,
         additionalImages:
           additionalImages.length > 0 ? additionalImages : undefined,
         content: form.content || undefined,
@@ -481,13 +492,22 @@ export function PostForm({
             </span>
           )}
           {form.imageUrl && (
-            <Image
-              src={form.imageUrl}
-              alt="Cover"
-              width={96}
-              height={96}
-              className="h-24 w-auto rounded border border-[rgba(255,255,255,0.1)] object-cover"
-            />
+            <div className="flex flex-col gap-2">
+              <Image
+                src={form.imageUrl}
+                alt={form.imageAlt || "Cover"}
+                width={96}
+                height={96}
+                className="h-24 w-auto rounded border border-[rgba(255,255,255,0.1)] object-cover"
+              />
+              <input
+                type="text"
+                value={form.imageAlt}
+                onChange={(e) => update({ imageAlt: e.target.value })}
+                placeholder="Cover image alt text"
+                className="w-full max-w-xs rounded-lg border border-[rgba(255,255,255,0.2)] bg-[rgba(255,255,255,0.05)] px-3 py-1.5 text-sm text-white focus:border-[#FDBE35] focus:outline-none"
+              />
+            </div>
           )}
         </div>
       </div>
@@ -543,7 +563,14 @@ export function PostForm({
                   <span className="truncate font-mono text-xs text-[#FDBE35]">
                     {img.id}
                   </span>
-                  <div className="flex gap-1">
+                  <input
+                    type="text"
+                    value={img.alt}
+                    onChange={(e) => updateAdditionalImageAlt(img.id, e.target.value)}
+                    placeholder="Alt text"
+                    className="w-full rounded border border-[rgba(255,255,255,0.2)] bg-[rgba(255,255,255,0.05)] px-2 py-1 text-xs text-white focus:border-[#FDBE35] focus:outline-none"
+                  />
+                  <div className="flex w-full items-center justify-between gap-1 mt-1">
                     <button
                       type="button"
                       onClick={() => copyImageId(img.id)}

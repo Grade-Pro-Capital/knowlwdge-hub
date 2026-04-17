@@ -55,6 +55,7 @@ export async function POST(request: Request) {
       contentFreshnessDate,
       expertiseSignals,
       faqs,
+      imageAlt,
       additionalImages,
     } = body;
 
@@ -101,6 +102,7 @@ export async function POST(request: Request) {
         authorAvatar: authorAvatar ?? null,
         imageUrl: imageUrl ?? null,
         imageKey: imageKey ?? null,
+        imageAlt: imageAlt ?? null,
         additionalImages:
           additionalImages != null && Array.isArray(additionalImages)
             ? additionalImages
