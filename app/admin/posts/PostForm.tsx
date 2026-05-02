@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { RichTextEditorDynamic } from "../components/RichTextEditorDynamic";
@@ -111,6 +111,10 @@ export function PostForm({
   const [uploadingAdditional, setUploadingAdditional] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [isDirty, setIsDirty] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const pendingHrefRef = useRef<string | null>(null);
+  const pendingPopRef = useRef(false);
   const [templates, setTemplates] = useState<SavedTemplate[]>([]);
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
@@ -133,6 +137,7 @@ export function PostForm({
   function update(f: Partial<PostFormData>) {
     setForm((prev) => {
       const next = { ...prev, ...f };
+      setIsDirty(true);
       if (f.slug !== undefined) next.slug = slugify(f.slug);
       else if (f.title !== undefined && !postId) next.slug = slugify(f.title);
       return next;
@@ -349,6 +354,7 @@ export function PostForm({
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Save failed");
+      setIsDirty(false);
       router.push("/admin/posts");
       router.refresh();
     } catch (err) {
@@ -356,6 +362,80 @@ export function PostForm({
     } finally {
       setSaving(false);
     }
+  }
+
+  // --- Leave-confirmation handlers ---
+  useEffect(() => {
+    function onBeforeUnload(e: BeforeUnloadEvent) {
+      if (!isDirty) return;
+      e.preventDefault();
+      e.returnValue = "You have unsaved changes. Are you sure you want to leave?";
+      return e.returnValue;
+    }
+
+    function onPopState(e: PopStateEvent) {
+      if (!isDirty) return;
+      // Prevent the navigation and show modal instead.
+      pendingPopRef.current = true;
+      // Push a new history entry to negate the back so user stays put until they confirm.
+      window.history.pushState(null, document.title);
+      setShowConfirmModal(true);
+    }
+
+    function onClickCapture(e: MouseEvent) {
+      if (!isDirty) return;
+      const target = e.target as HTMLElement | null;
+      if (!target) return;
+      const anchor = target.closest && (target.closest("a") as HTMLAnchorElement | null);
+      if (!anchor) return;
+      if (anchor.target === "_blank") return;
+      const href = anchor.href;
+      if (!href) return;
+      // Only intercept same-origin navigations
+      try {
+        const url = new URL(href);
+        if (url.origin !== window.location.origin) return;
+      } catch {
+        return;
+      }
+      e.preventDefault();
+      pendingHrefRef.current = href;
+      setShowConfirmModal(true);
+    }
+
+    if (isDirty) {
+      window.addEventListener("beforeunload", onBeforeUnload);
+      window.addEventListener("popstate", onPopState);
+      document.addEventListener("click", onClickCapture, true);
+    }
+    return () => {
+      window.removeEventListener("beforeunload", onBeforeUnload);
+      window.removeEventListener("popstate", onPopState);
+      document.removeEventListener("click", onClickCapture, true);
+    };
+  }, [isDirty]);
+
+  function confirmLeave() {
+    setShowConfirmModal(false);
+    const href = pendingHrefRef.current;
+    const pop = pendingPopRef.current;
+    pendingHrefRef.current = null;
+    pendingPopRef.current = false;
+    setIsDirty(false);
+    if (href) {
+      window.location.href = href;
+    } else if (pop) {
+      // allow the back navigation to proceed
+      window.history.back();
+    } else {
+      router.back();
+    }
+  }
+
+  function cancelLeave() {
+    setShowConfirmModal(false);
+    pendingHrefRef.current = null;
+    pendingPopRef.current = false;
   }
 
   return (
@@ -1042,6 +1122,29 @@ export function PostForm({
           Cancel
         </button>
       </div>
+      {showConfirmModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/60" onClick={cancelLeave} />
+          <div className="relative w-full max-w-md rounded-lg bg-white p-6 text-gray-900">
+            <h3 className="mb-2 text-lg font-semibold">Leave page?</h3>
+            <p className="mb-4 text-sm text-gray-700">Are you sure you want to leave? Your changes will be lost.</p>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={cancelLeave}
+                className="rounded-lg border border-gray-300 px-4 py-2 hover:bg-gray-50"
+              >
+                Stay
+              </button>
+              <button
+                onClick={confirmLeave}
+                className="rounded-lg bg-red-600 px-4 py-2 text-white hover:bg-red-700"
+              >
+                Leave
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </form>
   );
 }
