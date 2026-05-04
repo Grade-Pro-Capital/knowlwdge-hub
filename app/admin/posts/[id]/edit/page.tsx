@@ -1,7 +1,8 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/app/lib/db";
 import { PostForm } from "../../PostForm";
+import Link from "next/link";
+import { BackToPostsLink } from "../../BackToPostsLink";
 
 export default async function EditPostPage({
   params,
@@ -116,12 +117,7 @@ export default async function EditPostPage({
   return (
     <div>
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
-        <Link
-          href="/admin/posts"
-          className="text-sm text-[rgba(255,255,255,0.6)] hover:text-white"
-        >
-          ← Posts
-        </Link>
+        <BackToPostsLink />
         <Link
           href="/admin/editor-guide"
           className="text-sm text-[#FDBE35] hover:text-[#FDDA93]"
