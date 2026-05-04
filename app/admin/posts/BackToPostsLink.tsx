@@ -39,7 +39,7 @@ export function BackToPostsLink() {
             </div>
             <h3 className="text-xl font-semibold">Are you sure you want to leave?</h3>
             <p className="mt-2 text-sm leading-6 text-[rgba(255,255,255,0.72)]">
-              MAtt jaa bhaiiii... regret karega... sab ud jayega jo bhi kiya tune... soch le ek baar... ek baar soch le... aur agar chaahe toh reh bhi sakta hai... par jaane ke baad pachtayega... soch le bhaiiii... ek baar soch le...! 🥺🥺🥺🥺
+              If you leave this page, any unsaved changes will be lost. Make sure to save your work before navigating away. 
             </p>
             <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
               <button
