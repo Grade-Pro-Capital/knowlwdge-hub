@@ -11,6 +11,8 @@ import { NewsletterForm } from "@/app/components/NewsletterForm";
 import { p1071e4a } from "@/app/lib/svgPaths";
 import type { BlogPost } from "@/app/data/blogData";
 
+const POSTS_PER_PAGE = 6;
+
 export default function HomePage() {
   const searchParams = useSearchParams();
   const tabParam = searchParams.get("tab");
@@ -20,6 +22,17 @@ export default function HomePage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
+  const [visiblePostCount, setVisiblePostCount] = useState(POSTS_PER_PAGE);
+
+  const handleTabChange = (tab: "all" | "professionals") => {
+    setActiveTab(tab);
+    setVisiblePostCount(POSTS_PER_PAGE);
+  };
+
+  const handleSearchQueryChange = (query: string) => {
+    setSearchQuery(query);
+    setVisiblePostCount(POSTS_PER_PAGE);
+  };
 
   useEffect(() => {
     if (tabParam === "professionals") setActiveTab("professionals");
@@ -43,6 +56,8 @@ export default function HomePage() {
       (Array.isArray(post.tags) && post.tags.some((t) => t.toLowerCase().includes(q)));
     return matchesTab && matchesSearch;
   });
+  const visiblePosts = filteredPosts.slice(0, visiblePostCount);
+  const hasMorePosts = visiblePostCount < filteredPosts.length;
 
   return (
     <div className="min-h-screen bg-[#020100] text-white">
@@ -56,7 +71,7 @@ export default function HomePage() {
               <SearchDropdown
                 posts={posts}
                 query={searchQuery}
-                onQueryChange={setSearchQuery}
+                onQueryChange={handleSearchQueryChange}
                 filter={(post) =>
                   activeTab === "all" ? !post.isProfessional : !!post.isProfessional
                 }
@@ -166,7 +181,7 @@ export default function HomePage() {
           <div className="mb-8 flex items-center gap-4 border-b border-[rgba(255,255,255,0.1)]">
             <button
               type="button"
-              onClick={() => setActiveTab("all")}
+              onClick={() => handleTabChange("all")}
               className={`relative px-6 pb-3 transition-all ${
                 activeTab === "all"
                   ? "text-[#FDBE35]"
@@ -180,7 +195,7 @@ export default function HomePage() {
             </button>
             <button
               type="button"
-              onClick={() => setActiveTab("professionals")}
+              onClick={() => handleTabChange("professionals")}
               className={`relative px-6 pb-3 transition-all ${
                 activeTab === "professionals"
                   ? "text-[#FDBE35]"
@@ -206,7 +221,7 @@ export default function HomePage() {
             </div>
           ) : (
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 lg:gap-8">
-              {filteredPosts.map((post) => (
+              {visiblePosts.map((post) => (
                 <Link
                   key={post.id}
                   href={`/blog/${post.slug}`}
@@ -242,14 +257,21 @@ export default function HomePage() {
             </div>
           )}
 
-          <div className="mt-12 text-center">
-            <button
-              type="button"
-              className="rounded-lg border border-[#d4af37] px-8 py-3 text-[#FDBE35] transition-all hover:bg-[rgba(212,175,55,0.1)]"
-            >
-              Load more articles
-            </button>
-          </div>
+          {hasMorePosts && (
+            <div className="mt-12 text-center">
+              <button
+                type="button"
+                onClick={() =>
+                  setVisiblePostCount((count) =>
+                    Math.min(count + POSTS_PER_PAGE, filteredPosts.length)
+                  )
+                }
+                className="rounded-lg border border-[#d4af37] px-8 py-3 text-[#FDBE35] transition-all hover:bg-[rgba(212,175,55,0.1)]"
+              >
+                Load more articles
+              </button>
+            </div>
+          )}
         </div>
       </section>
 

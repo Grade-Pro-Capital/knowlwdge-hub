@@ -227,6 +227,7 @@ export function PostForm({
       setError(err instanceof Error ? err.message : "Upload failed");
     } finally {
       setUploadingAdditional(false);
+      setIsDirty(true);
       // Reset the file input
       e.target.value = "";
     }
@@ -240,6 +241,7 @@ export function PostForm({
 
   function removeAdditionalImage(id: string) {
     setAdditionalImages((prev) => prev.filter((img) => img.id !== id));
+    setIsDirty(true);
   }
 
   function copyImageId(id: string) {
@@ -251,16 +253,19 @@ export function PostForm({
   // ----- FAQ helpers -----
   function addFaq() {
     setFaqs((prev) => [...prev, { question: "", answer: "" }]);
+    setIsDirty(true);
   }
 
   function updateFaq(index: number, field: "question" | "answer", value: string) {
     setFaqs((prev) =>
       prev.map((faq, i) => (i === index ? { ...faq, [field]: value } : faq))
     );
+    setIsDirty(true);
   }
 
   function removeFaq(index: number) {
     setFaqs((prev) => prev.filter((_, i) => i !== index));
+    setIsDirty(true);
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -365,55 +370,86 @@ export function PostForm({
   }
 
   // --- Leave-confirmation handlers ---
+  const isDirtyRef = useRef(isDirty);
   useEffect(() => {
+    isDirtyRef.current = isDirty;
+  }, [isDirty]);
+
+  useEffect(() => {
+    const shouldWarn = !postId || isDirty;
+
+    // Push a dummy state to history. When the user clicks back,
+    // they'll go from this dummy state back to the 'real' state of the page,
+    // which triggers the popstate event but stays on the same page visually.
+    if (typeof window !== "undefined") {
+      window.history.pushState({ ...window.history.state, stay: true }, "", window.location.href);
+    }
+
     function onBeforeUnload(e: BeforeUnloadEvent) {
-      if (!isDirty) return;
+      if (!(!postId || isDirtyRef.current)) return;
       e.preventDefault();
       e.returnValue = "You have unsaved changes. Are you sure you want to leave?";
       return e.returnValue;
     }
 
     function onPopState(e: PopStateEvent) {
-      if (!isDirty) return;
-      // Prevent the navigation and show modal instead.
-      pendingPopRef.current = true;
-      // Push a new history entry to negate the back so user stays put until they confirm.
-      window.history.pushState(null, document.title);
+      // If we're on the dummy state we just pushed, ignore it.
+      if (e.state?.stay) return;
+
+      const currentShouldWarn = !postId || isDirtyRef.current;
+      if (!currentShouldWarn) {
+        // If we don't need to warn, we've already popped once, but our dummy state was "ahead".
+        // So we might need to go back again to get to the actual previous page.
+        // Actually, the most reliable way here is to just allow the navigation.
+        return;
+      }
+
+      // We were on the dummy state and user clicked back, so we are now on the "real" entry.
+      // Show modal and push the dummy state back to "undo" the back button.
       setShowConfirmModal(true);
+      pendingPopRef.current = true;
+      window.history.pushState({ ...window.history.state, stay: true }, "", window.location.href);
     }
 
     function onClickCapture(e: MouseEvent) {
-      if (!isDirty) return;
+      const currentShouldWarn = !postId || isDirtyRef.current;
+      if (!currentShouldWarn) return;
+
       const target = e.target as HTMLElement | null;
       if (!target) return;
       const anchor = target.closest && (target.closest("a") as HTMLAnchorElement | null);
       if (!anchor) return;
       if (anchor.target === "_blank") return;
+
       const href = anchor.href;
       if (!href) return;
+
       // Only intercept same-origin navigations
       try {
         const url = new URL(href);
         if (url.origin !== window.location.origin) return;
+
+        // If it's a hash link on the same page, don't intercept
+        if (url.pathname === window.location.pathname && url.search === window.location.search) return;
       } catch {
         return;
       }
+
       e.preventDefault();
       pendingHrefRef.current = href;
       setShowConfirmModal(true);
     }
 
-    if (isDirty) {
-      window.addEventListener("beforeunload", onBeforeUnload);
-      window.addEventListener("popstate", onPopState);
-      document.addEventListener("click", onClickCapture, true);
-    }
+    window.addEventListener("beforeunload", onBeforeUnload);
+    window.addEventListener("popstate", onPopState);
+    document.addEventListener("click", onClickCapture, true);
+
     return () => {
       window.removeEventListener("beforeunload", onBeforeUnload);
       window.removeEventListener("popstate", onPopState);
       document.removeEventListener("click", onClickCapture, true);
     };
-  }, [isDirty]);
+  }, [postId]); // Only depend on postId to avoid multiple history pushes
 
   function confirmLeave() {
     setShowConfirmModal(false);
@@ -421,12 +457,18 @@ export function PostForm({
     const pop = pendingPopRef.current;
     pendingHrefRef.current = null;
     pendingPopRef.current = false;
+
+    // Set isDirty to false so we don't trigger the warning again
     setIsDirty(false);
+    isDirtyRef.current = false;
+
     if (href) {
-      window.location.href = href;
+      router.push(href);
     } else if (pop) {
-      // allow the back navigation to proceed
-      window.history.back();
+      // We are on the dummy state (index 2).
+      // Index 1 is the real page. Index 0 is the Dashboard.
+      // We want to go back to Dashboard, so we go back twice.
+      window.history.go(-2);
     } else {
       router.back();
     }
@@ -1123,23 +1165,30 @@ export function PostForm({
         </button>
       </div>
       {showConfirmModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/60" onClick={cancelLeave} />
-          <div className="relative w-full max-w-md rounded-lg bg-white p-6 text-gray-900">
-            <h3 className="mb-2 text-lg font-semibold">Leave page?</h3>
-            <p className="mb-4 text-sm text-gray-700">Are you sure you want to leave? Your changes will be lost.</p>
-            <div className="flex justify-end gap-3">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center px-4">
+          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={cancelLeave} />
+          <div className="relative w-full max-w-md rounded-2xl border border-[rgba(255,255,255,0.12)] bg-[#0B0B0B] p-6 text-white shadow-[0_20px_80px_rgba(0,0,0,0.55)]">
+            <div className="mb-4 inline-flex rounded-full border border-[#FDBE35]/30 bg-[#FDBE35]/10 px-3 py-1 text-xs font-medium tracking-wide text-[#FDBE35]">
+              Confirm navigation
+            </div>
+            <h3 className="text-xl font-semibold">Are you sure you want to leave?</h3>
+            <p className="mt-2 text-sm leading-6 text-[rgba(255,255,255,0.72)]">
+              If you leave this page, any unsaved changes will be lost. Make sure to save your work before navigating away.
+            </p>
+            <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
               <button
+                type="button"
                 onClick={cancelLeave}
-                className="rounded-lg border border-gray-300 px-4 py-2 hover:bg-gray-50"
+                className="rounded-xl border border-[rgba(255,255,255,0.16)] px-4 py-2 text-sm text-white transition-colors hover:bg-[rgba(255,255,255,0.06)]"
               >
-                Stay
+                Stay here
               </button>
               <button
+                type="button"
                 onClick={confirmLeave}
-                className="rounded-lg bg-red-600 px-4 py-2 text-white hover:bg-red-700"
+                className="rounded-xl bg-[#FDBE35] px-4 py-2 text-sm font-medium text-black transition-colors hover:bg-[#FDDA93]"
               >
-                Leave
+                Yes, leave
               </button>
             </div>
           </div>
