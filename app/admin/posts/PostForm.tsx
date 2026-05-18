@@ -732,12 +732,12 @@ export function PostForm({
               type="text"
               value={form.metaTitle}
               onChange={(e) => update({ metaTitle: e.target.value.slice(0, 60) })}
-              maxLength={60}
+              maxLength={70}
               placeholder="Defaults to post title if empty"
               className="w-full rounded-lg border border-[rgba(255,255,255,0.2)] bg-[rgba(255,255,255,0.05)] px-4 py-2 text-white focus:border-[#FDBE35] focus:outline-none"
             />
             <p className="mt-1 text-xs text-[rgba(255,255,255,0.5)]">
-              {form.metaTitle.length}/60
+              {form.metaTitle.length}/70
             </p>
           </div>
           <div>
@@ -747,13 +747,13 @@ export function PostForm({
             <textarea
               value={form.metaDescription}
               onChange={(e) => update({ metaDescription: e.target.value.slice(0, 160) })}
-              maxLength={160}
+              maxLength={170}
               rows={2}
               placeholder="Defaults to excerpt if empty"
               className="w-full rounded-lg border border-[rgba(255,255,255,0.2)] bg-[rgba(255,255,255,0.05)] px-4 py-2 text-white focus:border-[#FDBE35] focus:outline-none"
             />
             <p className="mt-1 text-xs text-[rgba(255,255,255,0.5)]">
-              {form.metaDescription.length}/160
+              {form.metaDescription.length}/170
             </p>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
