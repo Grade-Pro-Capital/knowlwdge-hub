@@ -11,11 +11,17 @@ import { ImageWithFallback } from "@/app/components/ImageWithFallback";
 
 type Props = { params: Promise<{ slug: string }> };
 
+function canonicalTagSlug(slug: string): string {
+  const normalizedSlug = slugify(slug);
+  if (normalizedSlug === "alue-averaging") return "value-averaging";
+  return normalizedSlug;
+}
+
 export async function generateMetadata({
   params,
 }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const normalizedSlug = slugify(slug);
+  const normalizedSlug = canonicalTagSlug(slug);
   const name = normalizedSlug.charAt(0).toUpperCase() + normalizedSlug.slice(1).replace(/-/g, " ");
 
   const rawTitle = `${name} | ${SITE_TITLE_SUFFIX}`;
@@ -30,7 +36,7 @@ export async function generateMetadata({
     title,
     description,
     alternates: { canonical },
-    robots: { index: true, follow: true },
+    robots: { index: false, follow: true },
     openGraph: {
       locale: "en_IN",
       siteName: SITE_NAME_OG,
@@ -52,7 +58,7 @@ export async function generateMetadata({
 
 export default async function TagPage({ params }: Props) {
   const { slug } = await params;
-  const normalizedSlug = slugify(slug);
+  const normalizedSlug = canonicalTagSlug(slug);
   if (normalizedSlug !== slug) redirect(`/tag/${normalizedSlug}`);
 
   // DB stores tags with spaces (e.g. "Crypto Basket"); URL uses slug (e.g. crypto-basket)
@@ -61,7 +67,7 @@ export default async function TagPage({ params }: Props) {
     orderBy: { publishedAt: "desc" },
   });
   const posts = allWithTags.filter((post) =>
-    post.tags.some((t) => slugify(t) === normalizedSlug)
+    post.tags.some((t) => canonicalTagSlug(t) === normalizedSlug)
   );
 
   if (posts.length === 0) notFound();

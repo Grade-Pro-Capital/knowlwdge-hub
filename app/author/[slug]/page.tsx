@@ -4,7 +4,7 @@ import Image from "next/image";
 import { Logo } from "@/app/components/Logo";
 import type { Metadata } from "next";
 import { prisma } from "@/app/lib/db";
-import { getBaseUrl, absoluteUrl } from "@/app/lib/seo";
+import { getBaseUrl } from "@/app/lib/seo";
 import { SITE_TITLE_SUFFIX, SITE_NAME_OG, sanitizeTitleForBrand } from "@/app/lib/siteConfig";
 import { authorJsonLd } from "@/app/lib/jsonLd";
 import { JsonLdScript } from "@/app/components/JsonLdScript";
@@ -38,7 +38,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title,
     description,
     alternates: { canonical },
-    robots: { index: true, follow: true },
+    robots: { index: false, follow: true },
     openGraph: {
       locale: "en_IN",
       siteName: SITE_NAME_OG,
