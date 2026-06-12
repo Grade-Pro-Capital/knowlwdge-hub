@@ -31,7 +31,8 @@ import {
   faqJsonLd,
 } from "@/app/lib/jsonLd";
 import { calculateReadingTime, countWords } from "@/app/lib/readingTime";
-import { getTocFromContent, ensureHeadingIds, normalizeArticleLinks } from "@/app/lib/tocFromContent";
+import { getTocFromContent, ensureHeadingIds, normalizeArticleLinks, lazyLoadContentImages } from "@/app/lib/tocFromContent";
+import { resolvePostImage } from "@/app/lib/images";
 import type { Citation, ExpertiseSignals, FaqItem } from "@/app/lib/types";
 
 const baseUrl = getBaseUrl();
@@ -190,7 +191,7 @@ export default async function BlogPage({
 
   const content = row.content ?? "";
   const contentWithIds = ensureHeadingIds(content);
-  const contentForRender = normalizeArticleLinks(contentWithIds);
+  const contentForRender = lazyLoadContentImages(normalizeArticleLinks(contentWithIds));
   const tocItems = getTocFromContent(contentWithIds);
   const citations = parseCitations(row.authoritativeCitations);
   const expertise = parseExpertise(row.expertiseSignals);
@@ -228,9 +229,7 @@ export default async function BlogPage({
   const breadcrumbLd = breadcrumbJsonLd(breadcrumbItems);
   const faqLd = faqs?.length ? faqJsonLd(faqs) : null;
 
-  const imageSrc = row.imageUrl?.startsWith("http")
-    ? row.imageUrl
-    : `https://source.unsplash.com/1200x800/?${row.imageUrl || row.imageKey || "crypto"}`;
+  const imageSrc = resolvePostImage(row.imageUrl ?? row.imageKey);
 
   const canonical = `${baseUrl}/blog/${row.slug}`;
 

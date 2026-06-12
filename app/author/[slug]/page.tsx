@@ -4,6 +4,7 @@ import Image from "next/image";
 import { Logo } from "@/app/components/Logo";
 import type { Metadata } from "next";
 import { prisma } from "@/app/lib/db";
+import { resolvePostImage } from "@/app/lib/images";
 import { getBaseUrl } from "@/app/lib/seo";
 import { SITE_TITLE_SUFFIX, SITE_NAME_OG, sanitizeTitleForBrand } from "@/app/lib/siteConfig";
 import { authorJsonLd } from "@/app/lib/jsonLd";
@@ -153,9 +154,7 @@ export default async function AuthorPage({ params }: Props) {
         <h2 className="mb-6 text-xl font-semibold">Articles</h2>
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {posts.map((post) => {
-            const imgSrc = post.imageUrl?.startsWith("http")
-              ? post.imageUrl
-              : `https://source.unsplash.com/600x400/?${post.imageUrl || post.imageKey || "crypto"}`;
+            const imgSrc = resolvePostImage(post.imageUrl ?? post.imageKey);
             return (
               <Link
                 key={post.id}

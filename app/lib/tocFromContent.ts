@@ -68,6 +68,25 @@ export function ensureHeadingIds(html: string): string {
   });
 }
 
+const IMG_TAG_REGEX = /<img\s+([^>]*?)\/?>/gi;
+
+/**
+ * Add loading="lazy" and decoding="async" to article-body <img> tags that lack them,
+ * so off-screen images don't all download on page load. Lets posts carry many images
+ * without inflating initial page weight. The hero image is a separate Next <Image> with
+ * priority, so lazy-loading body images is safe for LCP.
+ */
+export function lazyLoadContentImages(html: string): string {
+  if (!html || typeof html !== "string") return html;
+
+  return html.replace(IMG_TAG_REGEX, (full, attrs) => {
+    let newAttrs = String(attrs).trim();
+    if (!/\bloading\s*=/i.test(newAttrs)) newAttrs += ' loading="lazy"';
+    if (!/\bdecoding\s*=/i.test(newAttrs)) newAttrs += ' decoding="async"';
+    return `<img ${newAttrs}>`;
+  });
+}
+
 function isOwnDomain(href: string): boolean {
   try {
     const url = new URL(href, "https://blogs.grade.capital");

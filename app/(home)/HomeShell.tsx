@@ -6,6 +6,7 @@ import { ChevronRight } from "lucide-react";
 import { ImageWithFallback } from "@/app/components/ImageWithFallback";
 import { Logo } from "@/app/components/Logo";
 import { SearchDropdown } from "@/app/components/SearchDropdown";
+import { resolvePostImage } from "@/app/lib/images";
 import type { BlogPost } from "@/app/data/blogData";
 
 const POSTS_PER_PAGE = 6;
@@ -130,7 +131,7 @@ export function HomeShell({ initialPosts, initialTab, children }: HomeShellProps
                 >
                   <div className="relative h-48 overflow-hidden">
                     <ImageWithFallback
-                      src={post.image?.startsWith("http") ? post.image : `https://source.unsplash.com/600x400/?${post.image || "crypto"}`}
+                      src={resolvePostImage(post.image)}
                       alt={post.title}
                       className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />

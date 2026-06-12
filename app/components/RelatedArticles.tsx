@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ImageWithFallback } from "./ImageWithFallback";
+import { resolvePostImage } from "@/app/lib/images";
 
 export type RelatedArticle = {
   slug: string;
@@ -26,9 +27,7 @@ export function RelatedArticles({
       <h2 className="mb-8 text-2xl font-semibold sm:text-3xl">{title}</h2>
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
         {articles.map((article) => {
-          const imgSrc = article.image?.startsWith("http")
-            ? article.image
-            : `https://source.unsplash.com/600x400/?${article.image || "crypto"}`;
+          const imgSrc = resolvePostImage(article.image);
           return (
             <Link
               key={article.slug}

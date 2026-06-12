@@ -4,6 +4,7 @@ import { Logo } from "@/app/components/Logo";
 import type { Metadata } from "next";
 import { prisma } from "@/app/lib/db";
 import { slugify, getBaseUrl } from "@/app/lib/seo";
+import { resolvePostImage } from "@/app/lib/images";
 import { SITE_TITLE_SUFFIX, SITE_NAME_OG, sanitizeTitleForBrand } from "@/app/lib/siteConfig";
 import { calculateReadingTime } from "@/app/lib/readingTime";
 import { Breadcrumb } from "@/app/components/Breadcrumb";
@@ -110,9 +111,7 @@ export default async function CategoryPage({ params }: Props) {
 
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {posts.map((post) => {
-            const imgSrc = post.imageUrl?.startsWith("http")
-              ? post.imageUrl
-              : `https://source.unsplash.com/600x400/?${post.imageUrl || post.imageKey || "crypto"}`;
+            const imgSrc = resolvePostImage(post.imageUrl ?? post.imageKey);
             return (
               <Link
                 key={post.id}

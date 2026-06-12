@@ -12,6 +12,9 @@ type SavedTemplate = { id: string; name: string; content: string };
 type FaqItem = { question: string; answer: string };
 type AdditionalImage = { id: string; url: string; key: string; alt: string };
 
+/** Max number of additional images allowed per post (enforced client-side). */
+const MAX_ADDITIONAL_IMAGES = 10;
+
 type PostFormData = {
   slug: string;
   title: string;
@@ -187,8 +190,8 @@ export function PostForm({
   ) {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (additionalImages.length >= 3) {
-      setError("Maximum 3 additional images allowed");
+    if (additionalImages.length >= MAX_ADDITIONAL_IMAGES) {
+      setError(`Maximum ${MAX_ADDITIONAL_IMAGES} additional images allowed`);
       return;
     }
     setUploadingAdditional(true);
@@ -640,10 +643,10 @@ export function PostForm({
           <h3 className="text-base font-medium text-white">
             Additional Images{" "}
             <span className="text-sm font-normal text-[rgba(255,255,255,0.5)]">
-              ({additionalImages.length}/3)
+              ({additionalImages.length}/{MAX_ADDITIONAL_IMAGES})
             </span>
           </h3>
-          {additionalImages.length < 3 && (
+          {additionalImages.length < MAX_ADDITIONAL_IMAGES && (
             <label className="flex cursor-pointer items-center gap-2 rounded-lg bg-[#FDBE35] px-3 py-1.5 text-sm font-medium text-[#020100] transition-colors hover:bg-[#FDDA93]">
               <Plus className="h-4 w-4" />
               Upload Image
