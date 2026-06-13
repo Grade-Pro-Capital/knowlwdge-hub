@@ -35,7 +35,7 @@ export function articleJsonLd(input: ArticleJsonLdInput): object {
 
   return {
     "@context": "https://schema.org",
-    "@type": "Article",
+    "@type": "BlogPosting",
     headline: input.headline,
     description: input.description,
     image: input.image ? [absoluteUrl(input.image)] : undefined,

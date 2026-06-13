@@ -294,12 +294,11 @@ export function PostForm({
         }
       })();
 
-      // Build FAQs array from the visual builder (filter out empty entries)
-      const faqsPayload = faqs
-        .filter((f) => f.question.trim() && f.answer.trim())
-        .length > 0
-        ? faqs.filter((f) => f.question.trim() && f.answer.trim())
-        : undefined;
+      // Build FAQs array from the visual builder (drop empty entries).
+      // Always send an array: an empty [] explicitly clears FAQs so deletions
+      // persist. (undefined would be omitted by JSON.stringify, and the API
+      // treats a missing faqs field as "leave unchanged" — the original bug.)
+      const faqsPayload = faqs.filter((f) => f.question.trim() && f.answer.trim());
 
       const body = {
         slug: form.slug,
