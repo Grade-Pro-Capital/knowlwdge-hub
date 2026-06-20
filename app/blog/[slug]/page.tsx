@@ -573,7 +573,11 @@ function ArticleStyles() {
       .article-content li { margin-bottom: 0.625rem; line-height: 1.7; padding-left: 0.25rem; }
       .article-content strong { color: #FDBE35; font-weight: 600; }
       .article-content blockquote { border-left: 4px solid #FDBE35; padding-left: 1.5rem; font-style: italic; color: rgba(255, 255, 255, 0.9); margin: 2rem 0; }
-      .article-content img { border-radius: 12px; margin: 2rem 0; }
+      .article-content img { border-radius: 12px; margin: 2rem 0; max-width: 100%; height: auto; }
+      .article-content img[data-align="center"] { display: block; margin-left: auto; margin-right: auto; }
+      .article-content img[data-align="left"] { float: left; margin: 0.5rem 1.5rem 1rem 0; }
+      .article-content img[data-align="right"] { float: right; margin: 0.5rem 0 1rem 1.5rem; }
+      .article-content h2, .article-content h3 { clear: both; }
       .article-content a { color: #FDBE35; text-decoration: underline; }
       .article-content a:hover { color: #FDDA93; }
       .article-content table { border-collapse: collapse; width: 100%; margin: 1.5rem 0; }

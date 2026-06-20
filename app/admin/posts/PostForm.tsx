@@ -5,15 +5,11 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { RichTextEditorDynamic } from "../components/RichTextEditorDynamic";
 import { BLOG_CONTENT_TEMPLATE } from "@/app/data/blogContentTemplate";
-import { Plus, Trash2, Copy, Check } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 
 type SavedTemplate = { id: string; name: string; content: string };
 
 type FaqItem = { question: string; answer: string };
-type AdditionalImage = { id: string; url: string; key: string; alt: string };
-
-/** Max number of additional images allowed per post (enforced client-side). */
-const MAX_ADDITIONAL_IMAGES = 10;
 
 type PostFormData = {
   slug: string;
@@ -97,21 +93,15 @@ export function PostForm({
   postId,
   initial,
   initialFaqs,
-  initialAdditionalImages,
 }: {
   postId?: string;
   initial?: Partial<PostFormData>;
   initialFaqs?: FaqItem[];
-  initialAdditionalImages?: AdditionalImage[];
 }) {
   const router = useRouter();
   const [form, setForm] = useState<PostFormData>({ ...defaults, ...initial });
   const [faqs, setFaqs] = useState<FaqItem[]>(initialFaqs ?? []);
-  const [additionalImages, setAdditionalImages] = useState<AdditionalImage[]>(
-    initialAdditionalImages ?? []
-  );
   const [uploading, setUploading] = useState(false);
-  const [uploadingAdditional, setUploadingAdditional] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [isDirty, setIsDirty] = useState(false);
@@ -119,7 +109,6 @@ export function PostForm({
   const pendingHrefRef = useRef<string | null>(null);
   const pendingPopRef = useRef(false);
   const [templates, setTemplates] = useState<SavedTemplate[]>([]);
-  const [copiedId, setCopiedId] = useState<string | null>(null);
 
   useEffect(() => {
     if (postId) return;
@@ -145,10 +134,6 @@ export function PostForm({
       else if (f.title !== undefined && !postId) next.slug = slugify(f.title);
       return next;
     });
-  }
-
-  function generateImageId(): string {
-    return "img-" + Math.random().toString(36).slice(2, 8);
   }
 
   async function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -185,73 +170,6 @@ export function PostForm({
     }
   }
 
-  async function handleAdditionalImageUpload(
-    e: React.ChangeEvent<HTMLInputElement>
-  ) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    if (additionalImages.length >= MAX_ADDITIONAL_IMAGES) {
-      setError(`Maximum ${MAX_ADDITIONAL_IMAGES} additional images allowed`);
-      return;
-    }
-    setUploadingAdditional(true);
-    setError("");
-    try {
-      const fd = new FormData();
-      fd.set("file", file);
-      const res = await fetch("/api/admin/upload", {
-        method: "POST",
-        body: fd,
-        credentials: "same-origin",
-      });
-      const text = await res.text();
-      let data: { url?: string; key?: string; error?: string };
-      try {
-        data = text ? JSON.parse(text) : {};
-      } catch {
-        throw new Error(
-          res.status === 401
-            ? "Session expired. Please log in again and try uploading."
-            : "Upload failed. Please log in again if needed, or try a smaller image (max 5MB, JPEG/PNG/WebP/GIF)."
-        );
-      }
-      if (!res.ok) throw new Error(data.error ?? "Upload failed");
-      if (data.url && data.key) {
-        const id = generateImageId();
-        const newImg: AdditionalImage = {
-          id: id,
-          url: data.url,
-          key: data.key,
-          alt: id, // Default alt to the image ID
-        };
-        setAdditionalImages((prev) => [...prev, newImg]);
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Upload failed");
-    } finally {
-      setUploadingAdditional(false);
-      setIsDirty(true);
-      // Reset the file input
-      e.target.value = "";
-    }
-  }
-
-  function updateAdditionalImageAlt(id: string, alt: string) {
-    setAdditionalImages((prev) =>
-      prev.map((img) => (img.id === id ? { ...img, alt: alt } : img))
-    );
-  }
-
-  function removeAdditionalImage(id: string) {
-    setAdditionalImages((prev) => prev.filter((img) => img.id !== id));
-    setIsDirty(true);
-  }
-
-  function copyImageId(id: string) {
-    navigator.clipboard.writeText(id);
-    setCopiedId(id);
-    setTimeout(() => setCopiedId(null), 2000);
-  }
 
   // ----- FAQ helpers -----
   function addFaq() {
@@ -312,8 +230,6 @@ export function PostForm({
         imageUrl: form.imageUrl || undefined,
         imageKey: form.imageKey || undefined,
         imageAlt: form.imageAlt || undefined,
-        additionalImages:
-          additionalImages.length > 0 ? additionalImages : undefined,
         content: form.content || undefined,
         isProfessional: form.isProfessional,
         published: form.published,
@@ -634,93 +550,6 @@ export function PostForm({
             </div>
           )}
         </div>
-      </div>
-
-      {/* ===== Additional Images ===== */}
-      <div className="rounded-xl border border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.02)] p-6">
-        <div className="mb-4 flex items-center justify-between">
-          <h3 className="text-base font-medium text-white">
-            Additional Images{" "}
-            <span className="text-sm font-normal text-[rgba(255,255,255,0.5)]">
-              ({additionalImages.length}/{MAX_ADDITIONAL_IMAGES})
-            </span>
-          </h3>
-          {additionalImages.length < MAX_ADDITIONAL_IMAGES && (
-            <label className="flex cursor-pointer items-center gap-2 rounded-lg bg-[#FDBE35] px-3 py-1.5 text-sm font-medium text-[#020100] transition-colors hover:bg-[#FDDA93]">
-              <Plus className="h-4 w-4" />
-              Upload Image
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleAdditionalImageUpload}
-                disabled={uploadingAdditional}
-                className="hidden"
-              />
-            </label>
-          )}
-        </div>
-        {uploadingAdditional && (
-          <p className="mb-3 text-sm text-[rgba(255,255,255,0.5)]">
-            Uploading…
-          </p>
-        )}
-        <p className="mb-4 text-xs text-[rgba(255,255,255,0.4)]">
-          Upload images, copy their ID, then use the 📷 button in the editor to insert them into your content.
-        </p>
-        {additionalImages.length === 0 ? (
-          <p className="text-sm text-[rgba(255,255,255,0.3)]">
-            No additional images uploaded yet.
-          </p>
-        ) : (
-          <div className="grid gap-3 sm:grid-cols-3">
-            {additionalImages.map((img) => (
-              <div
-                key={img.id}
-                className="relative flex flex-col items-center gap-2 rounded-lg border border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.03)] p-3"
-              >
-                <img
-                  src={img.url}
-                  alt={img.id}
-                  className="h-20 w-full rounded object-cover"
-                />
-                <div className="flex w-full items-center justify-between gap-1">
-                  <span className="truncate font-mono text-xs text-[#FDBE35]">
-                    {img.id}
-                  </span>
-                  <input
-                    type="text"
-                    value={img.alt}
-                    onChange={(e) => updateAdditionalImageAlt(img.id, e.target.value)}
-                    placeholder="Alt text"
-                    className="w-full rounded border border-[rgba(255,255,255,0.2)] bg-[rgba(255,255,255,0.05)] px-2 py-1 text-xs text-white focus:border-[#FDBE35] focus:outline-none"
-                  />
-                  <div className="flex w-full items-center justify-between gap-1 mt-1">
-                    <button
-                      type="button"
-                      onClick={() => copyImageId(img.id)}
-                      className="flex h-6 w-6 items-center justify-center rounded border border-[rgba(255,255,255,0.2)] text-[rgba(255,255,255,0.6)] hover:text-white"
-                      title="Copy ID"
-                    >
-                      {copiedId === img.id ? (
-                        <Check className="h-3 w-3 text-green-400" />
-                      ) : (
-                        <Copy className="h-3 w-3" />
-                      )}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => removeAdditionalImage(img.id)}
-                      className="flex h-6 w-6 items-center justify-center rounded border border-red-500/30 text-red-400 hover:bg-red-500/10"
-                      title="Remove"
-                    >
-                      <Trash2 className="h-3 w-3" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
       </div>
 
       <div className="rounded-xl border border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.02)] p-6">
@@ -1125,7 +954,6 @@ export function PostForm({
           onChange={(html) => update({ content: html })}
           placeholder="Write your post content…"
           minHeight="320px"
-          additionalImages={additionalImages}
         />
       </div>
 

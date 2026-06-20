@@ -37,37 +37,6 @@ export default async function EditPostPage({
     }
   })();
 
-  // Parse additional images
-  const parsedAdditionalImages: { id: string; url: string; key: string; alt: string }[] = (() => {
-    if (!post.additionalImages) return [];
-    try {
-      const raw =
-        typeof post.additionalImages === "string"
-          ? JSON.parse(post.additionalImages)
-          : post.additionalImages;
-      if (Array.isArray(raw)) {
-        return raw
-          .filter(
-            (img: unknown): img is { id: string; url: string; key: string; alt: string } =>
-              typeof img === "object" &&
-              img !== null &&
-              "id" in img &&
-              "url" in img &&
-              "key" in img
-          )
-          .map((img) => ({
-            id: String(img.id),
-            url: String(img.url),
-            key: String(img.key),
-            alt: String(img.alt || img.id),
-          }));
-      }
-      return [];
-    } catch {
-      return [];
-    }
-  })();
-
   const initial = {
     slug: post.slug,
     title: post.title,
@@ -131,7 +100,6 @@ export default async function EditPostPage({
           postId={id}
           initial={initial}
           initialFaqs={parsedFaqs}
-          initialAdditionalImages={parsedAdditionalImages}
         />
       </div>
     </div>

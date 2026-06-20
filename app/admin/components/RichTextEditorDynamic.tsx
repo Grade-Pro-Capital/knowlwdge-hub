@@ -1,7 +1,6 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import type { AdditionalImage } from "./RichTextEditor";
 
 const RichTextEditorBase = dynamic(
   () =>
@@ -23,7 +22,6 @@ export function RichTextEditorDynamic(props: {
   onChange: (html: string) => void;
   placeholder?: string;
   minHeight?: string;
-  additionalImages?: AdditionalImage[];
 }) {
   return <RichTextEditorBase {...props} />;
 }
