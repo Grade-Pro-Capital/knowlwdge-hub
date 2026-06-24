@@ -78,7 +78,6 @@ export default async function EditPostPage({
     contentFreshnessDate: post.contentFreshnessDate
       ? new Date(post.contentFreshnessDate).toISOString().slice(0, 10)
       : "",
-    expertiseCredentials: expertise?.credentials ?? "",
     expertiseMethodology: expertise?.methodology ?? "",
     expertiseResearchNotes: expertise?.researchNotes ?? "",
   };

@@ -189,6 +189,14 @@ export default async function BlogPage({
     take: 3,
   });
 
+  // The Author record is the single source of truth for credentials. Look up the
+  // linked author by slug; fall back to "N/A" when no credential is set yet.
+  const postAuthor = row.authorSlug
+    ? await prisma.author.findUnique({ where: { slug: row.authorSlug } })
+    : null;
+  // Raw author credentials (may be empty); the byline applies a fallback inline.
+  const authorCredentials = postAuthor?.credentials?.trim() ?? "";
+
   const content = row.content ?? "";
   const contentWithIds = ensureHeadingIds(content);
   const contentForRender = lazyLoadContentImages(normalizeArticleLinks(contentWithIds));
@@ -275,7 +283,7 @@ export default async function BlogPage({
                 <div>
                   <p className="text-sm text-white">{row.authorName}</p>
                   <p className="text-xs text-[rgba(255,255,255,0.6)]">
-                    Senior Analyst
+                    {authorCredentials || "N/A"}
                   </p>
                 </div>
               </div>
@@ -399,6 +407,7 @@ export default async function BlogPage({
             authorName={row.authorName}
             authorSlug={row.authorSlug}
             authorAvatar={row.authorAvatar}
+            authorCredentials={authorCredentials}
             expertiseSignals={expertise}
           />
         </div>

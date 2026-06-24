@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/app/lib/admin";
 import { prisma } from "@/app/lib/db";
-import { parseContentFreshnessDate } from "@/app/lib/seo";
+import { parseContentFreshnessDate, slugify } from "@/app/lib/seo";
+import { ensureCategory } from "@/app/lib/categories";
+import { ensureAuthor } from "@/app/lib/authors";
 
 export async function GET(request: Request) {
   const auth = await requireAdmin(request);
@@ -29,6 +31,7 @@ export async function POST(request: Request) {
       authorName,
       authorSlug,
       authorAvatar,
+      authorCredentials,
       imageUrl,
       imageKey,
       content,
@@ -98,7 +101,11 @@ export async function POST(request: Request) {
         category: String(category),
         readTime: readTime ?? null,
         authorName: String(authorName),
-        authorSlug: authorSlug ?? null,
+        // Always store a slug so the author page + JSON-LD link work; derive from
+        // the name when the editor didn't supply one.
+        authorSlug: (typeof authorSlug === "string" && authorSlug.trim()
+          ? authorSlug.trim().toLowerCase()
+          : slugify(String(authorName))),
         authorAvatar: authorAvatar ?? null,
         imageUrl: imageUrl ?? null,
         imageKey: imageKey ?? null,
@@ -146,6 +153,16 @@ export async function POST(request: Request) {
             ? faqs
             : null,
       },
+    });
+    // Persist the category so a newly-typed one becomes selectable next time.
+    await ensureCategory(post.category);
+    // Persist/link the author (single source of credentials) so a new author
+    // becomes selectable and credential edits propagate to all their posts.
+    await ensureAuthor({
+      name: post.authorName,
+      slug: post.authorSlug,
+      avatar: post.authorAvatar,
+      credentials: typeof authorCredentials === "string" ? authorCredentials : null,
     });
     return NextResponse.json(post);
   } catch (e) {

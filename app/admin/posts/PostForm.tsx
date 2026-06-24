@@ -9,6 +9,8 @@ import { Plus, Trash2 } from "lucide-react";
 
 type SavedTemplate = { id: string; name: string; content: string };
 
+type AuthorOption = { slug: string; name: string; credentials: string; avatar: string };
+
 type FaqItem = { question: string; answer: string };
 
 type PostFormData = {
@@ -20,6 +22,7 @@ type PostFormData = {
   authorName: string;
   authorSlug: string;
   authorAvatar: string;
+  authorCredentials: string;
   imageUrl: string;
   imageKey: string;
   imageAlt: string;
@@ -45,7 +48,6 @@ type PostFormData = {
   authoritativeCitations: string;
   entityTags: string;
   contentFreshnessDate: string;
-  expertiseCredentials: string;
   expertiseMethodology: string;
   expertiseResearchNotes: string;
 };
@@ -59,6 +61,7 @@ const defaults: PostFormData = {
   authorName: "",
   authorSlug: "",
   authorAvatar: "",
+  authorCredentials: "",
   imageUrl: "",
   imageKey: "",
   imageAlt: "",
@@ -84,7 +87,6 @@ const defaults: PostFormData = {
   authoritativeCitations: "",
   entityTags: "",
   contentFreshnessDate: "",
-  expertiseCredentials: "",
   expertiseMethodology: "",
   expertiseResearchNotes: "",
 };
@@ -109,6 +111,10 @@ export function PostForm({
   const pendingHrefRef = useRef<string | null>(null);
   const pendingPopRef = useRef(false);
   const [templates, setTemplates] = useState<SavedTemplate[]>([]);
+  const [categories, setCategories] = useState<string[]>([]);
+  const [showCategoryMenu, setShowCategoryMenu] = useState(false);
+  const [authors, setAuthors] = useState<AuthorOption[]>([]);
+  const [showAuthorMenu, setShowAuthorMenu] = useState(false);
 
   useEffect(() => {
     if (postId) return;
@@ -117,6 +123,84 @@ export function PostForm({
       .then((data) => setTemplates(Array.isArray(data) ? data : []))
       .catch(() => setTemplates([]));
   }, [postId]);
+
+  // Load existing categories for the combobox (existing rows + categories used
+  // on posts). Typing a new one is still allowed — it's saved on submit.
+  useEffect(() => {
+    fetch("/api/admin/categories")
+      .then((res) => res.json())
+      .then((data) => setCategories(Array.isArray(data) ? data : []))
+      .catch(() => setCategories([]));
+  }, []);
+
+  // Load existing authors for the author combobox. When editing a post, credentials
+  // aren't stored on the post (the Author record is the single source), so prefill
+  // the credentials field from the matching author once the list arrives.
+  useEffect(() => {
+    fetch("/api/admin/authors")
+      .then((res) => res.json())
+      .then((data: AuthorOption[]) => {
+        const list = Array.isArray(data) ? data : [];
+        setAuthors(list);
+        setForm((prev) => {
+          if (prev.authorCredentials.trim()) return prev;
+          const slug = prev.authorSlug.trim().toLowerCase();
+          const match = slug
+            ? list.find((a) => a.slug === slug)
+            : list.find((a) => a.name.toLowerCase() === prev.authorName.trim().toLowerCase());
+          return match?.credentials ? { ...prev, authorCredentials: match.credentials } : prev;
+        });
+      })
+      .catch(() => setAuthors([]));
+  }, []);
+
+  // Filter the dropdown by what's typed so it doubles as a search.
+  const categoryQuery = form.category.trim().toLowerCase();
+  const filteredCategories = categoryQuery
+    ? categories.filter((c) => c.toLowerCase().includes(categoryQuery))
+    : categories;
+  // True when what's typed doesn't match any existing category (case-insensitive)
+  // — i.e. saving will create a brand-new category with this exact name.
+  const isNewCategory =
+    form.category.trim().length > 0 &&
+    !categories.some((c) => c.toLowerCase() === categoryQuery);
+
+  // Author combobox derived values.
+  const authorQuery = form.authorName.trim().toLowerCase();
+  const filteredAuthors = authorQuery
+    ? authors.filter((a) => a.name.toLowerCase().includes(authorQuery))
+    : authors;
+  const isNewAuthor =
+    form.authorName.trim().length > 0 &&
+    !authors.some((a) => a.name.toLowerCase() === authorQuery);
+
+  // Selecting an existing author fills its slug, avatar (if any), and credentials.
+  function selectAuthor(a: AuthorOption) {
+    update({
+      authorName: a.name,
+      authorSlug: a.slug,
+      authorAvatar: a.avatar || form.authorAvatar,
+      authorCredentials: a.credentials,
+    });
+    setShowAuthorMenu(false);
+  }
+
+  // Typing an author name: if it matches an existing author, auto-fill from it;
+  // otherwise keep a live slug derived from the name (new author on save).
+  function onAuthorNameChange(value: string) {
+    const match = authors.find((a) => a.name.toLowerCase() === value.trim().toLowerCase());
+    if (match) {
+      update({
+        authorName: value,
+        authorSlug: match.slug,
+        authorAvatar: form.authorAvatar || match.avatar,
+        authorCredentials: match.credentials,
+      });
+    } else {
+      update({ authorName: value, authorSlug: slugify(value) });
+    }
+    setShowAuthorMenu(true);
+  }
 
   function slugify(text: string): string {
     return String(text)
@@ -227,6 +311,7 @@ export function PostForm({
         authorName: form.authorName,
         authorSlug: form.authorSlug || undefined,
         authorAvatar: form.authorAvatar || undefined,
+        authorCredentials: form.authorCredentials || undefined,
         imageUrl: form.imageUrl || undefined,
         imageKey: form.imageKey || undefined,
         imageAlt: form.imageAlt || undefined,
@@ -259,11 +344,8 @@ export function PostForm({
           : undefined,
         contentFreshnessDate: form.contentFreshnessDate || undefined,
         expertiseSignals:
-          form.expertiseCredentials ||
-          form.expertiseMethodology ||
-          form.expertiseResearchNotes
+          form.expertiseMethodology || form.expertiseResearchNotes
             ? {
-                credentials: form.expertiseCredentials || undefined,
                 methodology: form.expertiseMethodology || undefined,
                 researchNotes: form.expertiseResearchNotes || undefined,
               }
@@ -437,13 +519,77 @@ export function PostForm({
           <label className="mb-1 block text-sm text-[rgba(255,255,255,0.7)]">
             Category *
           </label>
-          <input
-            type="text"
-            value={form.category}
-            onChange={(e) => update({ category: e.target.value })}
-            required
-            className="w-full rounded-lg border border-[rgba(255,255,255,0.2)] bg-[rgba(255,255,255,0.05)] px-4 py-2 text-white focus:border-[#FDBE35] focus:outline-none"
-          />
+          <div className="relative">
+            <input
+              type="text"
+              value={form.category}
+              onChange={(e) => {
+                update({ category: e.target.value });
+                setShowCategoryMenu(true);
+              }}
+              onFocus={() => setShowCategoryMenu(true)}
+              // Delay so a click on a dropdown item registers before it closes.
+              onBlur={() => setTimeout(() => setShowCategoryMenu(false), 150)}
+              required
+              autoComplete="off"
+              placeholder="Select or type a category"
+              className="w-full rounded-lg border border-[rgba(255,255,255,0.2)] bg-[rgba(255,255,255,0.05)] px-4 py-2 text-white focus:border-[#FDBE35] focus:outline-none"
+            />
+            {showCategoryMenu && (filteredCategories.length > 0 || isNewCategory) && (
+              <ul className="absolute z-20 mt-1 max-h-56 w-full overflow-auto rounded-lg border border-[rgba(255,255,255,0.2)] bg-[#111] py-1 shadow-xl">
+                {filteredCategories.map((c) => (
+                  <li key={c}>
+                    <button
+                      type="button"
+                      // onMouseDown (not onClick) so it fires before the input's
+                      // onBlur hides the menu.
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        update({ category: c });
+                        setShowCategoryMenu(false);
+                      }}
+                      className={`flex w-full items-center justify-between px-4 py-2 text-left text-sm hover:bg-[rgba(255,255,255,0.08)] ${
+                        c.toLowerCase() === categoryQuery
+                          ? "text-[#FDBE35]"
+                          : "text-white"
+                      }`}
+                    >
+                      {c}
+                    </button>
+                  </li>
+                ))}
+                {isNewCategory && (
+                  <li className="border-t border-[rgba(255,255,255,0.1)]">
+                    <button
+                      type="button"
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        setShowCategoryMenu(false);
+                      }}
+                      className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-[#FDBE35] hover:bg-[rgba(253,190,53,0.1)]"
+                    >
+                      <Plus className="h-3.5 w-3.5 shrink-0" />
+                      <span>
+                        Create new category &ldquo;{form.category.trim()}&rdquo;
+                      </span>
+                    </button>
+                  </li>
+                )}
+              </ul>
+            )}
+          </div>
+          {isNewCategory ? (
+            <p className="mt-1 flex items-center gap-1 text-xs text-[#FDBE35]">
+              <Plus className="h-3 w-3 shrink-0" />
+              New category &ldquo;{form.category.trim()}&rdquo; will be created on
+              save.
+            </p>
+          ) : (
+            <p className="mt-1 text-xs text-[rgba(255,255,255,0.5)]">
+              Pick an existing category or type a new one — new categories are saved
+              automatically.
+            </p>
+          )}
         </div>
         <div>
           <label className="mb-1 block text-sm text-[rgba(255,255,255,0.7)]">
@@ -464,13 +610,67 @@ export function PostForm({
           <label className="mb-1 block text-sm text-[rgba(255,255,255,0.7)]">
             Author name *
           </label>
-          <input
-            type="text"
-            value={form.authorName}
-            onChange={(e) => update({ authorName: e.target.value })}
-            required
-            className="w-full rounded-lg border border-[rgba(255,255,255,0.2)] bg-[rgba(255,255,255,0.05)] px-4 py-2 text-white focus:border-[#FDBE35] focus:outline-none"
-          />
+          <div className="relative">
+            <input
+              type="text"
+              value={form.authorName}
+              onChange={(e) => onAuthorNameChange(e.target.value)}
+              onFocus={() => setShowAuthorMenu(true)}
+              onBlur={() => setTimeout(() => setShowAuthorMenu(false), 150)}
+              required
+              autoComplete="off"
+              placeholder="Select or type an author"
+              className="w-full rounded-lg border border-[rgba(255,255,255,0.2)] bg-[rgba(255,255,255,0.05)] px-4 py-2 text-white focus:border-[#FDBE35] focus:outline-none"
+            />
+            {showAuthorMenu && (filteredAuthors.length > 0 || isNewAuthor) && (
+              <ul className="absolute z-20 mt-1 max-h-56 w-full overflow-auto rounded-lg border border-[rgba(255,255,255,0.2)] bg-[#111] py-1 shadow-xl">
+                {filteredAuthors.map((a) => (
+                  <li key={a.slug}>
+                    <button
+                      type="button"
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        selectAuthor(a);
+                      }}
+                      className="flex w-full flex-col px-4 py-2 text-left text-sm text-white hover:bg-[rgba(255,255,255,0.08)]"
+                    >
+                      <span>{a.name}</span>
+                      <span className="text-xs text-[rgba(255,255,255,0.45)]">
+                        {a.slug}
+                        {a.credentials ? ` · ${a.credentials}` : ""}
+                      </span>
+                    </button>
+                  </li>
+                ))}
+                {isNewAuthor && (
+                  <li className="border-t border-[rgba(255,255,255,0.1)]">
+                    <button
+                      type="button"
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        setShowAuthorMenu(false);
+                      }}
+                      className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-[#FDBE35] hover:bg-[rgba(253,190,53,0.1)]"
+                    >
+                      <Plus className="h-3.5 w-3.5 shrink-0" />
+                      <span>Create new author &ldquo;{form.authorName.trim()}&rdquo;</span>
+                    </button>
+                  </li>
+                )}
+              </ul>
+            )}
+          </div>
+          {isNewAuthor ? (
+            <p className="mt-1 flex items-center gap-1 text-xs text-[#FDBE35]">
+              <Plus className="h-3 w-3 shrink-0" />
+              New author &ldquo;{form.authorName.trim()}&rdquo; will be created on save.
+            </p>
+          ) : (
+            <p className="mt-1 text-xs text-[rgba(255,255,255,0.5)]">
+              Pick an existing author or type a new one — new authors are saved
+              automatically.
+            </p>
+          )}
         </div>
         <div>
           <label className="mb-1 block text-sm text-[rgba(255,255,255,0.7)]">
@@ -483,7 +683,24 @@ export function PostForm({
             placeholder="ravi-kumar"
             className="w-full rounded-lg border border-[rgba(255,255,255,0.2)] bg-[rgba(255,255,255,0.05)] px-4 py-2 text-white focus:border-[#FDBE35] focus:outline-none"
           />
-          <p className="mt-1 text-xs text-[rgba(255,255,255,0.5)]">For /author/[slug]</p>
+          <p className="mt-1 text-xs text-[rgba(255,255,255,0.5)]">
+            Auto-filled from the name (lowercase). Used for /author/[slug].
+          </p>
+        </div>
+        <div>
+          <label className="mb-1 block text-sm text-[rgba(255,255,255,0.7)]">
+            Author credentials
+          </label>
+          <input
+            type="text"
+            value={form.authorCredentials}
+            onChange={(e) => update({ authorCredentials: e.target.value })}
+            placeholder="e.g. Marketing Manager"
+            className="w-full rounded-lg border border-[rgba(255,255,255,0.2)] bg-[rgba(255,255,255,0.05)] px-4 py-2 text-white focus:border-[#FDBE35] focus:outline-none"
+          />
+          <p className="mt-1 text-xs text-[rgba(255,255,255,0.5)]">
+            Saved to the author — updates the byline on all their posts.
+          </p>
         </div>
         <div>
           <label className="mb-1 block text-sm text-[rgba(255,255,255,0.7)]">
@@ -793,17 +1010,11 @@ export function PostForm({
               className="rounded-lg border border-[rgba(255,255,255,0.2)] bg-[rgba(255,255,255,0.05)] px-4 py-2 text-white focus:border-[#FDBE35] focus:outline-none"
             />
           </div>
-          <div className="grid gap-4 sm:grid-cols-3">
-            <div>
-              <label className="mb-1 block text-xs text-[rgba(255,255,255,0.6)]">Credentials</label>
-              <input
-                type="text"
-                value={form.expertiseCredentials}
-                onChange={(e) => update({ expertiseCredentials: e.target.value })}
-                placeholder="Senior Analyst"
-                className="w-full rounded-lg border border-[rgba(255,255,255,0.2)] bg-[rgba(255,255,255,0.05)] px-4 py-2 text-sm text-white focus:border-[#FDBE35] focus:outline-none"
-              />
-            </div>
+          <p className="text-xs text-[rgba(255,255,255,0.5)]">
+            Author credentials are set in the Author section above (single source —
+            shown on every post by that author).
+          </p>
+          <div className="grid gap-4 sm:grid-cols-2">
             <div>
               <label className="mb-1 block text-xs text-[rgba(255,255,255,0.6)]">Methodology</label>
               <input

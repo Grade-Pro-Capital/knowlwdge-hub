@@ -171,6 +171,9 @@ function setTextAlignment(editor: Editor, textAlign: string | null) {
 
 function Toolbar({ editor }: { editor: Editor | null }) {
   const [linkUrl, setLinkUrl] = useState("");
+  // When true, the link is saved with rel="nofollow" so search engines don't
+  // pass ranking credit to (or endorse) the destination. See docs/seo-nofollow-links.md.
+  const [linkNofollow, setLinkNofollow] = useState(false);
   const [showLinkInput, setShowLinkInput] = useState(false);
   const [showTableMenu, setShowTableMenu] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -219,10 +222,38 @@ function Toolbar({ editor }: { editor: Editor | null }) {
     if (!editor) return;
     const previousUrl = editor.getAttributes("link").href;
     const url = linkUrl || previousUrl || "https://";
-    editor.chain().focus().extendMarkRange("link").setLink({ href: url }).run();
+    // Follow links omit rel (equity flows normally). No-follow links carry
+    // rel="nofollow"; this attribute is preserved end-to-end and rendered on
+    // the public article so the reader's browser/crawler sees a real nofollow.
+    const rel = linkNofollow ? "nofollow" : null;
+    editor.chain().focus().extendMarkRange("link").setLink({ href: url, rel }).run();
     setLinkUrl("");
+    setLinkNofollow(false);
     setShowLinkInput(false);
-  }, [editor, linkUrl]);
+  }, [editor, linkUrl, linkNofollow]);
+
+  const openLinkInput = useCallback(() => {
+    if (!editor) return;
+    setShowLinkInput((v) => {
+      const next = !v;
+      // Prefill from the link under the cursor so editing toggles follow/nofollow
+      // instead of silently creating a duplicate state.
+      if (next) {
+        const attrs = editor.getAttributes("link");
+        setLinkUrl(typeof attrs.href === "string" ? attrs.href : "");
+        setLinkNofollow(typeof attrs.rel === "string" && /\bnofollow\b/i.test(attrs.rel));
+      }
+      return next;
+    });
+  }, [editor]);
+
+  const unsetLink = useCallback(() => {
+    if (!editor) return;
+    editor.chain().focus().extendMarkRange("link").unsetLink().run();
+    setLinkUrl("");
+    setLinkNofollow(false);
+    setShowLinkInput(false);
+  }, [editor]);
 
   if (!editor) return null;
 
@@ -528,25 +559,51 @@ function Toolbar({ editor }: { editor: Editor | null }) {
       <div className="relative">
         <button
           type="button"
-          onClick={() => setShowLinkInput((v) => !v)}
+          onClick={openLinkInput}
           className={`${buttonClass} ${editor.isActive("link") ? activeClass : ""}`}
           title="Link"
         >
           <LinkIcon className="h-4 w-4" />
         </button>
         {showLinkInput && (
-          <div className="absolute left-0 top-full z-10 mt-1 flex gap-1 rounded-lg border border-[rgba(255,255,255,0.2)] bg-[#1a1a1a] p-2 shadow-xl">
-            <input
-              type="url"
-              value={linkUrl}
-              onChange={(e) => setLinkUrl(e.target.value)}
-              placeholder="https://..."
-              className="w-48 rounded border border-[rgba(255,255,255,0.2)] bg-[rgba(255,255,255,0.05)] px-2 py-1 text-sm text-white focus:border-[#FDBE35] focus:outline-none"
-              onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), setLink())}
-            />
-            <button type="button" onClick={setLink} className={buttonClass}>
-              OK
-            </button>
+          <div className="absolute left-0 top-full z-10 mt-1 flex w-64 flex-col gap-2 rounded-lg border border-[rgba(255,255,255,0.2)] bg-[#1a1a1a] p-2 shadow-xl">
+            <div className="flex gap-1">
+              <input
+                type="url"
+                value={linkUrl}
+                onChange={(e) => setLinkUrl(e.target.value)}
+                placeholder="https://..."
+                className="w-full rounded border border-[rgba(255,255,255,0.2)] bg-[rgba(255,255,255,0.05)] px-2 py-1 text-sm text-white focus:border-[#FDBE35] focus:outline-none"
+                onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), setLink())}
+                autoFocus
+              />
+              <button type="button" onClick={setLink} className={buttonClass} title="Apply link">
+                OK
+              </button>
+            </div>
+            <label className="flex items-center gap-2 px-0.5 text-xs text-[rgba(255,255,255,0.8)]">
+              <input
+                type="checkbox"
+                checked={linkNofollow}
+                onChange={(e) => setLinkNofollow(e.target.checked)}
+                className="rounded border-[rgba(255,255,255,0.3)] bg-[rgba(255,255,255,0.05)] text-[#FDBE35] focus:ring-[#FDBE35]"
+              />
+              <span>
+                No-follow link{" "}
+                <span className="text-[rgba(255,255,255,0.45)]">
+                  (adds rel=&quot;nofollow&quot; — no SEO credit passed)
+                </span>
+              </span>
+            </label>
+            {editor.isActive("link") && (
+              <button
+                type="button"
+                onClick={unsetLink}
+                className="self-start text-xs text-red-400 hover:text-red-300"
+              >
+                Remove link
+              </button>
+            )}
           </div>
         )}
       </div>
@@ -670,6 +727,8 @@ export function RichTextEditor({
         .ProseMirror .blog-editor-image[data-align="right"] { float: right; margin: 0.5rem 0 0.5rem 1rem; }
         .ProseMirror .ProseMirror-selectednode { outline: 2px solid #FDBE35; outline-offset: 2px; }
         .ProseMirror a { color: #FDBE35; text-decoration: underline; cursor: pointer; }
+        /* No-follow links get a dashed underline so authors can tell them apart at a glance. */
+        .ProseMirror a[rel~="nofollow"] { text-decoration-style: dashed; }
       `}</style>
     </div>
   );

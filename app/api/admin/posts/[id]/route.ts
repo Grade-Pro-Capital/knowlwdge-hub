@@ -2,7 +2,9 @@ import { NextResponse } from "next/server";
 import { requireAdmin } from "@/app/lib/admin";
 import { prisma } from "@/app/lib/db";
 import { deleteFromSpaces } from "@/app/lib/upload";
-import { parseContentFreshnessDate } from "@/app/lib/seo";
+import { parseContentFreshnessDate, slugify } from "@/app/lib/seo";
+import { ensureCategory } from "@/app/lib/categories";
+import { ensureAuthor } from "@/app/lib/authors";
 
 export async function GET(
   request: Request,
@@ -46,6 +48,7 @@ export async function PATCH(
       authorName,
       authorSlug,
       authorAvatar,
+      authorCredentials,
       imageUrl,
       imageKey,
       content,
@@ -123,7 +126,14 @@ export async function PATCH(
         ...(category !== undefined && { category: String(category) }),
         ...(readTime !== undefined && { readTime: readTime ?? null }),
         ...(authorName !== undefined && { authorName: String(authorName) }),
-        ...(authorSlug !== undefined && { authorSlug: authorSlug ?? null }),
+        ...(authorSlug !== undefined && {
+          // Keep a usable slug: fall back to slugifying the name (new or existing)
+          // when the editor sends an empty slug.
+          authorSlug:
+            typeof authorSlug === "string" && authorSlug.trim()
+              ? authorSlug.trim().toLowerCase()
+              : slugify(String(authorName ?? post.authorName)),
+        }),
         ...(authorAvatar !== undefined && { authorAvatar: authorAvatar ?? null }),
         ...(imageUrl !== undefined && { imageUrl: imageUrl ?? null }),
         ...(imageKey !== undefined && { imageKey: imageKey ?? null }),
@@ -182,6 +192,22 @@ export async function PATCH(
         }),
       },
     });
+    // Persist the category so a newly-typed one becomes selectable next time.
+    if (category !== undefined) await ensureCategory(updated.category);
+    // Persist/link the author and propagate credential edits (single source).
+    if (
+      authorName !== undefined ||
+      authorSlug !== undefined ||
+      authorAvatar !== undefined ||
+      authorCredentials !== undefined
+    ) {
+      await ensureAuthor({
+        name: updated.authorName,
+        slug: updated.authorSlug,
+        avatar: updated.authorAvatar,
+        credentials: typeof authorCredentials === "string" ? authorCredentials : null,
+      });
+    }
     return NextResponse.json(updated);
   } catch (e) {
     console.error("Update post error:", e);

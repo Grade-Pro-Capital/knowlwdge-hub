@@ -13,6 +13,7 @@
     "db:migrate": "prisma migrate dev",
     "db:seed": "tsx prisma/seed.ts",
     "db:seed:posts": "tsx prisma/seedPosts.ts",
+    "db:backfill:authors": "tsx prisma/backfillAuthors.ts",
     "db:studio": "prisma studio"
   },
   "dependencies": {

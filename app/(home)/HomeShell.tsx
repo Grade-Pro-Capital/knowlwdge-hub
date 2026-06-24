@@ -20,13 +20,23 @@ type HomeShellProps = {
   children: React.ReactNode;
 };
 
+const ALL_CATEGORIES = "all";
+
 export function HomeShell({ initialPosts, initialTab, children }: HomeShellProps) {
   const [activeTab, setActiveTab] = useState<"all" | "professionals">(initialTab);
+  const [activeCategory, setActiveCategory] = useState<string>(ALL_CATEGORIES);
   const [searchQuery, setSearchQuery] = useState("");
   const [visiblePostCount, setVisiblePostCount] = useState(POSTS_PER_PAGE);
 
   const handleTabChange = (tab: "all" | "professionals") => {
     setActiveTab(tab);
+    // Categories differ per tab, so reset the category filter when switching.
+    setActiveCategory(ALL_CATEGORIES);
+    setVisiblePostCount(POSTS_PER_PAGE);
+  };
+
+  const handleCategoryChange = (category: string) => {
+    setActiveCategory(category);
     setVisiblePostCount(POSTS_PER_PAGE);
   };
 
@@ -35,15 +45,25 @@ export function HomeShell({ initialPosts, initialTab, children }: HomeShellProps
     setVisiblePostCount(POSTS_PER_PAGE);
   };
 
-  const filteredPosts = initialPosts.filter((post) => {
-    const matchesTab =
-      activeTab === "all" ? !post.isProfessional : post.isProfessional;
+  // Posts for the active tab — drives both the category chips and the feed.
+  const tabPosts = initialPosts.filter((post) =>
+    activeTab === "all" ? !post.isProfessional : post.isProfessional
+  );
+
+  // Distinct categories present in this tab, sorted alphabetically.
+  const categories = [
+    ...new Set(tabPosts.map((p) => p.category).filter(Boolean)),
+  ].sort((a, b) => a.localeCompare(b));
+
+  const filteredPosts = tabPosts.filter((post) => {
+    const matchesCategory =
+      activeCategory === ALL_CATEGORIES || post.category === activeCategory;
     const q = searchQuery.trim().toLowerCase();
     const matchesSearch =
       !q ||
       post.title.toLowerCase().includes(q) ||
       (Array.isArray(post.tags) && post.tags.some((t) => t.toLowerCase().includes(q)));
-    return matchesTab && matchesSearch;
+    return matchesCategory && matchesSearch;
   });
   const visiblePosts = filteredPosts.slice(0, visiblePostCount);
   const hasMorePosts = visiblePostCount < filteredPosts.length;
@@ -114,6 +134,36 @@ export function HomeShell({ initialPosts, initialTab, children }: HomeShellProps
               )}
             </button>
           </div>
+
+          {categories.length > 0 && (
+            <div className="mb-8 flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={() => handleCategoryChange(ALL_CATEGORIES)}
+                className={`rounded-full border px-4 py-1.5 text-sm transition-all ${
+                  activeCategory === ALL_CATEGORIES
+                    ? "border-[#FDBE35] bg-[rgba(253,190,53,0.15)] text-[#FDBE35]"
+                    : "border-[rgba(255,255,255,0.15)] text-[rgba(255,255,255,0.7)] hover:border-[rgba(253,190,53,0.4)] hover:text-white"
+                }`}
+              >
+                All Categories
+              </button>
+              {categories.map((category) => (
+                <button
+                  key={category}
+                  type="button"
+                  onClick={() => handleCategoryChange(category)}
+                  className={`rounded-full border px-4 py-1.5 text-sm transition-all ${
+                    activeCategory === category
+                      ? "border-[#FDBE35] bg-[rgba(253,190,53,0.15)] text-[#FDBE35]"
+                      : "border-[rgba(255,255,255,0.15)] text-[rgba(255,255,255,0.7)] hover:border-[rgba(253,190,53,0.4)] hover:text-white"
+                  }`}
+                >
+                  {category}
+                </button>
+              ))}
+            </div>
+          )}
 
           {filteredPosts.length === 0 ? (
             <div className="py-16 text-center">

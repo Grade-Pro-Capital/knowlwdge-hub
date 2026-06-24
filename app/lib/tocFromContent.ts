@@ -99,9 +99,32 @@ function isOwnDomain(href: string): boolean {
 
 const A_TAG_REGEX = /<a\s+([^>]*)>/gi;
 
+/** Read the existing rel="..." token list off an anchor's attribute string. */
+function getRelTokens(attrs: string): string[] {
+  const relMatch = attrs.match(/\brel\s*=\s*["']([^"']*)["']/i);
+  if (!relMatch) return [];
+  return relMatch[1].split(/\s+/).filter(Boolean);
+}
+
+/** Replace (or append) a single rel="..." attribute with the given token list. */
+function withRel(attrs: string, tokens: string[]): string {
+  const rel = `rel="${[...new Set(tokens)].join(" ")}"`;
+  const stripped = attrs.replace(/\s*\brel\s*=\s*["'][^"']*["']/gi, "").trim();
+  return `${stripped ? `${stripped} ` : ""}${rel}`;
+}
+
 /**
- * Normalize links in article HTML: own-domain (grade.capital) links use HTTPS and rel="noopener" only
- * (no nofollow) so Google can pass link equity to the main site. External links are unchanged.
+ * Normalize links in article HTML before rendering:
+ *
+ * - Own-domain (grade.capital) links: forced to HTTPS and rel="noopener" only.
+ *   Any author-set "nofollow" is intentionally dropped so Google passes link
+ *   equity to our own site — internal links should always be followed.
+ *
+ * - External links: the author's follow/no-follow choice is authoritative. We
+ *   preserve a "nofollow" token if the author set one in the editor, and always
+ *   add rel="noopener noreferrer" for tab-nabbing / referrer-leak protection.
+ *   This is what makes a no-follow link actually behave as no-follow for the
+ *   reader's browser and for crawlers. See docs/seo-nofollow-links.md.
  */
 export function normalizeArticleLinks(html: string): string {
   if (!html || typeof html !== "string") return html;
@@ -109,23 +132,31 @@ export function normalizeArticleLinks(html: string): string {
   return html.replace(A_TAG_REGEX, (match, attrs) => {
     const hrefMatch = attrs.match(/href\s*=\s*["']([^"']*)["']/i);
     const href = hrefMatch ? hrefMatch[1].trim() : "";
-    if (!href || !isOwnDomain(href)) return match;
+    if (!href) return match;
 
-    try {
-      const url = new URL(href, "https://blogs.grade.capital");
-      const secureHref =
-        url.protocol === "https:"
-          ? url.toString()
-          : `https://${url.hostname}${url.pathname}${url.search}${url.hash}`;
+    if (isOwnDomain(href)) {
+      try {
+        const url = new URL(href, "https://blogs.grade.capital");
+        const secureHref =
+          url.protocol === "https:"
+            ? url.toString()
+            : `https://${url.hostname}${url.pathname}${url.search}${url.hash}`;
 
-      let newAttrs = attrs
-        .replace(/\brel\s*=\s*["'][^"']*["']/gi, 'rel="noopener"')
-        .replace(/\bhref\s*=\s*["'][^"']*["']/gi, `href="${secureHref}"`);
-
-      if (!/\brel\s*=/i.test(newAttrs)) newAttrs = `${newAttrs.trim()} rel="noopener"`;
-      return `<a ${newAttrs.trim()}>`;
-    } catch {
-      return match;
+        const newAttrs = withRel(
+          attrs.replace(/\bhref\s*=\s*["'][^"']*["']/gi, `href="${secureHref}"`),
+          ["noopener"]
+        );
+        return `<a ${newAttrs.trim()}>`;
+      } catch {
+        return match;
+      }
     }
+
+    // External link: keep the author's nofollow choice, enforce security rel.
+    const tokens = ["noopener", "noreferrer"];
+    if (getRelTokens(attrs).some((t) => t.toLowerCase() === "nofollow")) {
+      tokens.push("nofollow");
+    }
+    return `<a ${withRel(attrs, tokens).trim()}>`;
   });
 }

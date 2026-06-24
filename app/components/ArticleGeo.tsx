@@ -18,6 +18,8 @@ type ArticleGeoProps = {
   authorName: string;
   authorSlug?: string | null;
   authorAvatar?: string | null;
+  /** Author-level credentials (single source of truth) shown under the name. */
+  authorCredentials?: string | null;
   expertiseSignals?: ExpertiseSignals | null;
   /** When false, only render GEO blocks (summary, TL;DR, citations). Default true. */
   showAuthorSection?: boolean;
@@ -31,6 +33,7 @@ export function ArticleGeo({
   authorName,
   authorSlug,
   authorAvatar,
+  authorCredentials,
   expertiseSignals,
   showAuthorSection = true,
 }: ArticleGeoProps) {
@@ -149,11 +152,10 @@ export function ArticleGeo({
                 authorName
               )}
             </h3>
-            {expertiseSignals?.credentials && (
-              <p className="mb-2 text-sm text-[#FDBE35]">
-                {expertiseSignals.credentials}
-              </p>
-            )}
+            {/* Author credential (single source). Shows "N/A" when none is set. */}
+            <p className="mb-2 text-sm text-[#FDBE35]">
+              {authorCredentials?.trim() || "N/A"}
+            </p>
             {expertiseSignals?.methodology && (
               <p className="mb-2 text-sm leading-relaxed text-[rgba(255,255,255,0.7)]">
                 {expertiseSignals.methodology}
@@ -164,17 +166,6 @@ export function ArticleGeo({
                 {expertiseSignals.researchNotes}
               </p>
             )}
-            {!expertiseSignals?.credentials &&
-              !expertiseSignals?.methodology &&
-              !expertiseSignals?.researchNotes && (
-                <p className="text-sm leading-relaxed text-[rgba(255,255,255,0.7)]">
-                  {authorName} is a senior analyst at Grade Capital,
-                  specializing in institutional crypto adoption and regulatory
-                  frameworks. With extensive experience in traditional finance
-                  and digital assets, they provide in-depth analysis on market
-                  trends and investment strategies.
-                </p>
-              )}
           </div>
         </div>
       </section>
