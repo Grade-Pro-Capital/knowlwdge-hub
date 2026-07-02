@@ -31,6 +31,57 @@ body {
 }
 
 /* ---------------------------------------------------------------------------
+   Hero — frosted glass cards + floating animation (Figma hero design).
+   --------------------------------------------------------------------------- */
+.glass-panel {
+  background-color: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+}
+.glass-panel-active {
+  background-color: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.floating-card-1 {
+  animation: hero-float 6s ease-in-out infinite;
+}
+.floating-card-2 {
+  animation: hero-float 8s ease-in-out infinite reverse;
+}
+@keyframes hero-float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .floating-card-1,
+  .floating-card-2 {
+    animation: none;
+  }
+}
+
+/* Interactive background grid — cells light up on pointer hover. */
+#interactive-grid {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.grid-cell {
+  position: absolute;
+  box-sizing: border-box;
+  border: 1px solid rgba(156, 143, 122, 0.2);
+  background-color: transparent;
+}
+
+/* ---------------------------------------------------------------------------
    Site footer — ported verbatim from the Grade Institute website
    (D:\we-have-to-make-a-website\src\styles.css). `--line` is inlined as
    rgba(255,255,255,0.09) to keep it self-contained.

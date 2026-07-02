@@ -13,10 +13,21 @@ const poppins = Poppins({
 
 const GTM_ID = "GTM-MWXB6RB3";
 
-const metadataBase =
-  typeof process.env.NEXT_PUBLIC_SITE_URL === "string"
-    ? new URL(process.env.NEXT_PUBLIC_SITE_URL)
-    : new URL("https://blogs.grade.capital");
+const FALLBACK_SITE_URL = "https://blogs.grade.capital";
+// Tolerate a scheme-less NEXT_PUBLIC_SITE_URL (e.g. "blogs.grade.capital"): default
+// to https:// rather than throwing "Invalid URL" and 500-ing every route.
+const rawSiteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim();
+const normalizedSiteUrl = rawSiteUrl
+  ? /^https?:\/\//i.test(rawSiteUrl)
+    ? rawSiteUrl
+    : `https://${rawSiteUrl}`
+  : FALLBACK_SITE_URL;
+let metadataBase: URL;
+try {
+  metadataBase = new URL(normalizedSiteUrl);
+} catch {
+  metadataBase = new URL(FALLBACK_SITE_URL);
+}
 const base = metadataBase.origin;
 const defaultOgImage = `${base}/og-default.png`;
 
