@@ -72,7 +72,7 @@ export function HomeShell({ initialPosts, initialTab, children }: HomeShellProps
   return (
     <>
       {/* Header — frosted translucent bar (styling shared with SiteHeader) */}
-      <header className="sticky top-0 z-50 border-b border-white/10 bg-[rgba(32,32,32,0.2)] backdrop-blur-md">
+      <header className="sticky top-0 z-50 bg-[rgba(32,32,32,0.2)] backdrop-blur-md">
         <div className="mx-auto max-w-[1600px] px-4 py-4 sm:px-8 lg:px-16">
           <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center sm:gap-6">
             <Logo />

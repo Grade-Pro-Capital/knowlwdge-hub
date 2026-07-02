@@ -77,7 +77,7 @@ body {
 .grid-cell {
   position: absolute;
   box-sizing: border-box;
-  border: 1px solid rgba(156, 143, 122, 0.2);
+  border: 1px solid rgba(156, 143, 122, 0.1);
   background-color: transparent;
 }
 

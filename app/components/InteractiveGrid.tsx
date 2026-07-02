@@ -7,7 +7,7 @@ import { useEffect, useRef } from "react";
 const TARGET_CELL = 64;
 // Length of the glowing "snake tail" that follows the pointer, in cells.
 const TAIL_LENGTH = 6;
-const MAX_ALPHA = 0.3;
+const MAX_ALPHA = 0.22;
 
 /**
  * Decorative background grid where a glowing "snake tail" of cells follows the
