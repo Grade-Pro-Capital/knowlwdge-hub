@@ -1,10 +1,10 @@
 import { notFound } from "next/navigation";
-import Link from "next/link";
 import Image from "next/image";
 import type { Metadata } from "next";
 import { Clock, Calendar } from "lucide-react";
 import { ImageWithFallback } from "@/app/components/ImageWithFallback";
-import { Logo } from "@/app/components/Logo";
+import { SiteHeader } from "@/app/components/SiteHeader";
+import { SiteFooter } from "@/app/components/SiteFooter";
 import { ShareButtons } from "@/app/components/ShareButtons";
 import { Breadcrumb } from "@/app/components/Breadcrumb";
 import { ArticleGeo } from "@/app/components/ArticleGeo";
@@ -249,7 +249,7 @@ export default async function BlogPage({
       <JsonLdScript data={breadcrumbLd} />
       {faqLd && <JsonLdScript data={faqLd} />}
 
-      <Header />
+      <SiteHeader />
       <Breadcrumb items={breadcrumbItems} withJsonLd={false} />
 
       <article>
@@ -429,45 +429,9 @@ export default async function BlogPage({
       </article>
 
       <NewsletterSection />
-      <Footer />
+      <SiteFooter />
       <ArticleStyles />
     </div>
-  );
-}
-
-function Header() {
-  return (
-    <header className="sticky top-0 z-50 border-b border-[rgba(255,255,255,0.1)] bg-[#020100]">
-      <div className="mx-auto max-w-[1600px] px-4 py-4 sm:px-8 sm:py-6 lg:px-16">
-        <div className="flex items-center justify-between">
-          <Logo />
-          <nav className="hidden md:flex md:items-center md:gap-6">
-            <Link
-              href="/#insights"
-              className="text-sm text-[rgba(255,255,255,0.7)] transition-colors hover:text-white"
-            >
-              Insights
-            </Link>
-            <Link
-              href="/"
-              className="text-sm text-[rgba(255,255,255,0.7)] transition-colors hover:text-white"
-            >
-              Research
-            </Link>
-            <Link
-              href="/?tab=professionals#insights"
-              className="text-sm text-[rgba(255,255,255,0.7)] transition-colors hover:text-white"
-            >
-              For Professionals
-            </Link>
-           
-          </nav>
-          <button className="rounded-lg bg-gradient-to-r from-[#FDBE35] to-[#FDDA93] px-4 py-2 text-sm text-[#020100] shadow-[0px_0px_20px_0px_rgba(212,175,55,0.4)] transition-all hover:shadow-[0px_0px_30px_0px_rgba(212,175,55,0.6)] sm:px-6">
-            Subscribe
-          </button>
-        </div>
-      </div>
-    </header>
   );
 }
 
@@ -492,84 +456,11 @@ function NewsletterSection() {
   );
 }
 
-function Footer() {
-  return (
-    <footer className="border-t border-[rgba(255,255,255,0.1)] py-12">
-      <div className="mx-auto max-w-[1600px] px-4 sm:px-8 lg:px-16">
-        <div className="mb-8 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="lg:col-span-1">
-            <Logo />
-            <p className="mt-4 text-sm text-[rgba(255,255,255,0.6)]">
-              © {new Date().getFullYear()} Grade Capital
-            </p>
-          </div>
-          {/* Footer links - commented out for now
-          <div>
-            <h4 className="mb-4 text-white">Insights</h4>
-            <ul className="space-y-2 text-sm text-[rgba(255,255,255,0.6)]">
-              <li>
-                <Link href="/" className="transition-colors hover:text-white">
-                  Investment in Crypto
-                </Link>
-              </li>
-              <li>
-                <Link href="/" className="transition-colors hover:text-white">
-                  Detailed Crypto Research
-                </Link>
-              </li>
-              <li>
-                <Link href="/" className="transition-colors hover:text-white">
-                  For Crypto Professionals
-                </Link>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="mb-4 text-white">For Professionals</h4>
-            <ul className="space-y-2 text-sm text-[rgba(255,255,255,0.6)]">
-              <li>
-                <Link href="/" className="transition-colors hover:text-white">
-                  Compliance & Consulting
-                </Link>
-              </li>
-              <li>
-                <Link href="/" className="transition-colors hover:text-white">
-                  Due Diligence Data Sets
-                </Link>
-              </li>
-              <li>
-                <Link href="/" className="transition-colors hover:text-white">
-                  Strategy Analysis
-                </Link>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="mb-4 text-white">Resources</h4>
-            <ul className="space-y-2 text-sm text-[rgba(255,255,255,0.6)]">
-              <li>
-                <Link href="/" className="transition-colors hover:text-white">
-                  Whitepaper
-                </Link>
-              </li>
-              <li>
-                <Link href="/" className="transition-colors hover:text-white">
-                  About
-                </Link>
-              </li>
-            </ul>
-          </div>
-          */}
-        </div>
-      </div>
-    </footer>
-  );
-}
 
 function ArticleStyles() {
   return (
     <style>{`
-      .article-wrapper { font-family: system-ui, -apple-system, sans-serif; max-width: none; }
+      .article-wrapper { font-family: var(--font-poppins), ui-sans-serif, system-ui, sans-serif; max-width: none; }
       .article-content h2 { font-size: 1.75rem; font-weight: 600; color: #FDBE35; margin-top: 2.5rem; margin-bottom: 1rem; scroll-margin-top: 6rem; line-height: 1.3; }
       .article-content h2:first-child { margin-top: 0; }
       .article-content h3 { font-size: 1.25rem; font-weight: 600; color: rgba(255, 255, 255, 0.95); margin-top: 1.75rem; margin-bottom: 0.75rem; }

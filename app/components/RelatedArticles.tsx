@@ -34,11 +34,11 @@ export function RelatedArticles({
               href={`/blog/${article.slug}`}
               className="group overflow-hidden rounded-lg border border-[rgba(255,255,255,0.05)] bg-[rgba(255,255,255,0.03)] transition-all hover:border-[rgba(212,175,55,0.3)] hover:bg-[rgba(255,255,255,0.06)]"
             >
-              <div className="relative h-48 overflow-hidden">
+              <div className="relative aspect-video w-full overflow-hidden">
                 <ImageWithFallback
                   src={imgSrc}
                   alt={article.title}
-                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  className="h-full w-full object-cover object-[center_35%] transition-transform duration-500 group-hover:scale-105"
                 />
               </div>
               <div className="p-6">

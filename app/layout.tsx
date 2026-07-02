@@ -1,7 +1,15 @@
 import type { Metadata } from "next";
 import Script from "next/script";
+import { Poppins } from "next/font/google";
 import "./globals.css";
 import { SITE_TITLE, SITE_DESCRIPTION, SITE_NAME_OG } from "@/app/lib/siteConfig";
+
+const poppins = Poppins({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700", "800"],
+  variable: "--font-poppins",
+  display: "swap",
+});
 
 const GTM_ID = "GTM-MWXB6RB3";
 
@@ -35,7 +43,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en-IN" className="dark">
+    <html lang="en-IN" className={`dark ${poppins.variable}`}>
       <head>
         {/* Google Tag Manager */}
         <Script id="gtm-init" strategy="afterInteractive">
@@ -48,7 +56,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         {/* End Google Tag Manager */}
       </head>
       <body
-        className="min-h-screen bg-[#020100] text-white antialiased"
+        className="min-h-screen bg-[#020100] font-sans text-white antialiased"
         suppressHydrationWarning
       >
         {/* Google Tag Manager (noscript) */}

@@ -7,6 +7,7 @@ import { ImageWithFallback } from "@/app/components/ImageWithFallback";
 import { Logo } from "@/app/components/Logo";
 import { SearchDropdown } from "@/app/components/SearchDropdown";
 import { resolvePostImage } from "@/app/lib/images";
+import { goldButtonClass } from "@/app/lib/ui";
 import type { BlogPost } from "@/app/data/blogData";
 
 const POSTS_PER_PAGE = 6;
@@ -70,13 +71,13 @@ export function HomeShell({ initialPosts, initialTab, children }: HomeShellProps
 
   return (
     <>
-      {/* Header */}
-      <header className="border-b border-[rgba(255,255,255,0.1)]">
-        <div className="mx-auto max-w-[1600px] px-4 py-6 sm:px-8 lg:px-16">
+      {/* Header — frosted translucent bar (styling shared with SiteHeader) */}
+      <header className="sticky top-0 z-50 border-b border-white/10 bg-[rgba(32,32,32,0.2)] backdrop-blur-md">
+        <div className="mx-auto max-w-[1600px] px-4 py-4 sm:px-8 lg:px-16">
           <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center sm:gap-6">
             <Logo />
 
-            <div className="flex w-full items-center gap-3 sm:w-auto">
+            <div className="flex w-full items-center gap-6 sm:w-auto">
               <SearchDropdown
                 posts={initialPosts}
                 query={searchQuery}
@@ -88,7 +89,7 @@ export function HomeShell({ initialPosts, initialTab, children }: HomeShellProps
               />
               <a
                 href="#newsletter"
-                className="whitespace-nowrap rounded-lg bg-gradient-to-r from-[#FDBE35] to-[#FDDA93] px-6 py-2 text-[#020100] shadow-[0px_0px_30px_0px_rgba(212,175,55,0.5)] transition-all hover:shadow-[0px_0px_40px_0px_rgba(212,175,55,0.7)]"
+                className={`${goldButtonClass} h-9 whitespace-nowrap px-4 text-sm tracking-[-0.15px]`}
               >
                 Subscribe
               </a>
@@ -101,7 +102,7 @@ export function HomeShell({ initialPosts, initialTab, children }: HomeShellProps
       {children}
 
       {/* Insights Section */}
-      <section id="insights" className="py-12 sm:py-16">
+      <section id="insights" className="pt-4 pb-12 sm:pt-6 sm:pb-16">
         <div className="mx-auto max-w-[1600px] px-4 sm:px-8 lg:px-16">
           <h2 className="sr-only">Latest Insights</h2>
           <div className="mb-8 flex items-center gap-4 border-b border-[rgba(255,255,255,0.1)]">
@@ -179,11 +180,11 @@ export function HomeShell({ initialPosts, initialTab, children }: HomeShellProps
                   href={`/blog/${post.slug}`}
                   className="group overflow-hidden rounded-lg border border-[rgba(255,255,255,0.05)] bg-[rgba(255,255,255,0.03)] transition-all hover:border-[rgba(212,175,55,0.3)] hover:bg-[rgba(255,255,255,0.06)]"
                 >
-                  <div className="relative h-48 overflow-hidden">
+                  <div className="relative aspect-video w-full overflow-hidden">
                     <ImageWithFallback
                       src={resolvePostImage(post.image)}
                       alt={post.title}
-                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      className="h-full w-full object-cover object-[center_35%] transition-transform duration-500 group-hover:scale-105"
                     />
                   </div>
                   <div className="p-6">

@@ -1,7 +1,8 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { Logo } from "@/app/components/Logo";
+import { SiteHeader } from "@/app/components/SiteHeader";
+import { SiteFooter } from "@/app/components/SiteFooter";
 import type { Metadata } from "next";
 import { prisma } from "@/app/lib/db";
 import { resolvePostImage } from "@/app/lib/images";
@@ -91,11 +92,7 @@ export default async function AuthorPage({ params }: Props) {
     <div className="min-h-screen bg-[#020100] text-white">
       <JsonLdScript data={authorLd} />
 
-      <header className="border-b border-[rgba(255,255,255,0.1)]">
-        <div className="mx-auto max-w-[1600px] px-4 py-6 sm:px-8 lg:px-16">
-          <Logo />
-        </div>
-      </header>
+      <SiteHeader />
 
       <Breadcrumb items={breadcrumbItems} />
 
@@ -161,11 +158,11 @@ export default async function AuthorPage({ params }: Props) {
                 href={`/blog/${post.slug}`}
                 className="group overflow-hidden rounded-lg border border-[rgba(255,255,255,0.05)] bg-[rgba(255,255,255,0.03)] transition-all hover:border-[rgba(212,175,55,0.3)]"
               >
-                <div className="relative h-48 overflow-hidden">
+                <div className="relative aspect-video w-full overflow-hidden">
                   <ImageWithFallback
                     src={imgSrc}
                     alt={post.title}
-                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    className="h-full w-full object-cover object-[center_35%] transition-transform duration-500 group-hover:scale-105"
                   />
                 </div>
                 <div className="p-6">
@@ -187,6 +184,8 @@ export default async function AuthorPage({ params }: Props) {
           })}
         </div>
       </main>
+
+      <SiteFooter />
     </div>
   );
 }

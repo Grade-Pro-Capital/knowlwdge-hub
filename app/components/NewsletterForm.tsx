@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { goldButtonClass } from "@/app/lib/ui";
 
 type NewsletterFormProps = {
   source?: string;
@@ -66,8 +67,7 @@ export function NewsletterForm({
 
   const baseInputClass =
     "rounded-lg border border-[rgba(255,255,255,0.2)] bg-[rgba(255,255,255,0.1)] px-4 py-3 text-white placeholder-[rgba(255,255,255,0.5)] focus:border-[#d4af37] focus:outline-none";
-  const baseButtonClass =
-    "rounded-lg bg-gradient-to-r from-[#FDBE35] to-[#FDDA93] px-8 py-3 text-[#020100] shadow-[0px_0px_30px_0px_rgba(212,175,55,0.5)] transition-all hover:shadow-[0px_0px_40px_0px_rgba(212,175,55,0.7)] disabled:opacity-60 disabled:cursor-not-allowed";
+  const baseButtonClass = `${goldButtonClass} px-8 py-3`;
 
   return (
     <form onSubmit={handleSubmit} className={className}>

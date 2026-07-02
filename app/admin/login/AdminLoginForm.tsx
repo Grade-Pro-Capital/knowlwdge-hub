@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { goldButtonClass } from "@/app/lib/ui";
 
 export function AdminLoginForm() {
   const router = useRouter();
@@ -79,7 +80,7 @@ export function AdminLoginForm() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-lg bg-gradient-to-r from-[#FDBE35] to-[#FDDA93] py-2.5 font-medium text-[#020100] disabled:opacity-60"
+            className={`${goldButtonClass} w-full py-2.5`}
           >
             {loading ? "Signing in…" : "Sign in"}
           </button>

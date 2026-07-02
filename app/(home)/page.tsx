@@ -1,6 +1,7 @@
 import { ChevronRight } from "lucide-react";
-import { Logo } from "@/app/components/Logo";
 import { NewsletterForm } from "@/app/components/NewsletterForm";
+import { SiteFooter } from "@/app/components/SiteFooter";
+import { goldButtonClass } from "@/app/lib/ui";
 import { p1071e4a } from "@/app/lib/svgPaths";
 import { getPublishedPosts } from "@/app/lib/posts";
 import { HomeShell } from "./HomeShell";
@@ -24,7 +25,7 @@ export default async function HomePage({
     <div className="min-h-screen bg-[#020100] text-white">
       <HomeShell initialPosts={posts} initialTab={initialTab}>
         {/* Hero Section — server-rendered so the H1 and hero copy are in the initial HTML */}
-        <section className="relative overflow-hidden py-16 sm:py-24 lg:py-32">
+        <section className="relative overflow-hidden pt-8 pb-10 sm:pt-10 sm:pb-14 lg:pt-12 lg:pb-16">
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-[rgba(212,175,55,0.1)] via-transparent to-[rgba(0,150,200,0.1)]" />
 
           <div className="relative z-10 mx-auto max-w-[1600px] px-4 sm:px-8 lg:px-16">
@@ -35,9 +36,13 @@ export default async function HomePage({
             </div>
 
             <div className="max-w-3xl">
-              <h1 className="mb-6 text-4xl sm:text-5xl lg:text-6xl">
-                Intelligence-driven insights for the{" "}
-                <span className="text-[#FDBE35]">Crypto Economy</span>
+              <h1 className="mb-6 text-4xl sm:text-5xl xl:text-6xl">
+                <span className="mb-1 block text-3xl sm:text-4xl xl:text-5xl lg:whitespace-nowrap">
+                  Intelligence-driven insights for
+                </span>
+                <span className="block bg-linear-to-r from-[#FDBE35] via-[#FDDA93] to-white bg-clip-text pb-2 font-semibold leading-tight text-transparent">
+                  the Crypto Economy
+                </span>
               </h1>
               <p className="mb-8 text-lg leading-relaxed text-[rgba(255,255,255,0.7)] sm:text-xl">
                 Research, analysis, and market intelligence designed for
@@ -46,7 +51,7 @@ export default async function HomePage({
               </p>
               <a
                 href="/#insights"
-                className="inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-[#FDBE35] to-[#FDDA93] px-5 py-2 text-sm font-medium text-[#020100] shadow-[0px_0px_30px_0px_rgba(212,175,55,0.5)] transition-all hover:shadow-[0px_0px_40px_0px_rgba(212,175,55,0.7)]"
+                className={`${goldButtonClass} px-[1.125rem] py-2.5 text-sm`}
               >
                 Explore Insights
                 <ChevronRight className="h-4 w-4" />
@@ -132,18 +137,7 @@ export default async function HomePage({
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-[rgba(255,255,255,0.1)] py-12">
-        <div className="mx-auto max-w-[1600px] px-4 sm:px-8 lg:px-16">
-          <div className="mb-8 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
-            <div className="lg:col-span-1">
-              <Logo linkToHome={true} />
-              <p className="mt-4 text-sm text-[rgba(255,255,255,0.6)]">
-                © {new Date().getFullYear()} Grade Capital
-              </p>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   );
 }
