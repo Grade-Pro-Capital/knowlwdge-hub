@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { SiteHeader } from "@/app/components/SiteHeader";
 import { AuthorAvatar } from "@/app/components/AuthorAvatar";
-import { SiteFooter } from "@/app/components/SiteFooter";
+// import { SiteFooter } from "@/app/components/SiteFooter";
 import type { Metadata } from "next";
 import { prisma } from "@/app/lib/db";
 import { resolvePostImage, resolveAuthorAvatar } from "@/app/lib/images";
@@ -177,7 +177,7 @@ export default async function AuthorPage({ params }: Props) {
         </div>
       </main>
 
-      <SiteFooter />
+      {/* <SiteFooter /> */}
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import { ChevronRight, Star } from "lucide-react";
 import { NewsletterForm } from "@/app/components/NewsletterForm";
-import { SiteFooter } from "@/app/components/SiteFooter";
+// import { SiteFooter } from "@/app/components/SiteFooter";
 import { InteractiveGrid } from "@/app/components/InteractiveGrid";
 import { goldButtonClass } from "@/app/lib/ui";
 import { getPublishedPosts } from "@/app/lib/posts";
@@ -130,7 +130,7 @@ export default async function HomePage({
       </section>
 
       {/* Footer */}
-      <SiteFooter />
+      {/* <SiteFooter /> */}
     </div>
   );
 }

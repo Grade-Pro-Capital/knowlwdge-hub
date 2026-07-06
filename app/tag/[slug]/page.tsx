@@ -1,7 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { SiteHeader } from "@/app/components/SiteHeader";
-import { SiteFooter } from "@/app/components/SiteFooter";
+// import { SiteFooter } from "@/app/components/SiteFooter";
 import type { Metadata } from "next";
 import { prisma } from "@/app/lib/db";
 import { getBaseUrl, slugify } from "@/app/lib/seo";
@@ -127,7 +127,7 @@ export default async function TagPage({ params }: Props) {
         </div>
       </main>
 
-      <SiteFooter />
+      {/* <SiteFooter /> */}
     </div>
   );
 }
