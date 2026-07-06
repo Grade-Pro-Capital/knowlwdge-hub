@@ -43,13 +43,15 @@ export async function ensureAuthor(input: {
     return;
   }
 
-  // Existing author: never touch the stored (proper-case) name. Only apply an
-  // explicit, non-empty credential edit (single source) or fill an empty avatar.
+  // Existing author: never touch the stored (proper-case) name. Apply an
+  // explicit, non-empty credential or avatar edit (both single-source, so the
+  // change propagates to every post by this author). We never blank a field —
+  // an empty incoming value leaves the existing one untouched.
   const data: { credentials?: string; avatar?: string } = {};
   const cred = input.credentials?.trim();
   if (cred && cred !== existing.credentials) data.credentials = cred;
   const avatar = input.avatar?.trim();
-  if (avatar && !existing.avatar) data.avatar = avatar;
+  if (avatar && avatar !== existing.avatar) data.avatar = avatar;
 
   if (Object.keys(data).length > 0) {
     await prisma.author.update({ where: { slug }, data });

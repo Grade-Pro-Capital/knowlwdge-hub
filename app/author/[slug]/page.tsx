@@ -1,11 +1,11 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
 import { SiteHeader } from "@/app/components/SiteHeader";
+import { AuthorAvatar } from "@/app/components/AuthorAvatar";
 import { SiteFooter } from "@/app/components/SiteFooter";
 import type { Metadata } from "next";
 import { prisma } from "@/app/lib/db";
-import { resolvePostImage } from "@/app/lib/images";
+import { resolvePostImage, resolveAuthorAvatar } from "@/app/lib/images";
 import { getBaseUrl } from "@/app/lib/seo";
 import { SITE_TITLE_SUFFIX, SITE_NAME_OG, sanitizeTitleForBrand } from "@/app/lib/siteConfig";
 import { authorJsonLd } from "@/app/lib/jsonLd";
@@ -73,6 +73,8 @@ export default async function AuthorPage({ params }: Props) {
 
   const name = author?.name ?? posts[0]?.authorName ?? slug;
   const bio = author?.bio?.trim();
+  // Author record is the single source of truth for the profile pic; fall back to
+  // a post's denormalized value only when there's no author row.
   const avatar = author?.avatar ?? posts[0]?.authorAvatar ?? null;
 
   const breadcrumbItems = [
@@ -85,7 +87,7 @@ export default async function AuthorPage({ params }: Props) {
     name,
     url: `/author/${slug}`,
     bio: bio ?? undefined,
-    image: avatar ?? undefined,
+    image: resolveAuthorAvatar(avatar) ?? undefined,
   });
 
   return (
@@ -99,17 +101,7 @@ export default async function AuthorPage({ params }: Props) {
       <main className="mx-auto max-w-[1400px] px-4 py-12 sm:px-8">
         <section className="mb-12 flex flex-col gap-6 sm:flex-row sm:items-start">
           <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[rgba(253,190,53,0.2)] text-4xl text-[#FDBE35]">
-            {avatar ? (
-              <Image
-                src={avatar}
-                alt={name}
-                width={96}
-                height={96}
-                className="h-full w-full object-cover"
-              />
-            ) : (
-              name.charAt(0)
-            )}
+            <AuthorAvatar src={avatar} name={name} size={96} />
           </div>
           <div>
             <h1 className="mb-2 text-3xl font-semibold sm:text-4xl">{name}</h1>

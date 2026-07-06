@@ -7,7 +7,7 @@
  * - About the Author with expertise signals
  */
 import Link from "next/link";
-import Image from "next/image";
+import { AuthorAvatar } from "@/app/components/AuthorAvatar";
 import type { Citation, ExpertiseSignals } from "@/app/lib/types";
 
 type ArticleGeoProps = {
@@ -126,18 +126,8 @@ export function ArticleGeo({
           About the Author
         </h2>
         <div className="flex flex-col gap-6 sm:flex-row">
-          <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-[rgba(253,190,53,0.2)] text-3xl text-[#FDBE35]">
-            {authorAvatar ? (
-              <Image
-                src={authorAvatar}
-                alt={authorName}
-                width={80}
-                height={80}
-                className="h-full w-full rounded-full object-cover"
-              />
-            ) : (
-              authorName.charAt(0)
-            )}
+          <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[rgba(253,190,53,0.2)] text-3xl text-[#FDBE35]">
+            <AuthorAvatar src={authorAvatar} name={authorName} size={80} />
           </div>
           <div className="flex-1">
             <h3 className="text-xl text-white">

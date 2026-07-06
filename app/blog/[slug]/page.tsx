@@ -1,5 +1,4 @@
 import { notFound } from "next/navigation";
-import Image from "next/image";
 import type { Metadata } from "next";
 import { Clock, Calendar } from "lucide-react";
 import { ImageWithFallback } from "@/app/components/ImageWithFallback";
@@ -8,6 +7,7 @@ import { SiteFooter } from "@/app/components/SiteFooter";
 import { ShareButtons } from "@/app/components/ShareButtons";
 import { Breadcrumb } from "@/app/components/Breadcrumb";
 import { ArticleGeo } from "@/app/components/ArticleGeo";
+import { AuthorAvatar } from "@/app/components/AuthorAvatar";
 import { FaqAccordion } from "@/app/components/FaqAccordion";
 import { RelatedArticles } from "@/app/components/RelatedArticles";
 import { NewsletterForm } from "@/app/components/NewsletterForm";
@@ -196,6 +196,10 @@ export default async function BlogPage({
     : null;
   // Raw author credentials (may be empty); the byline applies a fallback inline.
   const authorCredentials = postAuthor?.credentials?.trim() ?? "";
+  // Profile pic is sourced from the Author record (single source of truth), so a
+  // newly-uploaded pic shows on every post by that author — including older ones.
+  // Fall back to the post's denormalized value only when there's no author row.
+  const authorAvatar = postAuthor?.avatar ?? row.authorAvatar;
 
   const content = row.content ?? "";
   const contentWithIds = ensureHeadingIds(content);
@@ -267,18 +271,8 @@ export default async function BlogPage({
 
             <div className="mb-8 flex flex-wrap items-center gap-4 border-b border-[rgba(255,255,255,0.1)] pb-6 sm:gap-6">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[rgba(253,190,53,0.2)] text-[#FDBE35]">
-                  {row.authorAvatar ? (
-                    <Image
-                      src={row.authorAvatar}
-                      alt={row.authorName}
-                      width={40}
-                      height={40}
-                      className="h-full w-full rounded-full object-cover"
-                    />
-                  ) : (
-                    row.authorName.charAt(0)
-                  )}
+                <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-[rgba(253,190,53,0.2)] text-[#FDBE35]">
+                  <AuthorAvatar src={authorAvatar} name={row.authorName} size={40} />
                 </div>
                 <div>
                   <p className="text-sm text-white">{row.authorName}</p>
@@ -327,7 +321,7 @@ export default async function BlogPage({
               contentFreshnessDate={safeModifiedIso}
               authorName={row.authorName}
               authorSlug={row.authorSlug}
-              authorAvatar={row.authorAvatar}
+              authorAvatar={authorAvatar}
               expertiseSignals={null}
               showAuthorSection={false}
             />
@@ -406,7 +400,7 @@ export default async function BlogPage({
           <ArticleGeo
             authorName={row.authorName}
             authorSlug={row.authorSlug}
-            authorAvatar={row.authorAvatar}
+            authorAvatar={authorAvatar}
             authorCredentials={authorCredentials}
             expertiseSignals={expertise}
           />

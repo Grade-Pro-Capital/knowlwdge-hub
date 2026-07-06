@@ -16,10 +16,11 @@ const USER_AGENTS = [
 // Index-worthy sections only.
 const ALLOW = ["/", "/blog/"];
 
-// Tag/category/author archives are noindex'd and excluded from sitemap.xml;
-// blocked here too so crawl budget goes to real /blog/ posts. /admin/ and
-// /api/ stay blocked for security.
-const DISALLOW = ["/tag/", "/category/", "/author/", "/admin/", "/api/"];
+// Tag archives are noindex'd and excluded from sitemap.xml; blocked here too
+// so crawl budget goes to real /blog/ posts. /admin/ and /api/ stay blocked
+// for security. /category/ and /author/ are left crawlable so Google can
+// discover their noindex tags.
+const DISALLOW = ["/tag/", "/admin/", "/api/"];
 
 export default function robots(): MetadataRoute.Robots {
   const base = getBaseUrl();

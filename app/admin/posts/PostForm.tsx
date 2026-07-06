@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { RichTextEditorDynamic } from "../components/RichTextEditorDynamic";
 import { BLOG_CONTENT_TEMPLATE } from "@/app/data/blogContentTemplate";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, User } from "lucide-react";
 
 type SavedTemplate = { id: string; name: string; content: string };
 
@@ -104,6 +104,7 @@ export function PostForm({
   const [form, setForm] = useState<PostFormData>({ ...defaults, ...initial });
   const [faqs, setFaqs] = useState<FaqItem[]>(initialFaqs ?? []);
   const [uploading, setUploading] = useState(false);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [isDirty, setIsDirty] = useState(false);
@@ -143,12 +144,20 @@ export function PostForm({
         const list = Array.isArray(data) ? data : [];
         setAuthors(list);
         setForm((prev) => {
-          if (prev.authorCredentials.trim()) return prev;
           const slug = prev.authorSlug.trim().toLowerCase();
           const match = slug
             ? list.find((a) => a.slug === slug)
             : list.find((a) => a.name.toLowerCase() === prev.authorName.trim().toLowerCase());
-          return match?.credentials ? { ...prev, authorCredentials: match.credentials } : prev;
+          if (!match) return prev;
+          const next = { ...prev };
+          // Credentials + avatar live on the Author record (single source), so
+          // sync them from the matched author. This also repairs any stale/bad
+          // avatar denormalized onto an older post.
+          if (!prev.authorCredentials.trim() && match.credentials) {
+            next.authorCredentials = match.credentials;
+          }
+          if (match.avatar) next.authorAvatar = match.avatar;
+          return next;
         });
       })
       .catch(() => setAuthors([]));
@@ -174,7 +183,8 @@ export function PostForm({
     form.authorName.trim().length > 0 &&
     !authors.some((a) => a.name.toLowerCase() === authorQuery);
 
-  // Selecting an existing author fills its slug, avatar (if any), and credentials.
+  // Selecting an existing author adopts its slug, avatar, and credentials — the
+  // Author record is the single source, so its pic follows the author onto the post.
   function selectAuthor(a: AuthorOption) {
     update({
       authorName: a.name,
@@ -251,6 +261,45 @@ export function PostForm({
       setError(err instanceof Error ? err.message : "Upload failed");
     } finally {
       setUploading(false);
+    }
+  }
+
+  // Upload an author profile pic (square-cropped server-side). The URL is saved
+  // to the Author record on submit (single source), so it updates the byline on
+  // every post by this author — including older ones.
+  async function handleAvatarChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingAvatar(true);
+    setError("");
+    try {
+      const fd = new FormData();
+      fd.set("file", file);
+      fd.set("kind", "avatar");
+      const res = await fetch("/api/admin/upload", {
+        method: "POST",
+        body: fd,
+        credentials: "same-origin",
+      });
+      const text = await res.text();
+      let data: { url?: string; error?: string };
+      try {
+        data = text ? JSON.parse(text) : {};
+      } catch {
+        throw new Error(
+          res.status === 401
+            ? "Session expired. Please log in again and try uploading."
+            : "Upload failed. Try a smaller image (max 5MB, JPEG/PNG/WebP/GIF)."
+        );
+      }
+      if (!res.ok) throw new Error(data.error ?? "Upload failed");
+      if (data.url) update({ authorAvatar: data.url });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Upload failed");
+    } finally {
+      setUploadingAvatar(false);
+      // Allow re-selecting the same file to re-upload.
+      e.target.value = "";
     }
   }
 
@@ -704,15 +753,45 @@ export function PostForm({
         </div>
         <div>
           <label className="mb-1 block text-sm text-[rgba(255,255,255,0.7)]">
-            Author avatar URL
+            Author profile pic
           </label>
-          <input
-            type="text"
-            value={form.authorAvatar}
-            onChange={(e) => update({ authorAvatar: e.target.value })}
-            placeholder="https://..."
-            className="w-full rounded-lg border border-[rgba(255,255,255,0.2)] bg-[rgba(255,255,255,0.05)] px-4 py-2 text-white focus:border-[#FDBE35] focus:outline-none"
-          />
+          <div className="flex items-center gap-3">
+            <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full border border-[rgba(255,255,255,0.15)] bg-[rgba(253,190,53,0.15)]">
+              {form.authorAvatar ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={form.authorAvatar}
+                  alt={form.authorName || "Author"}
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <User className="h-6 w-6 text-[#FDBE35]" />
+              )}
+            </div>
+            <div className="flex flex-col gap-1">
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleAvatarChange}
+                disabled={uploadingAvatar}
+                className="text-sm text-[rgba(255,255,255,0.7)] file:mr-2 file:rounded file:border-0 file:bg-[#FDBE35] file:px-3 file:py-1 file:text-[#020100]"
+              />
+              {uploadingAvatar ? (
+                <span className="text-xs text-[rgba(255,255,255,0.5)]">Uploading…</span>
+              ) : form.authorAvatar ? (
+                <span className="text-xs text-[rgba(255,255,255,0.5)]">
+                  Upload a new image to replace it.
+                </span>
+              ) : (
+                <span className="text-xs text-[rgba(255,255,255,0.5)]">
+                  Default shown until a pic is uploaded.
+                </span>
+              )}
+            </div>
+          </div>
+          <p className="mt-1 text-xs text-[rgba(255,255,255,0.5)]">
+            Saved to the author — updates the pic on all their posts.
+          </p>
         </div>
       </div>
 

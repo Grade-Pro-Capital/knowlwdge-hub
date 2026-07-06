@@ -131,6 +131,35 @@ mismatches). Known credentials are seeded from a map inside the script.
 
 ## Changelog
 
+### 2026-07-06 — Profile pic upload + avatar is now author-sourced
+
+The author avatar became a **first-class, uploadable, single-source field** (like
+credentials).
+
+- **Upload**, not URL: the editor's "Author avatar URL" text input was replaced by
+  a **file upload with live preview** ([app/admin/posts/PostForm.tsx](../app/admin/posts/PostForm.tsx),
+  `handleAvatarChange`). Images post to `/api/admin/upload` with `kind=avatar`;
+  the route crops them **square (400×400, `fit: cover`)** and stores them under an
+  `authors/` prefix ([app/api/admin/upload/route.ts](../app/api/admin/upload/route.ts)).
+- **Single source of truth**: the profile pic is now read from `Author.avatar` at
+  render time (mirrors credentials). New helper
+  `resolveAuthorAvatar()` ([app/lib/images.ts](../app/lib/images.ts)) returns a URL
+  only when it's a real image, and a shared `<AuthorAvatar>`
+  component ([app/components/AuthorAvatar.tsx](../app/components/AuthorAvatar.tsx))
+  renders it or a neutral **default silhouette** (lucide `User`) — replacing the old
+  first-initial fallback in the blog byline, About-the-Author, and `/author/[slug]`.
+- **Old posts pick up new pics**: because the blog byline looks up
+  `postAuthor.avatar` instead of the post's denormalized `authorAvatar`, uploading
+  one pic updates every post by that author, including older ones.
+- **ensureAuthor** now applies an explicit avatar change (not just fills an empty
+  one), so re-uploading updates the pic everywhere. It still never blanks a field.
+- **Editor sync**: selecting/loading an author now syncs the pic from the Author
+  record, repairing any stale/bad avatar denormalized onto an old post.
+- **Data cleanup**: `scripts/clean-avatar-urls.mjs` (dry-run/`--apply`, idempotent)
+  cleared non-image avatar values. Applied: **1 author** (Mahaveer Soni) + **4 of
+  his posts** had a LinkedIn profile URL pasted into the avatar field by mistake —
+  all cleared to null. Nothing else was touched.
+
 ### 2026-06-24 — Credential fallback changed to "N/A"
 
 When an author has no credentials set, the byline used to fall back to
