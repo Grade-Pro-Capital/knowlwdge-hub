@@ -74,10 +74,12 @@ export function HomeShell({ initialPosts, initialTab, children }: HomeShellProps
       {/* Header — frosted translucent bar (styling shared with SiteHeader) */}
       <header className="sticky top-0 z-50 bg-[rgba(32,32,32,0.2)] backdrop-blur-md">
         <div className="mx-auto max-w-[1600px] px-4 py-4 sm:px-8 lg:px-16">
-          <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center sm:gap-6">
-            <Logo />
+          <div className="flex flex-row items-center justify-between gap-3 sm:gap-6">
+            <div className="shrink-0">
+              <Logo />
+            </div>
 
-            <div className="flex w-full items-center gap-6 sm:w-auto">
+            <div className="flex min-w-0 flex-1 items-center justify-end gap-3 sm:w-auto sm:flex-none sm:gap-6">
               <SearchDropdown
                 posts={initialPosts}
                 query={searchQuery}
@@ -173,7 +175,7 @@ export function HomeShell({ initialPosts, initialTab, children }: HomeShellProps
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 lg:gap-8">
+            <div className="grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-3 lg:gap-8">
               {visiblePosts.map((post) => (
                 <Link
                   key={post.id}
@@ -187,17 +189,17 @@ export function HomeShell({ initialPosts, initialTab, children }: HomeShellProps
                       className="h-full w-full object-cover object-[center_35%] transition-transform duration-500 group-hover:scale-105"
                     />
                   </div>
-                  <div className="p-6">
-                    <span className="mb-3 inline-block rounded-full bg-[rgba(253,190,53,0.2)] px-3 py-1 text-xs text-[#FDBE35]">
+                  <div className="p-4 sm:p-6">
+                    <span className="mb-3 inline-block rounded-full bg-[rgba(253,190,53,0.2)] px-3 py-1 text-[11px] leading-4 text-[#FDBE35] sm:text-xs">
                       {post.category}
                     </span>
-                    <h3 className="mb-3 line-clamp-2 text-xl transition-colors group-hover:text-[#FDBE35]">
+                    <h3 className="mb-3 line-clamp-2 text-[15px] leading-snug transition-colors group-hover:text-[#FDBE35] sm:text-[18px] sm:leading-7 lg:text-xl lg:leading-normal">
                       {post.title}
                     </h3>
-                    <p className="mb-4 line-clamp-2 text-sm text-[rgba(255,255,255,0.7)]">
+                    <p className="mb-4 line-clamp-2 text-[13px] leading-5 text-[rgba(255,255,255,0.7)] lg:text-sm lg:leading-normal">
                       {post.excerpt}
                     </p>
-                    <div className="flex items-center gap-3 text-xs text-[rgba(255,255,255,0.6)]">
+                    <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-[11px] leading-4 text-[rgba(255,255,255,0.6)] sm:gap-x-2 sm:text-xs lg:gap-x-3">
                       <span>{post.author.name}</span>
                       <span>•</span>
                       <span>{post.readTime}</span>

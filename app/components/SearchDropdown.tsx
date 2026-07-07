@@ -86,7 +86,7 @@ export function SearchDropdown({
   }
 
   return (
-    <div ref={containerRef} className="relative flex-1 sm:flex-initial">
+    <div ref={containerRef} className="relative min-w-0 flex-1 sm:flex-initial">
       <div className="relative">
         <input
           type="text"

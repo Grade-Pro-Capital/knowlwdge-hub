@@ -44,14 +44,21 @@ export default async function HomePage({
           <div className="relative z-10 mx-auto grid max-w-[1600px] grid-cols-1 items-center gap-16 px-4 pt-8 sm:px-8 sm:pt-10 lg:px-16 lg:pt-16">
             {/* Left column: copy & actions */}
             <div className="flex flex-col items-start gap-8">
-              {/* Eyebrow */}
-              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.15em] text-[#FDBE35]">
+              {/* Breadcrumb — mobile only (matches design) */}
+              <div className="flex items-center gap-1.5 text-sm text-white/50 sm:hidden">
+                Insights
+                <ChevronRight className="h-3.5 w-3.5" />
+                Crypto Insights
+              </div>
+
+              {/* Eyebrow — sm and up */}
+              <div className="hidden items-center gap-2 text-xs font-semibold uppercase tracking-[0.15em] text-[#FDBE35] sm:flex">
                 <span className="h-2 w-2 rounded-full bg-[#FDBE35]" />
                 Insights · Crypto Intelligence
               </div>
 
               {/* Headline */}
-              <h1 className="text-4xl font-bold leading-tight text-white/90 sm:text-5xl xl:text-6xl">
+              <h1 className="text-4xl font-normal leading-tight text-white/90 sm:text-5xl sm:font-bold xl:text-6xl">
                 Intelligence-driven insights for{" "}
                 <br className="hidden md:block" />
                 <span className="bg-linear-to-r from-[#FDBE35] via-[#FDDA93] to-white bg-clip-text pb-2 text-transparent">
@@ -60,47 +67,67 @@ export default async function HomePage({
               </h1>
 
               {/* Subtext */}
-              <p className="max-w-2xl text-lg leading-relaxed text-white/60 sm:text-xl">
+              <p className="max-w-2xl text-sm leading-relaxed text-white/40 sm:text-xl sm:text-white/60">
                 Research, analysis, and market intelligence designed for
                 institutional investors, wealth advisors, and financial
                 decision-makers navigating digital assets in India.
               </p>
 
               {/* CTAs */}
-              <div className="flex w-full flex-col items-stretch gap-4 sm:w-auto sm:flex-row sm:items-center">
+              <div className="flex w-auto flex-col items-start gap-4 sm:flex-row sm:items-center">
                 <a
                   href="#insights"
-                  className={`${goldButtonClass} px-8 py-4`}
+                  className={`${goldButtonClass} px-6 py-3 text-sm sm:px-8 sm:py-4 sm:text-base`}
                 >
                   Explore Insights
                   <ChevronRight className="h-4 w-4" />
                 </a>
                 <a
                   href="#newsletter"
-                  className="inline-flex items-center justify-center gap-2 rounded-[0.625rem] border border-white/20 bg-transparent px-8 py-4 font-semibold text-white transition-colors hover:bg-white/5"
+                  className="hidden items-center justify-center gap-2 rounded-[0.625rem] border border-white/20 bg-transparent px-8 py-4 font-semibold text-white transition-colors hover:bg-white/5 sm:inline-flex"
                 >
                   Subscribe to Newsletter
                 </a>
               </div>
 
-              {/* Stats row */}
-              <div className="mt-8 flex w-full flex-wrap items-center gap-x-6 gap-y-4 border-t border-white/5 pt-8">
-                <div className="flex items-center gap-2">
-                  <Star className="h-5 w-5 fill-[#FDBE35] text-[#FDBE35]" />
-                  <span className="text-white/80">10+ Analysts on board</span>
-                </div>
-                <div className="hidden h-4 w-px bg-white/10 sm:block" />
-                <div className="flex items-center gap-2">
-                  <Star className="h-5 w-5 fill-[#FDBE35] text-[#FDBE35]" />
-                  <span className="text-white/80">Weekly Market coverage</span>
-                </div>
-                <div className="hidden h-4 w-px bg-white/10 md:block" />
-                <div className="flex items-center gap-2">
-                  <Star className="h-5 w-5 fill-[#FDBE35] text-[#FDBE35]" />
-                  <span className="text-white/80">
-                    Institutional-grade research
-                  </span>
-                </div>
+              {/* Stats row — mobile/tablet: 3-column "big value + label" block */}
+              <div className="mt-8 grid w-full grid-cols-3 gap-3 border-t border-white/5 pt-8 lg:hidden">
+                {[
+                  { value: "10+", label: "Analysts on board" },
+                  { value: "Weekly", label: "Market coverage" },
+                  { value: "Expert", label: "Team of experts" },
+                ].map((stat) => (
+                  <div key={stat.label}>
+                    <div className="flex items-start gap-1">
+                      <span className="text-2xl font-normal text-white sm:text-3xl">
+                        {stat.value}
+                      </span>
+                      <Star className="mt-1 h-3 w-3 shrink-0 fill-[#FDBE35] text-[#FDBE35]" />
+                    </div>
+                    <p className="mt-1 text-xs text-white/50 sm:text-sm">
+                      {stat.label}
+                    </p>
+                  </div>
+                ))}
+              </div>
+
+              {/* Stats row — desktop (big value + label) */}
+              <div className="mt-8 hidden w-full items-start gap-16 border-t border-white/5 pt-8 lg:flex">
+                {[
+                  { value: "10+", label: "Analysts on board" },
+                  { value: "Weekly", label: "Market coverage" },
+                  { value: "Expert", label: "Team of experts" },
+                ].map((stat) => (
+                  <div key={stat.label}>
+                    <div className="flex items-start gap-2">
+                      <span className="text-3xl font-medium text-white">
+                        {stat.value}
+                      </span>
+                      <Star className="mt-1.5 h-4 w-4 shrink-0 fill-[#FDBE35] text-[#FDBE35]" />
+                    </div>
+                    <p className="mt-2 text-sm text-white/50">{stat.label}</p>
+                  </div>
+                ))}
               </div>
             </div>
 

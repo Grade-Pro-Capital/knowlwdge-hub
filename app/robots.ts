@@ -14,7 +14,7 @@ const USER_AGENTS = [
 ];
 
 // Index-worthy sections only.
-const ALLOW = ["/", "/blog/"];
+const ALLOW = ["/", "/blog/", "/author/"];
 
 // Tag archives are noindex'd and excluded from sitemap.xml; blocked here too
 // so crawl budget goes to real /blog/ posts. /admin/ and /api/ stay blocked
