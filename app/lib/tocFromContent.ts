@@ -134,9 +134,9 @@ function addTableCellLabels(table: string): string {
 
 /**
  * Wrap each article-body <table> in a scrollable container AND tag its cells with
- * column labels. On desktop the container scrolls if a table is wider than the
- * column; on mobile the CSS collapses each row into a labeled card so nothing is
- * cut off. Runs once in the render pipeline.
+ * column labels. On mobile the CSS sizes the table to its content: narrow tables
+ * fit the screen, wide tables scroll sideways with a pinned first column (see the
+ * smart-hybrid table CSS in the blog page). Runs once in the render pipeline.
  */
 export function wrapContentTables(html: string): string {
   if (!html || typeof html !== "string") return html;

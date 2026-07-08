@@ -332,7 +332,7 @@ export default async function BlogPage({
 
         <div className="pb-16 sm:pb-20">
           <div className="mx-auto max-w-[1400px] px-4 sm:px-8">
-            <div className="grid gap-8 lg:grid-cols-12 lg:gap-12">
+            <div className="grid min-w-0 gap-8 lg:grid-cols-12 lg:gap-12">
               <aside className="hidden lg:col-span-3 lg:block">
                 <div className="sticky top-24 space-y-6">
                   <div className="rounded-xl border border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.04)] p-6">
@@ -375,7 +375,7 @@ export default async function BlogPage({
                 </div>
               </aside>
 
-              <div className="lg:col-span-9">
+              <div className="min-w-0 lg:col-span-9">
                 <div
                   className="article-content article-wrapper"
                   dangerouslySetInnerHTML={{ __html: contentForRender }}
@@ -522,10 +522,12 @@ function ArticleStyles() {
         .article-content img[data-align="left"],
         .article-content img[data-align="right"] { float: none; display: block; margin-left: auto; margin-right: auto; }
 
-        /* Tables stay REAL tables and scroll horizontally inside their own
-           container (columns stay aligned, nothing is cut off). Compact type +
-           padding fit more on screen, and the first column is pinned so the row
-           label stays visible while the other columns swipe past. */
+        /* SMART, DETECTION-FREE TABLES: the table sizes to its own content
+           (width: max-content) but is never narrower than the screen
+           (min-width: 100%). A 2-column table fills the screen with no scroll,
+           while a wide table grows past the screen and the WHOLE table scrolls
+           sideways together inside its own box — no page shift, no pinned column.
+           A right-edge shadow hints there's more to swipe. */
         .article-content .article-table-scroll {
           overflow-x: auto;
           max-width: 100%;
@@ -533,36 +535,21 @@ function ArticleStyles() {
           border: 1px solid rgba(255,255,255,0.12);
           border-radius: 10px;
           -webkit-overflow-scrolling: touch;
+          background:
+            linear-gradient(to left, #020100 28%, rgba(2,1,0,0)) center right / 34px 100% no-repeat,
+            radial-gradient(farthest-side at 100% 50%, rgba(0,0,0,0.5), rgba(0,0,0,0)) center right / 14px 100% no-repeat;
+          background-attachment: local, scroll;
         }
         .article-content table {
-          min-width: 36rem;
-          width: 100%;
-          border-collapse: separate;
-          border-spacing: 0;
+          width: max-content;
+          min-width: 100%;
+          border-collapse: collapse;
           font-size: 0.8125rem;
         }
         .article-content th, .article-content td {
           padding: 0.5rem 0.7rem;
-          line-height: 1.45;
-        }
-        .article-content thead th { white-space: nowrap; }
-        /* Pin the first column so the row's label is always in view. Needs an
-           opaque background so scrolled cells don't show through underneath. */
-        .article-content thead th:first-child,
-        .article-content tbody td:first-child {
-          position: sticky;
-          left: 0;
-          border-right: 1px solid rgba(255,255,255,0.12);
-        }
-        .article-content tbody td:first-child {
-          background: #0c0b0a;
-          font-weight: 600;
-          color: rgba(255,255,255,0.95);
-          z-index: 1;
-        }
-        .article-content thead th:first-child {
-          background: #1e1706;
-          z-index: 2;
+          line-height: 1.4;
+          white-space: nowrap;
         }
       }
     `}</style>
