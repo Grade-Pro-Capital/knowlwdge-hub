@@ -522,34 +522,36 @@ function ArticleStyles() {
         .article-content img[data-align="left"],
         .article-content img[data-align="right"] { float: none; display: block; margin-left: auto; margin-right: auto; }
 
-        /* SMART, DETECTION-FREE TABLES: the table sizes to its own content
-           (width: max-content) but is never narrower than the screen
-           (min-width: 100%). A 2-column table fills the screen with no scroll,
-           while a wide table grows past the screen and the WHOLE table scrolls
-           sideways together inside its own box — no page shift, no pinned column.
-           A right-edge shadow hints there's more to swipe. */
+        /* COMPACT REAL TABLE: keeps a proper grid (aligned columns + grid lines)
+           and simply shrinks the content — smaller font AND tighter rows — so the
+           whole table fits the phone width with no horizontal scroll. Columns are
+           spread evenly (table-layout: fixed); text wraps at word boundaries and
+           only breaks a word when it genuinely can't fit. */
         .article-content .article-table-scroll {
-          overflow-x: auto;
+          overflow-x: hidden;
           max-width: 100%;
-          margin: 1.5rem 0;
-          border: 1px solid rgba(255,255,255,0.12);
-          border-radius: 10px;
-          -webkit-overflow-scrolling: touch;
-          background:
-            linear-gradient(to left, #020100 28%, rgba(2,1,0,0)) center right / 34px 100% no-repeat,
-            radial-gradient(farthest-side at 100% 50%, rgba(0,0,0,0.5), rgba(0,0,0,0)) center right / 14px 100% no-repeat;
-          background-attachment: local, scroll;
+          margin: 1.25rem 0;
+          border: 1px solid rgba(255,255,255,0.14);
+          border-radius: 8px;
         }
         .article-content table {
-          width: max-content;
-          min-width: 100%;
+          width: 100%;
+          min-width: 0;
+          table-layout: fixed;
           border-collapse: collapse;
-          font-size: 0.8125rem;
+          font-size: 0.625rem;
         }
         .article-content th, .article-content td {
-          padding: 0.5rem 0.7rem;
-          line-height: 1.4;
-          white-space: nowrap;
+          padding: 0.25rem 0.3rem;
+          line-height: 1.25;
+          white-space: normal;
+          overflow-wrap: break-word;
+          vertical-align: top;
+          border: 1px solid rgba(255,255,255,0.1);
+        }
+        .article-content thead th {
+          font-size: 0.625rem;
+          text-align: left;
         }
       }
     `}</style>
