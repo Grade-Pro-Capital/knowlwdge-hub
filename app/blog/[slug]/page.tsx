@@ -300,7 +300,7 @@ export default async function BlogPage({
               <ShareButtons url={canonical} title={row.title} />
             </div>
 
-            <div className="relative mb-12 h-[300px] overflow-hidden rounded-xl sm:h-[400px] lg:h-[500px]">
+            <div className="relative mb-12 aspect-video w-full overflow-hidden rounded-xl sm:aspect-auto sm:h-[400px] lg:h-[500px]">
               <ImageWithFallback
                 src={imageSrc}
                 alt={row.title}

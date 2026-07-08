@@ -53,13 +53,19 @@ export function MobileNav({ links }: { links: NavLink[] }) {
         }`}
       />
 
-      {/* Drawer — slides in from the right */}
-      <nav
-        aria-label="Mobile navigation"
-        className={`fixed right-0 top-0 z-61 flex h-dvh w-[82%] max-w-xs flex-col border-l border-white/10 bg-[#0a0a0a] shadow-2xl transition-transform duration-300 ease-out ${
-          open ? "translate-x-0" : "pointer-events-none translate-x-full"
-        }`}
-      >
+      {/* Drawer viewport — a full-screen fixed layer that CLIPS the off-canvas
+          panel. Without this, the closed drawer (translate-x-full) sits off the
+          right edge as a fixed element and extends the page's scrollable width,
+          which shifts/clamps the whole page horizontally. overflow-hidden here
+          confines it; pointer-events-none lets taps through to the page. */}
+      <div className="pointer-events-none fixed inset-0 z-61 overflow-hidden">
+        {/* Drawer — slides in from the right */}
+        <nav
+          aria-label="Mobile navigation"
+          className={`absolute right-0 top-0 flex h-full w-[82%] max-w-xs flex-col border-l border-white/10 bg-[#0a0a0a] shadow-2xl transition-transform duration-300 ease-out ${
+            open ? "pointer-events-auto translate-x-0" : "translate-x-full"
+          }`}
+        >
         <div className="flex h-[76px] shrink-0 items-center justify-between border-b border-white/10 px-4">
           <span className="text-xs font-semibold uppercase tracking-[0.15em] text-white/50">
             Menu
@@ -99,7 +105,8 @@ export function MobileNav({ links }: { links: NavLink[] }) {
             </a>
           </div>
         </div>
-      </nav>
+        </nav>
+      </div>
     </div>
   );
 
