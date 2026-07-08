@@ -107,11 +107,11 @@ export function HomeShell({ initialPosts, initialTab, children }: HomeShellProps
       <section id="insights" className="pt-4 pb-12 sm:pt-6 sm:pb-16">
         <div className="mx-auto max-w-[1600px] px-4 sm:px-8 lg:px-16">
           <h2 className="sr-only">Latest Insights</h2>
-          <div className="mb-8 flex items-center gap-4 border-b border-[rgba(255,255,255,0.1)]">
+          <div className="mb-8 flex items-center gap-2 overflow-x-auto border-b border-[rgba(255,255,255,0.1)] sm:gap-4">
             <button
               type="button"
               onClick={() => handleTabChange("all")}
-              className={`relative px-6 pb-3 transition-all ${
+              className={`relative shrink-0 whitespace-nowrap px-4 pb-3 transition-all sm:px-6 ${
                 activeTab === "all"
                   ? "text-[#FDBE35]"
                   : "text-[rgba(255,255,255,0.6)] hover:text-white"
@@ -125,7 +125,7 @@ export function HomeShell({ initialPosts, initialTab, children }: HomeShellProps
             <button
               type="button"
               onClick={() => handleTabChange("professionals")}
-              className={`relative px-6 pb-3 transition-all ${
+              className={`relative shrink-0 whitespace-nowrap px-4 pb-3 transition-all sm:px-6 ${
                 activeTab === "professionals"
                   ? "text-[#FDBE35]"
                   : "text-[rgba(255,255,255,0.6)] hover:text-white"
@@ -175,31 +175,31 @@ export function HomeShell({ initialPosts, initialTab, children }: HomeShellProps
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-3 lg:gap-8">
+            <div className="grid grid-cols-1 gap-4 min-[400px]:grid-cols-2 min-[400px]:gap-3 sm:gap-6 lg:grid-cols-3 lg:gap-8">
               {visiblePosts.map((post) => (
                 <Link
                   key={post.id}
                   href={`/blog/${post.slug}`}
-                  className="group overflow-hidden rounded-lg border border-[rgba(255,255,255,0.05)] bg-[rgba(255,255,255,0.03)] transition-all hover:border-[rgba(212,175,55,0.3)] hover:bg-[rgba(255,255,255,0.06)]"
+                  className="group overflow-hidden rounded-lg border border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.06)] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)] transition-all hover:border-[rgba(212,175,55,0.3)] hover:bg-[rgba(255,255,255,0.09)]"
                 >
-                  <div className="relative aspect-video w-full overflow-hidden">
+                  <div className="relative aspect-[16/10] w-full overflow-hidden">
                     <ImageWithFallback
                       src={resolvePostImage(post.image)}
                       alt={post.title}
                       className="h-full w-full object-cover object-[center_35%] transition-transform duration-500 group-hover:scale-105"
                     />
                   </div>
-                  <div className="p-4 sm:p-6">
-                    <span className="mb-3 inline-block rounded-full bg-[rgba(253,190,53,0.2)] px-3 py-1 text-[11px] leading-4 text-[#FDBE35] sm:text-xs">
+                  <div className="p-3.5 sm:p-4">
+                    <span className="mb-2 inline-block rounded-full bg-[rgba(253,190,53,0.2)] px-2.5 py-0.5 text-[9.5px] leading-4 text-[#FDBE35] sm:text-[10.5px]">
                       {post.category}
                     </span>
-                    <h3 className="mb-3 line-clamp-2 text-[15px] leading-snug transition-colors group-hover:text-[#FDBE35] sm:text-[18px] sm:leading-7 lg:text-xl lg:leading-normal">
+                    <h3 className="mb-1.5 line-clamp-2 text-[13px] leading-snug transition-colors group-hover:text-[#FDBE35] sm:text-[14px] sm:leading-[1.35] lg:text-[15px]">
                       {post.title}
                     </h3>
-                    <p className="mb-4 line-clamp-2 text-[13px] leading-5 text-[rgba(255,255,255,0.7)] lg:text-sm lg:leading-normal">
+                    <p className="mb-2.5 line-clamp-2 text-[11.5px] leading-[1.4] text-[rgba(255,255,255,0.7)] lg:text-[12px]">
                       {post.excerpt}
                     </p>
-                    <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-[11px] leading-4 text-[rgba(255,255,255,0.6)] sm:gap-x-2 sm:text-xs lg:gap-x-3">
+                    <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-[9.5px] leading-4 text-[rgba(255,255,255,0.6)] sm:gap-x-2 sm:text-[10.5px]">
                       <span>{post.author.name}</span>
                       <span>•</span>
                       <span>{post.readTime}</span>

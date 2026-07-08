@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Logo } from "@/app/components/Logo";
+import { MobileNav } from "@/app/components/MobileNav";
 import { goldButtonClass } from "@/app/lib/ui";
 
 /** Primary site navigation links. Labels/targets kept as-is; only styling is new. */
@@ -39,6 +40,8 @@ export function SiteHeader() {
           >
             Subscribe
           </a>
+
+          <MobileNav links={NAV_LINKS} />
         </div>
       </div>
     </header>

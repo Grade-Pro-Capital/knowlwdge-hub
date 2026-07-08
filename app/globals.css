@@ -20,6 +20,9 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
+  /* Safety net: prevent stray wide content from horizontally scrolling the page
+     on mobile. Real overflow sources are fixed at the source; this guards the rest. */
+  overflow-x: hidden;
 }
 
 /* Line clamp utility if not provided by Tailwind */
@@ -213,12 +216,13 @@ body {
   }
   .footer-brand p {
     font-size: 14px;
-    white-space: nowrap;
+    white-space: normal;
   }
   .footer-col h3 {
     font-size: 16px;
     margin-bottom: 12px;
     margin-top: 12px;
+    white-space: normal;
   }
   .footer-col a {
     font-size: 14px;
@@ -232,5 +236,16 @@ body {
     margin-top: 24px;
     padding-top: 20px;
     font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .footer {
+    grid-template-columns: 1fr;
+    column-gap: 0;
+    row-gap: 28px;
+  }
+  .footer-programs a {
+    max-width: none;
   }
 }

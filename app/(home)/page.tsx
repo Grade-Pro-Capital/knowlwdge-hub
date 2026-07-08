@@ -58,7 +58,7 @@ export default async function HomePage({
               </div>
 
               {/* Headline */}
-              <h1 className="text-4xl font-normal leading-tight text-white/90 sm:text-5xl sm:font-bold xl:text-6xl">
+              <h1 className="break-words text-4xl font-normal leading-tight text-white/90 sm:text-5xl sm:font-bold xl:text-6xl">
                 Intelligence-driven insights for{" "}
                 <br className="hidden md:block" />
                 <span className="bg-linear-to-r from-[#FDBE35] via-[#FDDA93] to-white bg-clip-text pb-2 text-transparent">

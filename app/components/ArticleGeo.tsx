@@ -107,7 +107,7 @@ export function ArticleGeo({
                     href={c.url}
                     target="_blank"
                     rel="noopener"
-                    className="text-[#FDBE35] underline transition-colors hover:text-[#FDDA93]"
+                    className="break-words text-[#FDBE35] underline transition-colors hover:text-[#FDDA93]"
                   >
                     {c.name}
                   </a>

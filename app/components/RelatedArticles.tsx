@@ -32,26 +32,26 @@ export function RelatedArticles({
             <Link
               key={article.slug}
               href={`/blog/${article.slug}`}
-              className="group overflow-hidden rounded-lg border border-[rgba(255,255,255,0.05)] bg-[rgba(255,255,255,0.03)] transition-all hover:border-[rgba(212,175,55,0.3)] hover:bg-[rgba(255,255,255,0.06)]"
+              className="group overflow-hidden rounded-lg border border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.06)] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)] transition-all hover:border-[rgba(212,175,55,0.3)] hover:bg-[rgba(255,255,255,0.09)]"
             >
-              <div className="relative aspect-video w-full overflow-hidden">
+              <div className="relative aspect-[16/10] w-full overflow-hidden">
                 <ImageWithFallback
                   src={imgSrc}
                   alt={article.title}
                   className="h-full w-full object-cover object-[center_35%] transition-transform duration-500 group-hover:scale-105"
                 />
               </div>
-              <div className="p-6">
-                <span className="mb-3 inline-block rounded-full bg-[rgba(253,190,53,0.2)] px-3 py-1 text-xs text-[#FDBE35]">
+              <div className="p-3.5 sm:p-4">
+                <span className="mb-2 inline-block rounded-full bg-[rgba(253,190,53,0.2)] px-2.5 py-0.5 text-[10.5px] text-[#FDBE35]">
                   {article.category}
                 </span>
-                <h3 className="mb-3 line-clamp-2 text-lg transition-colors group-hover:text-[#FDBE35]">
+                <h3 className="mb-1.5 line-clamp-2 text-[14px] leading-[1.35] transition-colors group-hover:text-[#FDBE35] lg:text-[15px]">
                   {article.title}
                 </h3>
-                <p className="mb-4 line-clamp-2 text-sm text-[rgba(255,255,255,0.7)]">
+                <p className="mb-2.5 line-clamp-2 text-[12px] leading-[1.4] text-[rgba(255,255,255,0.7)]">
                   {article.excerpt}
                 </p>
-                <span className="text-xs text-[rgba(255,255,255,0.6)]">
+                <span className="text-[10.5px] text-[rgba(255,255,255,0.6)]">
                   {article.readTime}
                 </span>
               </div>

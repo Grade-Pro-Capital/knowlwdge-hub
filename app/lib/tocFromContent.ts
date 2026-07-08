@@ -87,6 +87,65 @@ export function lazyLoadContentImages(html: string): string {
   });
 }
 
+const TABLE_TAG_REGEX = /<table\b[\s\S]*?<\/table>/gi;
+
+/** Strip tags/entities from a table header cell to use as a plain-text label. */
+function cellText(html: string): string {
+  return html
+    .replace(/<[^>]+>/g, "")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+/**
+ * Tag every body <td> with a data-label of its column header. On mobile the CSS
+ * hides the header row and turns each row into a labeled card (`Header: value`),
+ * which reads far better than a horizontally scrolling wide table. Uses the first
+ * row's cells as the header labels; leaves cells unlabeled if none is found.
+ */
+function addTableCellLabels(table: string): string {
+  const firstRow = table.match(/<tr\b[\s\S]*?<\/tr>/i);
+  if (!firstRow) return table;
+
+  const labels: string[] = [];
+  const cellRe = /<t[dh]\b(?:\s[^>]*)?>([\s\S]*?)<\/t[dh]>/gi;
+  let m: RegExpExecArray | null;
+  while ((m = cellRe.exec(firstRow[0])) !== null) labels.push(cellText(m[1]));
+  if (labels.every((l) => l === "")) return table;
+
+  // Keep the header row as-is; label the cells in every following row.
+  const splitAt = table.indexOf("</tr>") + "</tr>".length;
+  const head = table.slice(0, splitAt);
+  const body = table.slice(splitAt);
+
+  const labeledBody = body.replace(/<tr\b[\s\S]*?<\/tr>/gi, (row) => {
+    let i = 0;
+    return row.replace(/<td\b((?:\s[^>]*)?)>/gi, (open, attrs) => {
+      const label = labels[i++] ?? "";
+      if (!label || /\bdata-label\s*=/i.test(open)) return open;
+      return `<td${attrs} data-label="${label.replace(/"/g, "&quot;")}">`;
+    });
+  });
+
+  return head + labeledBody;
+}
+
+/**
+ * Wrap each article-body <table> in a scrollable container AND tag its cells with
+ * column labels. On desktop the container scrolls if a table is wider than the
+ * column; on mobile the CSS collapses each row into a labeled card so nothing is
+ * cut off. Runs once in the render pipeline.
+ */
+export function wrapContentTables(html: string): string {
+  if (!html || typeof html !== "string") return html;
+
+  return html.replace(TABLE_TAG_REGEX, (table) => {
+    return `<div class="article-table-scroll">${addTableCellLabels(table)}</div>`;
+  });
+}
+
 function isOwnDomain(href: string): boolean {
   try {
     const url = new URL(href, "https://blogs.grade.capital");

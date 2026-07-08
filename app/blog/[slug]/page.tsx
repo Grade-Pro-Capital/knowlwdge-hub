@@ -31,7 +31,7 @@ import {
   faqJsonLd,
 } from "@/app/lib/jsonLd";
 import { calculateReadingTime, countWords } from "@/app/lib/readingTime";
-import { getTocFromContent, ensureHeadingIds, normalizeArticleLinks, lazyLoadContentImages } from "@/app/lib/tocFromContent";
+import { getTocFromContent, ensureHeadingIds, normalizeArticleLinks, lazyLoadContentImages, wrapContentTables } from "@/app/lib/tocFromContent";
 import { resolvePostImage } from "@/app/lib/images";
 import type { Citation, ExpertiseSignals, FaqItem } from "@/app/lib/types";
 
@@ -203,7 +203,9 @@ export default async function BlogPage({
 
   const content = row.content ?? "";
   const contentWithIds = ensureHeadingIds(content);
-  const contentForRender = lazyLoadContentImages(normalizeArticleLinks(contentWithIds));
+  const contentForRender = wrapContentTables(
+    lazyLoadContentImages(normalizeArticleLinks(contentWithIds))
+  );
   const tocItems = getTocFromContent(contentWithIds);
   const citations = parseCitations(row.authoritativeCitations);
   const expertise = parseExpertise(row.expertiseSignals);
@@ -458,7 +460,7 @@ function ArticleStyles() {
       .article-content h2 { font-size: 1.75rem; font-weight: 600; color: #FDBE35; margin-top: 2.5rem; margin-bottom: 1rem; scroll-margin-top: 6rem; line-height: 1.3; }
       .article-content h2:first-child { margin-top: 0; }
       .article-content h3 { font-size: 1.25rem; font-weight: 600; color: rgba(255, 255, 255, 0.95); margin-top: 1.75rem; margin-bottom: 0.75rem; }
-      .article-content p { color: rgba(255, 255, 255, 0.85); line-height: 1.8; margin-bottom: 1.25rem; font-size: 1rem; }
+      .article-content p { color: rgba(255, 255, 255, 0.85); line-height: 1.8; margin-bottom: 1.25rem; font-size: 1rem; overflow-wrap: break-word; word-break: break-word; }
       .article-content ul, .article-content ol { color: rgba(255, 255, 255, 0.85); margin-bottom: 1.5rem; padding-left: 1.75rem; }
       .article-content ul { list-style-type: disc; }
       .article-content ul li::marker { color: rgba(253, 190, 53, 0.9); }
@@ -472,11 +474,97 @@ function ArticleStyles() {
       .article-content img[data-align="left"] { float: left; margin: 0.5rem 1.5rem 1rem 0; }
       .article-content img[data-align="right"] { float: right; margin: 0.5rem 0 1rem 1.5rem; }
       .article-content h2, .article-content h3 { clear: both; }
-      .article-content a { color: #FDBE35; text-decoration: underline; }
+      .article-content a { color: #FDBE35; text-decoration: underline; overflow-wrap: break-word; word-break: break-word; }
       .article-content a:hover { color: #FDDA93; }
-      .article-content table { border-collapse: collapse; width: 100%; margin: 1.5rem 0; }
-      .article-content th, .article-content td { border: 1px solid rgba(255,255,255,0.25); padding: 0.625rem 0.875rem; text-align: left; }
-      .article-content th { background: rgba(253,190,53,0.15); color: #FDBE35; font-weight: 600; }
+      .article-content li { overflow-wrap: break-word; word-break: break-word; }
+      .article-content pre { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 1rem 1.25rem; margin: 1.5rem 0; overflow-x: auto; max-width: 100%; -webkit-overflow-scrolling: touch; }
+      .article-content pre code { display: block; white-space: pre; font-size: 0.875rem; line-height: 1.6; color: rgba(255,255,255,0.9); }
+      .article-content code { background: rgba(255,255,255,0.08); border-radius: 4px; padding: 0.15em 0.4em; font-size: 0.875em; overflow-wrap: break-word; word-break: break-word; }
+      .article-content pre code { background: none; padding: 0; }
+      /* Tables: the wrapper scrolls horizontally on narrow screens (added by
+         wrapContentTables) so wide tables never stretch the page; the table
+         stays a real table so header/body columns stay aligned. Zebra striping
+         + a clear header keep them readable on mobile and desktop. */
+      .article-content .article-table-scroll {
+        overflow-x: auto;
+        max-width: 100%;
+        margin: 1.5rem 0;
+        border: 1px solid rgba(255,255,255,0.12);
+        border-radius: 10px;
+        -webkit-overflow-scrolling: touch;
+      }
+      .article-content table {
+        width: 100%;
+        min-width: 32rem;
+        border-collapse: collapse;
+        margin: 0;
+        font-size: 0.9375rem;
+      }
+      .article-content th, .article-content td {
+        padding: 0.75rem 1rem;
+        text-align: left;
+        vertical-align: top;
+        line-height: 1.55;
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+      }
+      .article-content thead th {
+        background: rgba(253,190,53,0.12);
+        color: #FDBE35;
+        font-weight: 600;
+        white-space: nowrap;
+        border-bottom: 1px solid rgba(253,190,53,0.25);
+      }
+      .article-content tbody tr:nth-child(even) { background: rgba(255,255,255,0.03); }
+      .article-content tbody tr:last-child td { border-bottom: none; }
+      .article-content td + td, .article-content th + th { border-left: 1px solid rgba(255,255,255,0.06); }
+      @media (max-width: 640px) {
+        /* Inline-aligned images stack full-width on phones instead of floating */
+        .article-content img[data-align="left"],
+        .article-content img[data-align="right"] { float: none; display: block; margin-left: auto; margin-right: auto; }
+
+        /* Tables stay REAL tables and scroll horizontally inside their own
+           container (columns stay aligned, nothing is cut off). Compact type +
+           padding fit more on screen, and the first column is pinned so the row
+           label stays visible while the other columns swipe past. */
+        .article-content .article-table-scroll {
+          overflow-x: auto;
+          max-width: 100%;
+          margin: 1.5rem 0;
+          border: 1px solid rgba(255,255,255,0.12);
+          border-radius: 10px;
+          -webkit-overflow-scrolling: touch;
+        }
+        .article-content table {
+          min-width: 36rem;
+          width: 100%;
+          border-collapse: separate;
+          border-spacing: 0;
+          font-size: 0.8125rem;
+        }
+        .article-content th, .article-content td {
+          padding: 0.5rem 0.7rem;
+          line-height: 1.45;
+        }
+        .article-content thead th { white-space: nowrap; }
+        /* Pin the first column so the row's label is always in view. Needs an
+           opaque background so scrolled cells don't show through underneath. */
+        .article-content thead th:first-child,
+        .article-content tbody td:first-child {
+          position: sticky;
+          left: 0;
+          border-right: 1px solid rgba(255,255,255,0.12);
+        }
+        .article-content tbody td:first-child {
+          background: #0c0b0a;
+          font-weight: 600;
+          color: rgba(255,255,255,0.95);
+          z-index: 1;
+        }
+        .article-content thead th:first-child {
+          background: #1e1706;
+          z-index: 2;
+        }
+      }
     `}</style>
   );
 }
