@@ -204,7 +204,7 @@ export function HomeShell({ initialPosts, initialTab, children }: HomeShellProps
                       <span>•</span>
                       <span>{post.readTime}</span>
                       <span>•</span>
-                      <span>{post.publishedAt} ago</span>
+                      <span>{post.publishedAt} </span>
                     </div>
                   </div>
                 </Link>

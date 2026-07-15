@@ -69,7 +69,8 @@ body {
   }
 }
 
-/* Interactive background grid — cells light up on pointer hover. */
+/* Interactive background grid — cells light up on pointer hover.
+   (Kept for the legacy InteractiveGrid component; the hero now uses HeroBeams.) */
 #interactive-grid {
   position: absolute;
   inset: 0;
@@ -82,6 +83,255 @@ body {
   box-sizing: border-box;
   border: 1px solid rgba(156, 143, 122, 0.1);
   background-color: transparent;
+}
+
+/* ---------------------------------------------------------------------------
+   Hero — flowing light beams background (HeroBeams component).
+   Soft diagonal gold/cyan beams that slowly drift and pulse, plus a faint
+   film-grain overlay to mask banding on the dark background.
+   --------------------------------------------------------------------------- */
+.hero-beams {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.hero-beams__beam {
+  position: absolute;
+  top: -40%;
+  height: 180%;
+  opacity: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    var(--beam-color),
+    transparent
+  );
+  filter: blur(32px);
+  transform: rotate(18deg) translateX(-40px);
+  will-change: transform, opacity;
+  animation-name: beam-drift;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+@keyframes beam-drift {
+  0% {
+    opacity: 0;
+    transform: rotate(18deg) translateX(-60px);
+  }
+  50% {
+    opacity: var(--beam-opacity, 0.4);
+    transform: rotate(18deg) translateX(40px);
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(18deg) translateX(140px);
+  }
+}
+/* Subtle animated film grain layered over the beams. */
+.hero-beams__grain {
+  position: absolute;
+  inset: -50%;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.035;
+  mix-blend-mode: overlay;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-beams__beam {
+    animation: none;
+    opacity: var(--beam-opacity, 0.4);
+    transform: rotate(18deg);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Hero — aurora blobs background (HeroAurora component).
+   Slow-drifting blurred gold/cyan blobs. Calm, premium, no interaction.
+   --------------------------------------------------------------------------- */
+.hero-aurora {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.hero-aurora__blob {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(90px);
+  will-change: transform;
+}
+.hero-aurora__blob--1 {
+  top: -8%;
+  left: 2%;
+  width: 46%;
+  height: 70%;
+  background: radial-gradient(circle, rgba(253, 190, 53, 0.5), transparent 68%);
+  animation: aurora-1 22s ease-in-out infinite;
+}
+.hero-aurora__blob--2 {
+  top: 8%;
+  right: 4%;
+  width: 42%;
+  height: 64%;
+  background: radial-gradient(circle, rgba(53, 218, 255, 0.4), transparent 68%);
+  animation: aurora-2 26s ease-in-out infinite;
+}
+.hero-aurora__blob--3 {
+  bottom: -18%;
+  left: 26%;
+  width: 50%;
+  height: 66%;
+  background: radial-gradient(circle, rgba(253, 218, 147, 0.42), transparent 70%);
+  animation: aurora-3 30s ease-in-out infinite;
+}
+.hero-aurora__blob--4 {
+  top: 22%;
+  left: 40%;
+  width: 34%;
+  height: 50%;
+  background: radial-gradient(circle, rgba(253, 190, 53, 0.3), transparent 70%);
+  animation: aurora-1 28s ease-in-out infinite reverse;
+}
+@keyframes aurora-1 {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(12%, 10%, 0) scale(1.12);
+  }
+}
+@keyframes aurora-2 {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1.05);
+  }
+  50% {
+    transform: translate3d(-14%, 8%, 0) scale(0.92);
+  }
+}
+@keyframes aurora-3 {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(6%, -12%, 0) scale(1.1);
+  }
+}
+.hero-aurora__grain {
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.03;
+  mix-blend-mode: overlay;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-aurora__blob {
+    animation: none;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Hero — full-bleed background image with vignette (HeroImageBg component).
+   Image lives at /public/hero-laptop.png; the vignette keeps the left-aligned
+   copy readable over it.
+   --------------------------------------------------------------------------- */
+.hero-image-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.hero-image-bg__img {
+  position: absolute;
+  /* Confine the photo to the RIGHT ~half of the hero so the left stays clean and
+     dark for the copy. `cover` fills that panel; the vignette fades its left edge. */
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 45%;
+  background-image: url("/hero-laptop.png");
+  /* Slightly smaller than the panel so the laptop reads a touch smaller with a
+     little breathing room (bump this % up/down to resize). */
+  background-size: auto 70%;
+  /* X Y — lower X moves the photo left, lower Y moves it up. */
+  background-position: 30% 0%;
+  background-repeat: no-repeat;
+}
+.hero-image-bg__vignette {
+  position: absolute;
+  inset: 0;
+  background:
+    /* Left-to-right: solid black under the copy, fading to fully clear over the
+       laptop on the right so the photo reads at full brightness there. */
+    linear-gradient(
+      to right,
+      #020100 0%,
+      #020100 42%,
+      rgba(2, 1, 0, 0.82) 52%,
+      rgba(2, 1, 0, 0.28) 63%,
+      rgba(2, 1, 0, 0) 75%
+    ),
+    /* Gentle top/bottom fade so the photo blends into the hero edges. */
+      linear-gradient(
+        to bottom,
+        rgba(2, 1, 0, 0.3) 0%,
+        transparent 20%,
+        transparent 80%,
+        rgba(2, 1, 0, 0.55) 100%
+      );
+}
+/* Tablet (768–1023px): there's no room for a side-by-side photo next to the
+   full-width copy, so let the laptop become a full-bleed backdrop on the right,
+   dimmed, with a heavier left/bottom vignette so the copy stays readable. */
+@media (max-width: 1023px) {
+  .hero-image-bg__img {
+    inset: 0;
+    background-size: cover;
+    background-position: center right;
+    opacity: 0.4;
+  }
+  .hero-image-bg__vignette {
+    background:
+      linear-gradient(
+        to right,
+        #020100 0%,
+        rgba(2, 1, 0, 0.85) 35%,
+        rgba(2, 1, 0, 0.55) 70%,
+        rgba(2, 1, 0, 0.45) 100%
+      ),
+      linear-gradient(
+        to bottom,
+        rgba(2, 1, 0, 0.5) 0%,
+        rgba(2, 1, 0, 0.35) 45%,
+        rgba(2, 1, 0, 0.8) 100%
+      );
+  }
+}
+
+/* Phones (≤767px): the copy stacks over the full width, so keep the photo as a
+   very subtle, evenly-dimmed texture behind everything. */
+@media (max-width: 767px) {
+  .hero-image-bg__img {
+    /* Keep full opacity and dim via the overlay instead — this keeps blacks
+       black so only the warm lamp glow shows through (no muddy grey wash).
+       Anchor right so the ambient glow shows rather than the busy laptop screen. */
+    opacity: 1;
+    background-position: right center;
+  }
+  .hero-image-bg__vignette {
+    background: linear-gradient(
+      to bottom,
+      rgba(2, 1, 0, 0.9) 0%,
+      rgba(2, 1, 0, 0.78) 42%,
+      rgba(2, 1, 0, 0.78) 68%,
+      rgba(2, 1, 0, 0.94) 100%
+    );
+  }
 }
 
 /* ---------------------------------------------------------------------------
