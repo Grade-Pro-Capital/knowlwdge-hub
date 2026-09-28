@@ -179,6 +179,9 @@ function Toolbar({ editor }: { editor: Editor | null }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploadingImg, setUploadingImg] = useState(false);
   const [imgError, setImgError] = useState("");
+  // An uploaded image waits here until it has alt text; only then is it inserted.
+  const [pendingImage, setPendingImage] = useState<string | null>(null);
+  const [pendingAlt, setPendingAlt] = useState("");
 
   const inTable = editor?.isActive("table") ?? false;
   const textStyle = editor?.getAttributes("textStyle") ?? {};
@@ -209,13 +212,21 @@ function Toolbar({ editor }: { editor: Editor | null }) {
               : "Upload failed. Try a smaller image (max 5MB, JPEG/PNG/WebP/GIF).")
         );
       }
-      editor.chain().focus().setImage({ src: data.url, alt: "" }).run();
+      setPendingImage(data.url);
+      setPendingAlt("");
     } catch (err) {
       setImgError(err instanceof Error ? err.message : "Upload failed");
     } finally {
       setUploadingImg(false);
       e.target.value = "";
     }
+  }
+
+  function insertPendingImage() {
+    if (!editor || !pendingImage || !pendingAlt.trim()) return;
+    editor.chain().focus().setImage({ src: pendingImage, alt: pendingAlt.trim() }).run();
+    setPendingImage(null);
+    setPendingAlt("");
   }
 
   const setLink = useCallback(() => {
@@ -545,9 +556,11 @@ function Toolbar({ editor }: { editor: Editor | null }) {
             onChange={(e) =>
               editor.chain().updateAttributes("image", { alt: e.target.value }).run()
             }
-            placeholder="Alt text"
-            className="h-8 w-44 rounded border border-[rgba(255,255,255,0.2)] bg-[rgba(255,255,255,0.05)] px-2 text-xs text-white focus:border-[#FDBE35] focus:outline-none"
-            title="Image alt text (for SEO & accessibility)"
+            placeholder="Alt text (required)"
+            className={`h-8 w-44 rounded border bg-[rgba(255,255,255,0.05)] px-2 text-xs text-white focus:border-[#FDBE35] focus:outline-none ${
+              imageAttrs.alt?.trim() ? "border-[rgba(255,255,255,0.2)]" : "border-red-400/70"
+            }`}
+            title="Image alt text (required, for SEO & accessibility)"
           />
         </>
       )}
@@ -555,6 +568,46 @@ function Toolbar({ editor }: { editor: Editor | null }) {
         <span className="ml-1 text-xs text-[rgba(255,255,255,0.5)]">Uploading…</span>
       )}
       {imgError && <span className="ml-1 text-xs text-red-400">{imgError}</span>}
+      {pendingImage && (
+        <div className="order-last flex basis-full flex-wrap items-center gap-2 rounded border border-[#FDBE35]/40 bg-[#FDBE35]/5 p-2">
+          {/* eslint-disable-next-line @next/next/no-img-element -- preview of the file just uploaded */}
+          <img src={pendingImage} alt="" className="h-10 w-10 rounded object-cover" />
+          <input
+            type="text"
+            autoFocus
+            value={pendingAlt}
+            onChange={(e) => setPendingAlt(e.target.value)}
+            onKeyDown={(e) => {
+              // Inside the post form: Enter must insert, not submit the form.
+              if (e.key === "Enter") {
+                e.preventDefault();
+                insertPendingImage();
+              } else if (e.key === "Escape") {
+                e.preventDefault();
+                setPendingImage(null);
+              }
+            }}
+            placeholder="Describe this image (alt text, required)"
+            aria-label="Alt text for the uploaded image (required)"
+            className="h-8 min-w-[220px] flex-1 rounded border border-[rgba(255,255,255,0.2)] bg-[rgba(255,255,255,0.05)] px-2 text-xs text-white focus:border-[#FDBE35] focus:outline-none"
+          />
+          <button
+            type="button"
+            onClick={insertPendingImage}
+            disabled={!pendingAlt.trim()}
+            className="h-8 rounded bg-[#FDBE35] px-3 text-xs text-[#020100] hover:bg-[#FDDA93] disabled:opacity-40"
+          >
+            Insert image
+          </button>
+          <button
+            type="button"
+            onClick={() => setPendingImage(null)}
+            className="h-8 rounded px-2 text-xs text-[rgba(255,255,255,0.7)] hover:bg-[rgba(255,255,255,0.1)]"
+          >
+            Cancel
+          </button>
+        </div>
+      )}
       <span className="mx-1 h-5 w-px bg-[rgba(255,255,255,0.2)]" />
       <div className="relative">
         <button
@@ -725,6 +778,8 @@ export function RichTextEditor({
         .ProseMirror .blog-editor-image[data-align="center"] { display: block; margin-left: auto; margin-right: auto; }
         .ProseMirror .blog-editor-image[data-align="left"] { float: left; margin: 0.5rem 1rem 0.5rem 0; }
         .ProseMirror .blog-editor-image[data-align="right"] { float: right; margin: 0.5rem 0 0.5rem 1rem; }
+        /* Images without alt text are outlined so editors can find and fix them. */
+        .ProseMirror .blog-editor-image:not([alt]), .ProseMirror .blog-editor-image[alt=""] { outline: 2px dashed #f87171; outline-offset: 2px; }
         .ProseMirror .ProseMirror-selectednode { outline: 2px solid #FDBE35; outline-offset: 2px; }
         .ProseMirror a { color: #FDBE35; text-decoration: underline; cursor: pointer; }
         /* No-follow links get a dashed underline so authors can tell them apart at a glance. */

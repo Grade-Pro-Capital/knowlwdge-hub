@@ -1,9 +1,12 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/app/lib/admin";
 import { prisma } from "@/app/lib/db";
-import { parseContentFreshnessDate, slugify } from "@/app/lib/seo";
+import { parseContentFreshnessDate, slugify, validCanonicalUrl } from "@/app/lib/seo";
 import { ensureCategory } from "@/app/lib/categories";
 import { ensureAuthor } from "@/app/lib/authors";
+import { postPath } from "@/app/lib/blogPaths";
+import { releasePath } from "@/app/lib/redirects";
+import { altTextGaps, describeAltTextGaps } from "@/app/lib/altText";
 
 export async function GET(request: Request) {
   const auth = await requireAdmin(request);
@@ -69,6 +72,19 @@ export async function POST(request: Request) {
       );
     }
 
+    // Every image needs alt text (cover + images in the article text).
+    const altTextError = describeAltTextGaps(altTextGaps({ imageUrl, imageAlt, content }));
+    if (altTextError) {
+      return NextResponse.json({ error: altTextError }, { status: 400 });
+    }
+
+    if (typeof canonicalUrl === "string" && canonicalUrl.trim() && !validCanonicalUrl(canonicalUrl)) {
+      return NextResponse.json(
+        { error: "Canonical URL must be a full http(s) URL, or left empty" },
+        { status: 400 }
+      );
+    }
+
     const existing = await prisma.post.findUnique({ where: { slug } });
     if (existing) {
       return NextResponse.json(
@@ -122,7 +138,7 @@ export async function POST(request: Request) {
         metaDescription: metaDescription ?? null,
         focusKeyword: focusKeyword ?? null,
         secondaryKeywords: secondaryKeywords ?? null,
-        canonicalUrl: canonicalUrl ?? null,
+        canonicalUrl: validCanonicalUrl(canonicalUrl),
         metaRobotsIndex: (metaRobotsIndex?.trim() || "index") as string,
         metaRobotsFollow: (metaRobotsFollow?.trim() || "follow") as string,
         ogTitle: ogTitle ?? null,
@@ -164,6 +180,8 @@ export async function POST(request: Request) {
       avatar: post.authorAvatar,
       credentials: typeof authorCredentials === "string" ? authorCredentials : null,
     });
+    // The article now lives at this URL; a redirect from it would hide the page.
+    await releasePath(postPath(post.slug));
     return NextResponse.json(post);
   } catch (e) {
     console.error("Create post error:", e);

@@ -2,9 +2,12 @@ import { NextResponse } from "next/server";
 import { requireAdmin } from "@/app/lib/admin";
 import { prisma } from "@/app/lib/db";
 import { deleteFromSpaces } from "@/app/lib/upload";
-import { parseContentFreshnessDate, slugify } from "@/app/lib/seo";
+import { parseContentFreshnessDate, slugify, validCanonicalUrl } from "@/app/lib/seo";
 import { ensureCategory } from "@/app/lib/categories";
 import { ensureAuthor } from "@/app/lib/authors";
+import { postPath } from "@/app/lib/blogPaths";
+import { recordArticleMove, releasePath } from "@/app/lib/redirects";
+import { altTextGaps, describeAltTextGaps } from "@/app/lib/altText";
 
 export async function GET(
   request: Request,
@@ -104,6 +107,28 @@ export async function PATCH(
             : []
         : undefined;
 
+    // Every image needs alt text. Checked when the update touches images (always the
+    // case for saves from the editor), against the post as it will be after saving.
+    if (imageUrl !== undefined || imageAlt !== undefined || content !== undefined) {
+      const altTextError = describeAltTextGaps(
+        altTextGaps({
+          imageUrl: imageUrl !== undefined ? imageUrl : post.imageUrl,
+          imageAlt: imageAlt !== undefined ? imageAlt : post.imageAlt,
+          content: content !== undefined ? content : post.content,
+        })
+      );
+      if (altTextError) {
+        return NextResponse.json({ error: altTextError }, { status: 400 });
+      }
+    }
+
+    if (typeof canonicalUrl === "string" && canonicalUrl.trim() && !validCanonicalUrl(canonicalUrl)) {
+      return NextResponse.json(
+        { error: "Canonical URL must be a full http(s) URL, or left empty" },
+        { status: 400 }
+      );
+    }
+
     if (slug !== undefined) {
       const slugStr = String(slug).trim().toLowerCase().replace(/\s+/g, "-");
       if (slugStr !== post.slug) {
@@ -152,7 +177,7 @@ export async function PATCH(
         ...(metaDescription !== undefined && { metaDescription: metaDescription ?? null }),
         ...(focusKeyword !== undefined && { focusKeyword: focusKeyword ?? null }),
         ...(secondaryKeywords !== undefined && { secondaryKeywords: secondaryKeywords ?? null }),
-        ...(canonicalUrl !== undefined && { canonicalUrl: canonicalUrl ?? null }),
+        ...(canonicalUrl !== undefined && { canonicalUrl: validCanonicalUrl(canonicalUrl) }),
         ...(metaRobotsIndex !== undefined && {
           metaRobotsIndex: (metaRobotsIndex?.trim() || "index") as string,
         }),
@@ -192,6 +217,15 @@ export async function PATCH(
         }),
       },
     });
+    // URL changed: a published article's old URL redirects to the new one; either
+    // way the new URL must not be shadowed by an existing redirect.
+    if (updated.slug !== post.slug) {
+      if (post.published || updated.published) {
+        await recordArticleMove(postPath(post.slug), postPath(updated.slug));
+      } else {
+        await releasePath(postPath(updated.slug));
+      }
+    }
     // Persist the category so a newly-typed one becomes selectable next time.
     if (category !== undefined) await ensureCategory(updated.category);
     // Persist/link the author and propagate credential edits (single source).

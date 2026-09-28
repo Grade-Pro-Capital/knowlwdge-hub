@@ -4,7 +4,12 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { RichTextEditorDynamic } from "../components/RichTextEditorDynamic";
+import { SerpWidthHint } from "../components/SerpWidthHint";
 import { BLOG_CONTENT_TEMPLATE } from "@/app/data/blogContentTemplate";
+import { BLOG_BASE } from "@/app/lib/blogPaths";
+import { altTextGaps, describeAltTextGaps, hasAltTextGaps } from "@/app/lib/altText";
+import { normalizeMetaTitle } from "@/app/lib/seo";
+import { sanitizeTitleForBrand } from "@/app/lib/siteConfig";
 import { Plus, Trash2, User } from "lucide-react";
 
 type SavedTemplate = { id: string; name: string; content: string };
@@ -322,8 +327,17 @@ export function PostForm({
     setIsDirty(true);
   }
 
+  // Every image (cover + images in the text) needs alt text before the post can be saved.
+  const altGaps = altTextGaps({ imageUrl: form.imageUrl, imageAlt: form.imageAlt, content: form.content });
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    const altTextError = describeAltTextGaps(altGaps);
+    if (altTextError) {
+      setError(altTextError);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
     setSaving(true);
     setError("");
     try {
@@ -535,6 +549,20 @@ export function PostForm({
         <p className="rounded-lg bg-red-500/20 px-3 py-2 text-sm text-red-400">
           {error}
         </p>
+      )}
+      {hasAltTextGaps(altGaps) && (
+        <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-sm text-amber-300">
+          <p className="font-medium">Some images have no alt text (required before saving):</p>
+          <ul className="mt-1 list-disc pl-5">
+            {altGaps.cover && <li>Cover image: fill in its alt text under “Cover image”.</li>}
+            {altGaps.textImages > 0 && (
+              <li>
+                {altGaps.textImages} image{altGaps.textImages === 1 ? "" : "s"} in the article text,
+                outlined in red: click one and fill in “Alt text” in the editor toolbar.
+              </li>
+            )}
+          </ul>
+        </div>
       )}
 
       <div>
@@ -840,9 +868,16 @@ export function PostForm({
                 type="text"
                 value={form.imageAlt}
                 onChange={(e) => update({ imageAlt: e.target.value })}
-                placeholder="Cover image alt text"
-                className="w-full max-w-xs rounded-lg border border-[rgba(255,255,255,0.2)] bg-[rgba(255,255,255,0.05)] px-3 py-1.5 text-sm text-white focus:border-[#FDBE35] focus:outline-none"
+                placeholder="Describe the image (required)"
+                aria-label="Cover image alt text (required)"
+                aria-required="true"
+                className={`w-full max-w-xs rounded-lg border bg-[rgba(255,255,255,0.05)] px-3 py-1.5 text-sm text-white focus:border-[#FDBE35] focus:outline-none ${
+                  form.imageAlt.trim() ? "border-[rgba(255,255,255,0.2)]" : "border-red-400/70"
+                }`}
               />
+              <p className="text-xs text-[rgba(255,255,255,0.5)]">
+                Alt text (required): what the image shows, for Google Images and screen readers.
+              </p>
             </div>
           )}
         </div>
@@ -859,13 +894,19 @@ export function PostForm({
               type="text"
               value={form.metaTitle}
               onChange={(e) => update({ metaTitle: e.target.value.slice(0, 60) })}
-              maxLength={70}
+              maxLength={60}
               placeholder="Defaults to post title if empty"
               className="w-full rounded-lg border border-[rgba(255,255,255,0.2)] bg-[rgba(255,255,255,0.05)] px-4 py-2 text-white focus:border-[#FDBE35] focus:outline-none"
             />
             <p className="mt-1 text-xs text-[rgba(255,255,255,0.5)]">
-              {form.metaTitle.length}/70
+              {form.metaTitle.length}/60
             </p>
+            {/* Measured as the page outputs it (same clean-up and fallback). */}
+            <SerpWidthHint
+              kind="title"
+              text={sanitizeTitleForBrand(normalizeMetaTitle(form.metaTitle) || normalizeMetaTitle(form.title))}
+              fallbackLabel={form.metaTitle.trim() ? undefined : "the article title"}
+            />
           </div>
           <div>
             <label className="mb-1 block text-sm text-[rgba(255,255,255,0.7)]">
@@ -874,14 +915,19 @@ export function PostForm({
             <textarea
               value={form.metaDescription}
               onChange={(e) => update({ metaDescription: e.target.value.slice(0, 160) })}
-              maxLength={170}
+              maxLength={160}
               rows={2}
               placeholder="Defaults to excerpt if empty"
               className="w-full rounded-lg border border-[rgba(255,255,255,0.2)] bg-[rgba(255,255,255,0.05)] px-4 py-2 text-white focus:border-[#FDBE35] focus:outline-none"
             />
             <p className="mt-1 text-xs text-[rgba(255,255,255,0.5)]">
-              {form.metaDescription.length}/170
+              {form.metaDescription.length}/160
             </p>
+            <SerpWidthHint
+              kind="description"
+              text={form.metaDescription.trim() || form.excerpt}
+              fallbackLabel={form.metaDescription.trim() ? undefined : "the excerpt"}
+            />
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
@@ -914,7 +960,7 @@ export function PostForm({
               URL Slug (auto-generated, editable)
             </label>
             <div className="flex items-center gap-2">
-              <span className="text-sm text-[rgba(255,255,255,0.5)]">/blog/</span>
+              <span className="text-sm text-[rgba(255,255,255,0.5)]">{BLOG_BASE}/</span>
               <input
                 type="text"
                 value={form.slug}
@@ -923,6 +969,10 @@ export function PostForm({
                 placeholder="post-url-slug"
               />
             </div>
+            <p className="mt-1 text-xs text-[rgba(255,255,255,0.5)]">
+              Changing the URL of a published article automatically redirects the old URL to the
+              new one (see Redirects).
+            </p>
           </div>
           <div>
             <label className="mb-1 block text-sm text-[rgba(255,255,255,0.7)]">
@@ -932,9 +982,14 @@ export function PostForm({
               type="url"
               value={form.canonicalUrl}
               onChange={(e) => update({ canonicalUrl: e.target.value })}
-              placeholder="https://blogs.grade.capital/blog/this-post"
+              placeholder="Leave empty to use this article's own URL"
               className="w-full rounded-lg border border-[rgba(255,255,255,0.2)] bg-[rgba(255,255,255,0.05)] px-4 py-2 text-white focus:border-[#FDBE35] focus:outline-none"
             />
+            <p className="mt-1 text-xs text-[rgba(255,255,255,0.5)]">
+              Only for articles first published on another website (full https:// URL of the
+              original). URLs on grade.capital are ignored: to change this article’s URL, edit the
+              slug instead.
+            </p>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <div>

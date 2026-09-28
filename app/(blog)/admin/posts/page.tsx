@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Plus, Pencil, Trash2, Eye, EyeOff } from "lucide-react";
+import { Plus, Pencil, Trash2, Eye, EyeOff, ImageOff } from "lucide-react";
+import { altTextGaps, hasAltTextGaps } from "@/app/lib/altText";
 
 type Post = {
   id: string;
@@ -11,6 +12,9 @@ type Post = {
   category: string;
   published: boolean;
   publishedAt: string;
+  imageUrl: string | null;
+  imageAlt: string | null;
+  content: string | null;
   _count: { views: number };
 };
 
@@ -104,6 +108,14 @@ export default function AdminPostsPage() {
                     ) : (
                       <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/20 px-2 py-0.5 text-xs text-amber-400">
                         <EyeOff className="h-3 w-3" /> Draft
+                      </span>
+                    )}
+                    {hasAltTextGaps(altTextGaps(post)) && (
+                      <span
+                        className="mt-1 flex w-fit items-center gap-1 rounded-full bg-red-500/15 px-2 py-0.5 text-xs text-red-300"
+                        title="Some images in this article have no alt text; it can't be saved until they do."
+                      >
+                        <ImageOff className="h-3 w-3" /> Missing alt text
                       </span>
                     )}
                   </td>
