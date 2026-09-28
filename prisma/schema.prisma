@@ -36,6 +36,9 @@ model Post {
   tags                   String[]   @default([])
   createdAt              DateTime   @default(now())
   updatedAt              DateTime   @updatedAt
+  // Set when the "new post" newsletter has been sent for this post (guards
+  // against accidental re-sends; drives the admin "Send to subscribers" state).
+  newsletterSentAt       DateTime?
   views                  PostView[]
   // SEO (per article)
   metaTitle              String?    // max 60 chars
@@ -110,6 +113,27 @@ model NewsletterSubscription {
   unsubscribedAt DateTime?
   source         String?   // e.g. "homepage", "article", "footer"
   verified       Boolean   @default(false)
+  // Random hex token used in unsubscribe links. Not @unique on purpose: a
+  // MongoDB unique index would reject multiple existing rows with a null token.
+  // Tokens are 32-byte random hex, so collisions are effectively impossible;
+  // lookups use findFirst({ where: { unsubscribeToken } }).
+  unsubscribeToken   String?
+  welcomeEmailSentAt DateTime?
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
+}
+
+// Audit log of a "new post" newsletter blast — one row per send attempt.
+model NewsletterSend {
+  id             String    @id @default(auto()) @map("_id") @db.ObjectId
+  postId         String    @db.ObjectId
+  postSlug       String
+  subject        String
+  recipientCount Int       @default(0)
+  successCount   Int       @default(0)
+  failCount      Int       @default(0)
+  status         String    @default("sending") // "sending" | "sent" | "failed"
+  sentBy         String?                        // admin username
+  createdAt      DateTime  @default(now())
+  completedAt    DateTime?
 }

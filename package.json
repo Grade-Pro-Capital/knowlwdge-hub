@@ -14,6 +14,7 @@
     "db:seed": "tsx prisma/seed.ts",
     "db:seed:posts": "tsx prisma/seedPosts.ts",
     "db:backfill:authors": "tsx prisma/backfillAuthors.ts",
+    "db:backfill:unsub": "tsx prisma/backfillUnsubTokens.ts",
     "db:studio": "prisma studio"
   },
   "dependencies": {
@@ -35,6 +36,7 @@
     "next": "16.1.6",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+    "resend": "^6.17.2",
     "sharp": "^0.33.5"
   },
   "devDependencies": {

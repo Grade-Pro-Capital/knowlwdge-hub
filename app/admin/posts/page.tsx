@@ -2,7 +2,15 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Plus, Pencil, Trash2, Eye, EyeOff } from "lucide-react";
+import {
+  Plus,
+  Pencil,
+  Trash2,
+  Eye,
+  EyeOff,
+  Send,
+  Check,
+} from "lucide-react";
 
 type Post = {
   id: string;
@@ -11,6 +19,7 @@ type Post = {
   category: string;
   published: boolean;
   publishedAt: string;
+  newsletterSentAt?: string | null;
   _count: { views: number };
 };
 
@@ -18,6 +27,7 @@ export default function AdminPostsPage() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [sendingId, setSendingId] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/admin/posts")
@@ -42,6 +52,45 @@ export default function AdminPostsPage() {
       }
     } finally {
       setDeletingId(null);
+    }
+  }
+
+  async function handleSend(post: Post, force = false) {
+    const prompt = force
+      ? `Resend "${post.title}" to all active subscribers?`
+      : `Send "${post.title}" to all active subscribers?`;
+    if (!confirm(prompt)) return;
+    setSendingId(post.id);
+    try {
+      const res = await fetch("/api/admin/newsletter/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ postId: post.id, force }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setPosts((prev) =>
+          prev.map((p) =>
+            p.id === post.id
+              ? { ...p, newsletterSentAt: new Date().toISOString() }
+              : p
+          )
+        );
+        alert(
+          `Sent to ${data.successCount}/${data.recipientCount} subscribers` +
+            (data.failCount ? ` (${data.failCount} failed).` : ".")
+        );
+      } else if (res.status === 409) {
+        if (confirm(`${data.error} Resend anyway?`)) {
+          await handleSend(post, true);
+        }
+      } else {
+        alert(data.error ?? "Send failed");
+      }
+    } catch {
+      alert("Send failed. Please try again.");
+    } finally {
+      setSendingId(null);
     }
   }
 
@@ -74,6 +123,7 @@ export default function AdminPostsPage() {
                 <th className="px-4 py-3">Title</th>
                 <th className="px-4 py-3">Category</th>
                 <th className="px-4 py-3">Status</th>
+                <th className="px-4 py-3">Newsletter</th>
                 <th className="px-4 py-3">Views</th>
                 <th className="px-4 py-3 text-right">Actions</th>
               </tr>
@@ -104,6 +154,49 @@ export default function AdminPostsPage() {
                     ) : (
                       <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/20 px-2 py-0.5 text-xs text-amber-400">
                         <EyeOff className="h-3 w-3" /> Draft
+                      </span>
+                    )}
+                  </td>
+                  <td className="px-4 py-3">
+                    {post.published ? (
+                      <div className="flex items-center gap-2">
+                        <a
+                          href={`/api/admin/newsletter/preview?postId=${post.id}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex rounded p-1.5 text-[rgba(255,255,255,0.6)] hover:bg-[rgba(255,255,255,0.1)] hover:text-white"
+                          title="Preview email"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </a>
+                        {post.newsletterSentAt ? (
+                          <button
+                            type="button"
+                            onClick={() => handleSend(post, true)}
+                            disabled={sendingId === post.id}
+                            className="inline-flex items-center gap-1 rounded-full bg-green-500/15 px-2 py-0.5 text-xs text-green-400 hover:bg-green-500/25 disabled:opacity-50"
+                            title={`Sent ${new Date(
+                              post.newsletterSentAt
+                            ).toLocaleString()} — click to resend`}
+                          >
+                            <Check className="h-3 w-3" />
+                            {sendingId === post.id ? "Sending…" : "Sent"}
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => handleSend(post, false)}
+                            disabled={sendingId === post.id}
+                            className="inline-flex items-center gap-1 rounded-full bg-[#FDBE35]/15 px-2.5 py-1 text-xs text-[#FDBE35] hover:bg-[#FDBE35]/25 disabled:opacity-50"
+                          >
+                            <Send className="h-3 w-3" />
+                            {sendingId === post.id ? "Sending…" : "Send"}
+                          </button>
+                        )}
+                      </div>
+                    ) : (
+                      <span className="text-xs text-[rgba(255,255,255,0.3)]">
+                        —
                       </span>
                     )}
                   </td>

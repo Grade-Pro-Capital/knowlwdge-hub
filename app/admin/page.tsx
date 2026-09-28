@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { FileText, BarChart3, Plus, BookOpen, FileStack } from "lucide-react";
+import { FileText, BarChart3, Plus, BookOpen, FileStack, Mail } from "lucide-react";
 
 export default function AdminDashboardPage() {
   return (
@@ -31,6 +31,20 @@ export default function AdminDashboardPage() {
             <h2 className="font-medium">New Post</h2>
             <p className="text-sm text-[rgba(255,255,255,0.6)]">
               Create a new blog post
+            </p>
+          </div>
+        </Link>
+        <Link
+          href="/admin/subscribers"
+          className="flex items-center gap-4 rounded-xl border border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.03)] p-6 transition-colors hover:border-[rgba(253,190,53,0.3)] hover:bg-[rgba(255,255,255,0.06)]"
+        >
+          <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-[rgba(253,190,53,0.2)]">
+            <Mail className="h-6 w-6 text-[#FDBE35]" />
+          </div>
+          <div>
+            <h2 className="font-medium">Subscribers</h2>
+            <p className="text-sm text-[rgba(255,255,255,0.6)]">
+              Newsletter subscriber list
             </p>
           </div>
         </Link>
