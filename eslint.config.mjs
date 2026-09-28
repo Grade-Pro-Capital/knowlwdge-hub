@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Downloaded Framer site bundles kept as a reference snapshot (not our code).
+    "reference/**",
   ]),
 ]);
 

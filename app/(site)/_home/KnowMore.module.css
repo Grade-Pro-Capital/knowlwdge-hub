@@ -1,0 +1,61 @@
+/* Hero "Know More" pill. Appears 0.8s after load (opacity, spring 1.1s). */
+.button {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: min-content;
+  padding: 12px 24px;
+  overflow: hidden;
+  cursor: pointer;
+  border-radius: 60px;
+  background: linear-gradient(90deg, var(--gc-gold-light) 0%, var(--gc-gold) 100%);
+  will-change: transform;
+  animation: know-more-appear 1100ms var(--gc-spring-ease) 800ms backwards;
+}
+
+.button::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 1px solid var(--gc-gold-light);
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.button:focus-visible {
+  outline: none;
+}
+
+.text {
+  position: relative;
+  flex: none;
+  color: var(--gc-bg);
+  white-space: pre;
+}
+
+.textPhone {
+  display: none;
+}
+
+@keyframes know-more-appear {
+  from {
+    opacity: 0.001;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 809.98px) {
+  .textWide {
+    display: none;
+  }
+
+  .textPhone {
+    display: block;
+  }
+}

@@ -1,0 +1,31 @@
+.badge {
+  position: relative;
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  overflow: hidden;
+  padding: 4px 8px;
+  width: min-content;
+  border-radius: 10px;
+  background-color: rgba(252, 188, 48, 0.1);
+}
+
+/* Framer draws the 0.5px gold border with an ::after overlay. */
+.badge::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 0.5px solid var(--gc-gold);
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.text {
+  font-family: "Poppins", "Poppins Placeholder", sans-serif;
+  font-size: 9px;
+  line-height: 10px;
+  color: var(--gc-gold-light);
+  white-space: pre;
+}

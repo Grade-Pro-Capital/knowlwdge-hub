@@ -1,0 +1,16 @@
+/* Framer "Delivering with Security": Results block, the sticky "Designed for
+   Success" card stack and its four scroll triggers, on a vertical gradient. */
+.section {
+  position: relative;
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  height: min-content;
+  padding: 0;
+  overflow: clip;
+  background: linear-gradient(180deg, var(--gc-surface) 11%, var(--gc-bg) 100%, var(--gc-bg) 165%);
+}

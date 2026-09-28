@@ -1,0 +1,137 @@
+/* "dashborad SS" — the investor dashboard screenshot under the hero.
+   Outer box: layout + load-in (y 150 → 0, 0.8s delay, spring stiffness 400 / damping 71).
+   Inner frame: scroll-linked scale/opacity/y (set from DashboardPreview.tsx). */
+
+.appear {
+  position: relative;
+  z-index: 5;
+  flex: none;
+  width: 80%;
+  max-width: 1200px;
+  animation: dashboard-appear var(--gc-spring-stiff-duration) var(--gc-spring-stiff-ease) 800ms backwards;
+}
+
+.frame {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 16px;
+  will-change: transform;
+}
+
+.frame::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 3px solid var(--gc-surface);
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.column {
+  position: relative;
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  width: 100%;
+  overflow: hidden;
+}
+
+.bar {
+  position: relative;
+  display: flex;
+  flex: none;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 10px;
+  width: 100%;
+  padding: 13px;
+  overflow: hidden;
+  background-color: var(--gc-surface);
+}
+
+.bar::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 4px solid var(--gc-surface);
+  pointer-events: none;
+}
+
+/* Window dots — Framer draws them in the bar's own colour, so they're invisible. */
+.dots {
+  position: relative;
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 51px;
+  height: 13px;
+  overflow: hidden;
+}
+
+.dot {
+  position: relative;
+  flex: none;
+  aspect-ratio: 1 / 1;
+  height: 100%;
+  width: auto;
+  overflow: hidden;
+  border-radius: 88px;
+  background-color: var(--gc-surface);
+}
+
+.shot {
+  position: relative;
+  flex: none;
+  aspect-ratio: 1.849 / 1;
+  width: 100%;
+  height: auto;
+  overflow: hidden;
+}
+
+@keyframes dashboard-appear {
+  from {
+    opacity: 0.001;
+    transform: translateY(150px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (min-width: 810px) and (max-width: 1199.98px) {
+  .appear {
+    width: 90%;
+  }
+}
+
+@media (max-width: 809.98px) {
+  .appear {
+    width: 90%;
+  }
+
+  .frame {
+    border-radius: 8px;
+    flex-direction: column;
+  }
+
+  .bar {
+    padding: 4px;
+  }
+
+  .dot {
+    height: 54%;
+  }
+}

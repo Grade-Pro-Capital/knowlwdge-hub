@@ -1,0 +1,276 @@
+/* Framer "Header" component (shared across all main-site pages).
+   Desktop variant at ≥1200px, "Phone/Tab" variant below. */
+
+.root {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  height: auto;
+}
+
+/* Framer promotes the header to its own layer when it carries a scroll or appear
+   effect (home, Support), not otherwise (FAQ). The layer changes how Chrome renders
+   its text and logo, so it is matched per page. */
+.layered {
+  will-change: transform;
+}
+
+/* Home page: Framer pins the header at left 0 (no centring transform) and runs an
+   appear effect { opacity: 0.001, y: -150 } → rest, spring { bounce: 0.2,
+   duration: 0.4 }, delay 0.8s. Fill "backwards": the end state is the normal style. */
+.pinned {
+  left: 0;
+  transform: none;
+}
+
+.appear {
+  animation: header-appear var(--gc-spring-duration) var(--gc-spring-ease) 800ms backwards;
+}
+
+@keyframes header-appear {
+  from {
+    opacity: 0.001;
+    transform: translateY(-150px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---------- Desktop ("Variant 1") ---------- */
+
+.desktop {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  overflow: hidden;
+  width: 100%;
+  background: linear-gradient(0deg, rgba(22, 22, 23, 0) 0%, rgba(22, 22, 23, 0.6) 100%);
+  -webkit-backdrop-filter: blur(23px);
+  backdrop-filter: blur(23px);
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  overflow: hidden;
+  padding: 16px 0;
+  position: relative;
+  width: 95%;
+}
+
+.logoLink {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  overflow: hidden;
+  flex: none;
+}
+
+.logo {
+  position: relative;
+  flex: none;
+  aspect-ratio: 2.7333333333333334 / 1;
+  width: 125px;
+  /* Framer: height var(--framer-aspect-ratio-supported, 46px) → auto (45.73px). */
+  height: auto;
+}
+
+.nav {
+  position: relative;
+  display: flex;
+  flex: 1 0 0px;
+  width: 1px;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  overflow: hidden;
+}
+
+/* Empty slot Framer keeps in the nav (min 79×24) — it shifts the links, so keep it. */
+.navSpacer {
+  position: relative;
+  display: flex;
+  flex: none;
+  gap: 4px;
+  min-width: 79px;
+  min-height: 24px;
+}
+
+.cta {
+  position: relative;
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  overflow: hidden;
+  padding: 8px 14px;
+  width: min-content;
+  border-radius: 60px;
+  background: linear-gradient(107deg, var(--gc-gold-light) -10%, var(--gc-gold) 100%);
+}
+
+.ctaText {
+  font-family: "Poppins", "Poppins Placeholder", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0em;
+  line-height: 18px;
+  color: var(--gc-bg);
+  white-space: pre;
+}
+
+/* ---------- Phone / Tablet ---------- */
+
+.mobile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 32px;
+  overflow: hidden;
+  width: 100%;
+  background: rgba(0, 0, 0, 0);
+  -webkit-backdrop-filter: blur(23px);
+  backdrop-filter: blur(23px);
+}
+
+.mobile[data-open="true"] {
+  background: linear-gradient(0deg, rgba(22, 22, 23, 0) 0%, rgba(22, 22, 23, 0.6) 100%);
+}
+
+.mobileRow {
+  cursor: pointer;
+}
+
+.mobile[data-open="true"] .mobileRow {
+  cursor: auto;
+}
+
+.mobileLogo {
+  position: relative;
+  flex: none;
+  aspect-ratio: 2.7333333333333334 / 1;
+  width: 99px;
+  height: auto;
+}
+
+.mobile[data-open="true"] .mobileLogo {
+  width: 118px;
+}
+
+.menu {
+  position: absolute;
+  right: 0;
+  top: calc(49.33333333333336% - 32px / 2);
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  width: 32px;
+  height: 32px;
+  overflow: visible;
+}
+
+.mobile[data-open="true"] .menu {
+  align-items: flex-end;
+  justify-content: flex-end;
+  cursor: pointer;
+}
+
+.bar {
+  flex: none;
+  position: relative;
+  height: 3px;
+  width: 26px;
+  border-radius: 40px;
+  background-color: var(--gc-text-muted);
+}
+
+.barShort {
+  width: 16px;
+}
+
+.mobile[data-open="true"] .bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(47.82608695652176% - 3px / 2);
+  width: unset;
+  z-index: 1;
+}
+
+.burger {
+  position: relative;
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 40px;
+  overflow: hidden;
+  width: 80%;
+  height: 100vh;
+  order: 1;
+}
+
+.burgerLinks {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.educationRow {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: min-content;
+}
+
+.burgerCta {
+  position: relative;
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  overflow: hidden;
+  padding: 8px 16px;
+  width: 70%;
+  order: 1;
+  border-radius: 60px;
+  background: linear-gradient(107deg, var(--gc-gold-light) -10%, var(--gc-gold) 100%);
+}
+
+@media (max-width: 1199.98px) {
+  .desktop {
+    display: none;
+  }
+}
+
+@media (min-width: 1200px) {
+  .mobile {
+    display: none;
+  }
+}

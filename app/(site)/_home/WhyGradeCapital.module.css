@@ -1,0 +1,164 @@
+/* Home "Why Grade Capital?" section: heading, intro and the three security cards. */
+
+.section {
+  position: relative;
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 48px;
+  width: 100%;
+  overflow: hidden;
+}
+
+.inner {
+  position: relative;
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 40px;
+  width: 83%;
+  max-width: 1200px;
+  padding: 120px 0 40px;
+  overflow: hidden;
+  border-radius: 16px;
+}
+
+.intro {
+  position: relative;
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  overflow: hidden;
+}
+
+.introText {
+  position: relative;
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  width: min-content;
+  overflow: visible;
+}
+
+.heading {
+  position: relative;
+  flex: none;
+  width: auto;
+  white-space: pre;
+  text-align: center;
+  color: var(--gc-gold);
+}
+
+.paragraph {
+  position: relative;
+  flex: none;
+  width: 900px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  text-align: center;
+  color: #fff;
+}
+
+.cards {
+  position: relative;
+  display: flex;
+  flex: none;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  width: 100%;
+  overflow: hidden;
+}
+
+.cardSlot {
+  position: relative;
+  flex: 1 0 0px;
+  align-self: stretch;
+  width: 1px;
+  height: auto;
+}
+
+.cardSlotLast {
+  align-self: auto;
+}
+
+@media (min-width: 810px) and (max-width: 1199.98px) {
+  .inner {
+    width: 90%;
+  }
+
+  .introText,
+  .paragraph {
+    width: 100%;
+  }
+
+  .heading {
+    width: 100%;
+    white-space: pre-wrap;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .cards {
+    flex-direction: column;
+  }
+
+  .cardSlot {
+    align-self: unset;
+    flex: none;
+    width: 100%;
+  }
+}
+
+@media (max-width: 809.98px) {
+  .section {
+    width: 90%;
+  }
+
+  .inner {
+    width: 100%;
+    padding: 80px 0 0;
+  }
+
+  .intro,
+  .paragraph {
+    width: 320px;
+  }
+
+  .introText {
+    gap: 21px;
+    width: 320px;
+  }
+
+  .heading {
+    width: 320px;
+    white-space: pre-wrap;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .cards {
+    flex-direction: column;
+    width: 320px;
+    height: 794px;
+  }
+
+  .cardSlot {
+    align-self: unset;
+    flex: none;
+    width: 100%;
+  }
+}

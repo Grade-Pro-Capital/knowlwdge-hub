@@ -1,0 +1,230 @@
+/* Framer "Glow Card 2–5" components (identical apart from the image offset).
+   Desktop/tablet use "Variant 1", phone uses "Variant 3". */
+
+.card {
+  --glow-radius: 24px;
+  --glow-border: 2px;
+  --glow-size: 300px;
+  --glow-color: rgb(52, 56, 68);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 52px;
+  width: 100%;
+  height: 100%;
+  padding: 24px;
+  overflow: visible;
+  border-radius: 24px;
+  background-color: rgb(10, 10, 11);
+}
+
+.content {
+  position: relative;
+  display: flex;
+  flex: 1 0 0px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 1px;
+  padding: 8px;
+  overflow: visible;
+}
+
+.text {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 8px;
+  width: 100%;
+  overflow: visible;
+}
+
+.middle {
+  position: relative;
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  width: 100%;
+  height: 78px;
+  overflow: hidden;
+}
+
+.titleRow {
+  position: relative;
+  display: flex;
+  flex: none;
+  flex-flow: row wrap;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  width: 100%;
+  height: 78px;
+  overflow: hidden;
+}
+
+.title {
+  position: relative;
+  flex: 1 0 0px;
+  width: 1px;
+  height: 78px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  font-family: "Poppins", "Poppins Placeholder", sans-serif;
+  font-size: 30px;
+  font-weight: 400;
+  letter-spacing: -1px;
+  line-height: 39px;
+  text-align: left;
+  color: #fff;
+}
+
+.bottom {
+  position: relative;
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 30px;
+  width: 100%;
+  overflow: visible;
+}
+
+.body {
+  position: relative;
+  z-index: 1;
+  flex: none;
+  width: 100%;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  font-family: "Poppins", "Poppins Placeholder", sans-serif;
+  font-size: 16px;
+  font-weight: 300;
+  letter-spacing: 0px;
+  line-height: 26px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.image {
+  position: absolute;
+  bottom: 0;
+  left: calc(49.70238095238098% - 333px / 2);
+  z-index: 1;
+  flex: none;
+  width: 333px;
+  height: 333px;
+  overflow: visible;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+}
+
+/* Glow Card 2 centres its image exactly. */
+.imageCentered {
+  left: calc(50.00000000000002% - 333px / 2);
+}
+
+.glowLayer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex: none;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.glowBox {
+  position: relative;
+  flex: 1 0 0px;
+  width: 1px;
+  height: 100%;
+}
+
+@media (max-width: 809.98px) {
+  .card {
+    --glow-radius: 16px;
+    --glow-border: 1px;
+    --glow-size: 60px;
+    --glow-color: rgba(255, 190, 48, 0);
+    gap: 26px;
+    width: 240px;
+    height: 346px;
+    padding: 0;
+  }
+
+  /* The "Fully Managed" card keeps its 2px ring on phones. */
+  .keepBorder {
+    --glow-border: 2px;
+  }
+
+  .content {
+    padding: 16px;
+  }
+
+  .text {
+    gap: 4px;
+    width: 210px;
+    height: 60px;
+  }
+
+  .middle {
+    width: 210px;
+    height: 60px;
+  }
+
+  .titleRow {
+    gap: 5px;
+    width: 210px;
+    height: 60px;
+  }
+
+  .title {
+    flex: none;
+    order: 0;
+    width: 210px;
+    height: 60px;
+    font-size: 20px;
+    line-height: 20px;
+  }
+
+  .bottom {
+    gap: 4px;
+  }
+
+  .body {
+    order: 0;
+    font-size: 14px;
+    line-height: 14px;
+  }
+
+  .image,
+  .imageCentered {
+    bottom: 12px;
+    left: calc(50.00000000000002% - 216px / 2);
+    width: 216px;
+    height: 190px;
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+  }
+
+  .glowLayer {
+    gap: 5px;
+  }
+}

@@ -1,0 +1,68 @@
+/* Framer "Social Link" row: X, LinkedIn, Instagram (footer and Support page). */
+
+.root {
+  position: relative;
+  display: flex;
+  flex: none;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  overflow: hidden;
+  width: min-content;
+}
+
+.social {
+  position: relative;
+  flex: none;
+  height: 32px;
+  width: 32px;
+}
+
+/* Framer "Social Link": transparent → #202227 on hover. */
+.socialLink {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  height: 100%;
+  width: 100%;
+  overflow: visible;
+  cursor: pointer;
+  border-radius: 4px;
+  background-color: rgba(0, 0, 0, 0);
+  transition: background-color var(--gc-spring-duration) var(--gc-spring-ease);
+}
+
+.socialLink:hover {
+  background-color: var(--gc-surface);
+}
+
+.socialIcon {
+  position: relative;
+  flex: none;
+  aspect-ratio: 1 / 1;
+  width: 24px;
+  height: auto;
+  background-color: var(--gc-gold-light);
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  mask-position: center;
+  mask-repeat: no-repeat;
+}
+
+.iconX {
+  -webkit-mask-image: url("/site/icons/x-logo.svg");
+  mask-image: url("/site/icons/x-logo.svg");
+}
+
+.iconLinkedin {
+  -webkit-mask-image: url("/site/icons/linkedin-logo.svg");
+  mask-image: url("/site/icons/linkedin-logo.svg");
+}
+
+.iconInstagram {
+  -webkit-mask-image: url("/site/icons/instagram-logo.svg");
+  mask-image: url("/site/icons/instagram-logo.svg");
+}

@@ -1,0 +1,428 @@
+/* Home "Talk to an expert" section: "Crypto Can Be Clear" + tweet, and the
+   "Book a Free Consultation" form card. */
+
+.section {
+  position: relative;
+  z-index: 6;
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 0;
+  overflow: visible;
+  scroll-margin-top: 800px;
+  background: linear-gradient(180deg, #19191b 0%, var(--gc-bg) 68.5441%);
+}
+
+.inner {
+  position: relative;
+  z-index: 4;
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 0;
+  overflow: visible;
+}
+
+.columns {
+  position: relative;
+  z-index: 0;
+  display: flex;
+  flex: none;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 32px;
+  width: 83%;
+  max-width: 1200px;
+  padding: 0;
+  overflow: visible;
+  border-radius: 16px;
+}
+
+.left {
+  position: relative;
+  display: flex;
+  flex: 1 0 0px;
+  flex-direction: column;
+  align-self: stretch;
+  align-content: center;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 24px;
+  width: 1px;
+  height: auto;
+  padding: 180px 0 0;
+  overflow: hidden;
+}
+
+.text {
+  position: relative;
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  width: 90%;
+  padding: 0;
+  overflow: visible;
+}
+
+.heading {
+  position: relative;
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  width: 100%;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* Framer rich-text container (merged with its text element). */
+.richText {
+  position: relative;
+  flex: none;
+  width: 100%;
+  height: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+.title {
+  color: var(--gc-gold);
+}
+
+/* Framer colours this paragraph #19191b. */
+.paragraph {
+  color: var(--gc-surface-2);
+}
+
+.centered {
+  text-align: center;
+}
+
+/* Breakpoint variants: `wide` on desktop and tablet, `phone` below 810px. */
+.phone {
+  display: none;
+}
+
+.tweet {
+  position: relative;
+  flex: none;
+  aspect-ratio: 5.10753 / 1;
+  width: 90%;
+  height: auto;
+  border-radius: 14px;
+}
+
+.formSection {
+  position: relative;
+  display: flex;
+  flex: 1 0 0px;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 1px;
+  height: 870px;
+  padding: 84px 0 0;
+  overflow: hidden;
+}
+
+.card {
+  position: relative;
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 24px;
+  width: 90%;
+  height: min-content;
+  padding: 32px;
+  overflow: hidden;
+  border-radius: 16px;
+  background-color: rgba(22, 22, 23, 0.93);
+  -webkit-backdrop-filter: blur(13px);
+  backdrop-filter: blur(13px);
+}
+
+.card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 1px solid var(--gc-grey-2);
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.cardPhone {
+  display: none;
+}
+
+.formBody {
+  position: relative;
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  width: 100%;
+  padding: 0;
+  overflow: hidden;
+}
+
+.fields {
+  position: relative;
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  width: 100%;
+  padding: 0;
+  overflow: hidden;
+}
+
+.nameField,
+.field {
+  position: relative;
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 10px;
+  width: 100%;
+  padding: 0;
+}
+
+.nameField {
+  gap: 8px;
+}
+
+.inputRow {
+  position: relative;
+  display: flex;
+  flex: none;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 0;
+  overflow: hidden;
+}
+
+.label {
+  position: relative;
+  flex: none;
+  width: auto;
+  white-space: pre;
+  color: #fff;
+}
+
+.button {
+  position: relative;
+  flex: none;
+  width: 100%;
+}
+
+.note {
+  position: relative;
+  display: flex;
+  flex: none;
+  flex-direction: row;
+  align-content: flex-start;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* Framer colours the note #19191b — nearly invisible on the card. Kept as-is. */
+.noteEmoji {
+  position: relative;
+  flex: none;
+  width: auto;
+  white-space: pre;
+  text-align: left;
+  color: var(--gc-surface-2);
+}
+
+.noteText {
+  position: relative;
+  flex: 1 0 0px;
+  width: 1px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  text-align: left;
+  color: var(--gc-surface-2);
+}
+
+/* Fades the section above into this one. */
+.fade {
+  position: absolute;
+  top: -136px;
+  left: -0.0416696%;
+  z-index: 1;
+  flex: none;
+  width: 100%;
+  height: 136px;
+  overflow: hidden;
+  background: linear-gradient(180deg, #16161700 0%, var(--gc-bg) 100%);
+}
+
+.anchor {
+  position: sticky;
+  top: 0;
+  z-index: 6;
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  height: 1px;
+  padding: 0;
+  overflow: visible;
+  scroll-margin-top: 800px;
+  background: linear-gradient(180deg, #19191b 0%, var(--gc-bg) 68.5441%);
+}
+
+@media (min-width: 810px) and (max-width: 1199.98px) {
+  .anchor {
+    display: block;
+    padding: unset;
+  }
+
+  .columns {
+    flex-direction: column;
+    gap: 0;
+    border-radius: unset;
+  }
+
+  .left {
+    align-self: unset;
+    flex: none;
+    gap: 30px;
+    width: 100%;
+    height: min-content;
+    padding: 115px 0 0;
+  }
+
+  .text {
+    gap: 16px;
+  }
+
+  .wide,
+  .cardHeading {
+    text-align: center;
+  }
+
+  .tweet {
+    width: 66%;
+  }
+
+  .formSection {
+    flex: none;
+    width: 100%;
+    height: 635px;
+    padding: 24px 0 0;
+  }
+
+  .cardWide {
+    width: 80%;
+  }
+
+  .fade {
+    top: -156px;
+    left: -0.0617266%;
+    height: 156px;
+  }
+}
+
+@media (max-width: 809.98px) {
+  .columns {
+    flex-direction: column;
+    gap: 24px;
+    width: 90%;
+  }
+
+  .left {
+    align-self: unset;
+    flex: none;
+    order: 0;
+    gap: 40px;
+    width: 100%;
+    height: min-content;
+    padding: 80px 0 0;
+  }
+
+  .wide {
+    display: none;
+  }
+
+  .phone {
+    display: block;
+  }
+
+  .tweet {
+    width: 95%;
+  }
+
+  .formSection {
+    flex: none;
+    order: 1;
+    width: 100%;
+    height: min-content;
+    padding: 24px 0 48px;
+  }
+
+  .cardWide {
+    display: none;
+  }
+
+  .cardPhone {
+    display: flex;
+    flex: 1 0 0px;
+    gap: 32px;
+    width: 1px;
+    padding: 24px;
+  }
+
+  .fade {
+    display: none;
+  }
+
+  .anchor {
+    display: block;
+    padding: unset;
+  }
+
+  /* Unlike the section's own fade, the anchor's stays on phones (91px). */
+  .anchorFade {
+    display: block;
+    top: -91px;
+    left: -0.128204%;
+    height: 91px;
+  }
+}

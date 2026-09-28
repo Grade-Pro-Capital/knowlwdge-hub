@@ -1,0 +1,213 @@
+/* Home "Hero section" — values from Framer's page CSS. */
+
+.hero {
+  position: relative;
+  z-index: 4;
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  /* Taller viewports push the content down, exactly like Framer. */
+  height: 55vh;
+  padding: 320px 0 215px;
+  overflow: clip;
+}
+
+.content {
+  position: relative;
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 32px;
+  width: 83%;
+  max-width: 1200px;
+  padding: 0 0 32px;
+  overflow: visible;
+}
+
+.badgeWrap {
+  position: relative;
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 16px;
+  width: 100%;
+  overflow: visible;
+}
+
+/* Phone keeps the badge in its own row above the content. */
+.badgeWrapPhone {
+  display: none;
+}
+
+.badge {
+  position: relative;
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: min-content;
+  padding: 8px 10px 8px 8px;
+  border-radius: 8px;
+  background: linear-gradient(107deg, var(--gc-bg) 0%, var(--gc-surface) 100%);
+  will-change: transform;
+  animation: rise-63 1000ms var(--gc-spring-ease) backwards;
+}
+
+.badge::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 1px solid var(--gc-gold-light);
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.flag {
+  position: relative;
+  flex: none;
+  aspect-ratio: 1 / 1;
+  width: 24px;
+  height: auto;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.badgeTextWrap {
+  position: relative;
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: min-content;
+}
+
+.badgeText {
+  font-family: "Poppins", "Poppins Placeholder", sans-serif;
+  font-size: 16px;
+  font-weight: 300;
+  line-height: 27.82595512431777px;
+  color: #fff;
+  text-transform: capitalize;
+  white-space: pre;
+}
+
+.titleWrap {
+  position: relative;
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 24px;
+  width: 100%;
+  overflow: hidden;
+}
+
+.title {
+  --title-lh: 73px;
+  position: relative;
+  flex: none;
+  width: 100%;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  text-align: center;
+  will-change: transform;
+  animation: rise-150 1200ms var(--gc-spring-ease) backwards;
+}
+
+/* Framer's [data-text-fill] rule: padding max(0, (1.3em − line-height) / 2) with
+   an equal negative margin, so the clipped gradient covers glyph overhangs.
+   --title-lh mirrors the preset's line-height at each breakpoint. */
+.gradientText {
+  display: inline-block;
+  padding: max(0em, calc((1.3em - var(--title-lh)) / 2));
+  margin: min(0em, calc((1.3em - var(--title-lh)) / -2));
+  background-image: linear-gradient(107deg, var(--gc-text-primary) 28.999999999999996%, var(--gc-bg) 105%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.cta {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  width: 100%;
+  overflow: visible;
+}
+
+@keyframes rise-63 {
+  from {
+    opacity: 0.001;
+    transform: translateY(63px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes rise-150 {
+  from {
+    opacity: 0.001;
+    transform: translateY(150px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (max-width: 1439px) and (min-width: 1200px) {
+  .title {
+    --title-lh: 64px;
+  }
+}
+
+@media (max-width: 1199px) and (min-width: 810px) {
+  .title {
+    --title-lh: 60px;
+  }
+}
+
+@media (max-width: 809px) {
+  .title {
+    --title-lh: 47px;
+  }
+}
+
+@media (max-width: 809.98px) {
+  .hero {
+    padding: 280px 0 215px;
+  }
+
+  .content {
+    order: 1;
+    width: 90%;
+    padding: 0;
+  }
+
+  .badgeWrapDesktop {
+    display: none;
+  }
+
+  .badgeWrapPhone {
+    display: flex;
+    order: 0;
+  }
+}

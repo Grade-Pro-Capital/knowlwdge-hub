@@ -1,0 +1,234 @@
+/* Framer form controls as styled on the site: text input ("framer-form-text-input")
+   and the "Button 4" submit button. */
+
+.inputWrapper {
+  position: relative;
+  display: flex;
+  flex: none;
+  align-items: center;
+  width: 100%;
+  height: 50px;
+  padding: 12px;
+  overflow: hidden;
+  border-radius: 8px;
+  background: var(--gc-surface-2);
+}
+
+.inputWrapper::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  box-sizing: border-box;
+  pointer-events: none;
+  border: 1px solid var(--input-border, var(--gc-surface));
+  border-radius: 8px;
+}
+
+.inputWrapper:focus-within::after {
+  border-color: var(--gc-gold-light);
+}
+
+.input {
+  flex: 1;
+  width: auto;
+  min-width: 0;
+  height: 100%;
+  padding: 0;
+  overflow: hidden;
+  border: none;
+  background: none;
+  font-family: "Inter";
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 0em;
+  line-height: 1.2em;
+  color: var(--input-text, #fff);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.input:focus-visible {
+  outline: none;
+}
+
+.input::placeholder {
+  color: var(--input-placeholder, var(--gc-text-muted));
+}
+
+.placeholderPink {
+  --input-placeholder: var(--gc-pink-light);
+}
+
+.textPrimary {
+  --input-text: var(--gc-text-primary);
+}
+
+.grow {
+  flex: 1 0 0;
+  width: 1px;
+}
+
+/* Textarea: the wrapper drops its padding, the textarea takes it and inherits the
+   wrapper min-height. */
+.textareaWrapper {
+  height: auto;
+  padding: 0;
+}
+
+.textarea {
+  display: flex;
+  width: 100%;
+  height: auto;
+  min-height: inherit;
+  max-height: inherit;
+  padding: 12px;
+  overflow-y: auto;
+  resize: vertical;
+  white-space: break-spaces;
+}
+
+.textarea::-webkit-resizer {
+  background: url("data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2214%22 height=%2214%22><path d=%22m1.5 8 7-7M9 5.5l-3 3%22 stroke=%22%23999%22 stroke-width=%221.5%22 stroke-linecap=%22round%22></path></svg>") no-repeat;
+}
+
+.textarea::-webkit-scrollbar {
+  cursor: pointer;
+  background: none;
+}
+
+.textarea::-webkit-scrollbar-thumb:window-inactive {
+  opacity: 0;
+}
+
+.textarea::-webkit-scrollbar-corner {
+  background: none;
+  outline: none;
+}
+
+/* Select ("framer-form-select-wrapper"): 16px right padding, border as ::after,
+   chevron as ::before (a 42px box at the right edge, icon 10px in). */
+.selectWrapper {
+  position: relative;
+  flex: 1 0 0px;
+  width: 1px;
+  height: auto;
+  padding: 0 16px 0 0;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.selectWrapper::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  border: 1px solid var(--select-border);
+  border-radius: 8px;
+}
+
+.selectWrapper:focus-within::after {
+  border-color: #0099ff;
+}
+
+.selectWrapper::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: block;
+  box-sizing: content-box;
+  width: 16px;
+  padding: 12px 16px 12px 10px;
+  pointer-events: none;
+  border: none;
+  background-color: var(--select-icon);
+  -webkit-mask-image: url("data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\"><path d=\"M 3.5 6 L 8 10.5 L 12.5 6\" fill=\"transparent\" stroke-width=\"1.5\" stroke=\"rgb(153, 153, 153)\" stroke-linecap=\"round\" stroke-linejoin=\"round\"></path></svg>");
+  mask-image: url("data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\"><path d=\"M 3.5 6 L 8 10.5 L 12.5 6\" fill=\"transparent\" stroke-width=\"1.5\" stroke=\"rgb(153, 153, 153)\" stroke-linecap=\"round\" stroke-linejoin=\"round\"></path></svg>");
+  -webkit-mask-position: 10px;
+  mask-position: 10px;
+  -webkit-mask-size: 16px;
+  mask-size: 16px;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
+
+.selectLight {
+  --select-border: var(--gc-grey-2);
+  --select-icon: var(--gc-bg);
+  background: #f2f2f2;
+}
+
+.selectLight .select {
+  color: #000;
+}
+
+.selectOutline {
+  --select-border: var(--gc-text-muted);
+  --select-icon: var(--gc-text-muted);
+}
+
+.selectOutline .select {
+  color: #fff;
+}
+
+.select {
+  width: 100%;
+  height: auto;
+  padding: 12px 16px;
+  overflow: hidden;
+  border: none;
+  background: none;
+  -webkit-appearance: none;
+  appearance: none;
+  font-family: "Poppins";
+  font-size: 16px;
+  font-weight: 400;
+  letter-spacing: 0em;
+  line-height: 1.2em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.select:focus-visible {
+  outline: none;
+}
+
+.select option {
+  color: #000;
+}
+
+.button {
+  position: relative;
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  width: 100%;
+  height: 45px;
+  padding: 0;
+  overflow: visible;
+  border: 0;
+  border-radius: 27px;
+  cursor: pointer;
+  background-color: var(--gc-gold-light);
+  transition: background-color 0.2s cubic-bezier(0.44, 0, 0.56, 1);
+}
+
+.button:hover,
+.button:active {
+  background-color: rgb(252, 188, 48);
+}
+
+.buttonText {
+  position: relative;
+  flex: none;
+  color: var(--gc-bg);
+  white-space: pre;
+  user-select: none;
+}

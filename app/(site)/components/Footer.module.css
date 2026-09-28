@@ -1,0 +1,704 @@
+/* Framer "Footer" component. Three layouts: desktop (≥1200px), tablet
+   (810–1199px) and phone (<810px). Values copied from Framer's CSS. */
+
+.root {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  overflow: hidden;
+  width: 100%;
+}
+
+.main {
+  position: relative;
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0;
+  overflow: hidden;
+  padding: 48px 0 0;
+  width: 100%;
+  background-color: var(--gc-bg);
+}
+
+.container {
+  position: relative;
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 41px;
+  max-width: 1200px;
+  overflow: hidden;
+  width: 83%;
+}
+
+/* Logo + app badges */
+.top {
+  position: relative;
+  display: flex;
+  flex: none;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  overflow: visible;
+  width: 100%;
+}
+
+.logo {
+  position: relative;
+  flex: none;
+  aspect-ratio: 2.7333333333333334 / 1;
+  height: auto;
+  width: 15%;
+}
+
+.stores {
+  position: relative;
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 20px;
+  overflow: hidden;
+  width: min-content;
+}
+
+.storeRow {
+  position: relative;
+  display: flex;
+  flex: none;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  overflow: hidden;
+  width: min-content;
+}
+
+.storeLink {
+  position: relative;
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  overflow: hidden;
+  width: min-content;
+}
+
+.badge {
+  position: relative;
+  height: 48px;
+  width: 148px;
+}
+
+/* Addresses + link columns */
+.body {
+  position: relative;
+  display: flex;
+  flex: none;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+  overflow: visible;
+  width: 100%;
+}
+
+.addresses {
+  position: relative;
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 32px;
+  overflow: hidden;
+  width: 351px;
+}
+
+.addressGroup {
+  position: relative;
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 8px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.label {
+  position: relative;
+  flex: none;
+  width: 100%;
+  font-family: "Poppins", "Poppins Placeholder", sans-serif;
+  font-size: 13px;
+  letter-spacing: -0.01em;
+  line-height: 18px;
+  text-transform: uppercase;
+  color: var(--gc-text-muted);
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+.address {
+  position: relative;
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  justify-content: flex-start;
+  width: 100%;
+}
+
+.address p {
+  font-family: "Poppins", "Poppins Placeholder", sans-serif;
+  font-size: 14px;
+  line-height: 24px;
+  color: #fff;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+/* The registered-office group keeps a fixed 351px width at every size. */
+.addressGroupFixed {
+  width: 351px;
+}
+
+/* Framer fixes this text box at 14px tall; the 24px line overflows it evenly. */
+.addressShort {
+  height: 14px;
+  justify-content: center;
+}
+
+.addressShort p {
+  text-align: left;
+}
+
+.addressNoWrap {
+  width: auto;
+  justify-content: center;
+}
+
+.addressNoWrap p {
+  white-space: pre;
+}
+
+.columns {
+  position: relative;
+  display: flex;
+  flex: none;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 40px;
+  overflow: hidden;
+  width: min-content;
+}
+
+.linksColumn {
+  position: relative;
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 40px;
+  overflow: hidden;
+  padding: 0 0 40px;
+  width: 170px;
+}
+
+.linkSection {
+  position: relative;
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 20px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.sitemap {
+  position: relative;
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 10px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.educationRow {
+  position: relative;
+  display: flex;
+  flex: none;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  overflow: visible;
+  width: min-content;
+}
+
+.registered {
+  position: relative;
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  align-self: stretch;
+  justify-content: flex-start;
+  gap: 39px;
+  height: auto;
+  overflow: hidden;
+  padding: 0 0 40px;
+  width: 176px;
+}
+
+.registeredHead {
+  position: relative;
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 16px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.registeredLogos {
+  position: relative;
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  overflow: visible;
+  width: 100%;
+}
+
+.elevate {
+  position: relative;
+  flex: none;
+  aspect-ratio: 3.0208333333333335 / 1;
+  height: auto;
+  overflow: visible;
+  width: 100%;
+  filter: invert(1) saturate(0);
+}
+
+.atlantease {
+  position: relative;
+  flex: none;
+  aspect-ratio: 1.3743016759776536 / 1;
+  height: auto;
+  overflow: visible;
+  width: 135px;
+  filter: invert(0) saturate(0);
+}
+
+/* Legal links row */
+.legal {
+  position: relative;
+  display: flex;
+  flex: none;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  overflow: hidden;
+  padding: 24px 0;
+  width: 100%;
+}
+
+.legalLinks {
+  position: relative;
+  display: flex;
+  flex: none;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 56px;
+  height: 22px;
+  min-width: 1200px;
+  overflow: hidden;
+  width: 83%;
+}
+
+.legalItem {
+  position: relative;
+  flex: none;
+  height: 18px;
+  width: auto;
+}
+
+.legalItemFixed {
+  width: 95px;
+}
+
+/* Framer "Footer text": #797b86 → #b2b3bd on hover (and on the current page). */
+.legalLink {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  height: 100%;
+  width: min-content;
+  overflow: visible;
+  cursor: pointer;
+}
+
+.legalItemFixed .legalLink {
+  width: 100%;
+}
+
+.legalText {
+  position: relative;
+  flex: none;
+  font-family: "Poppins", "Poppins Placeholder", sans-serif;
+  font-size: 16px;
+  letter-spacing: -0.01em;
+  line-height: 24px;
+  color: var(--gc-text-muted);
+  white-space: pre;
+  transition: color var(--gc-spring-duration) var(--gc-spring-ease);
+}
+
+.legalLink:hover .legalText,
+.legalActive .legalText {
+  color: var(--gc-text-secondary);
+}
+
+/* Investor notice */
+.notice {
+  position: relative;
+  display: flex;
+  flex: none;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  overflow: hidden;
+  padding: 24px 0;
+  width: 100%;
+}
+
+.noticeText {
+  position: relative;
+  flex: none;
+  min-width: 1200px;
+  width: 83%;
+  font-family: "Poppins", "Poppins Placeholder", sans-serif;
+  font-size: 14px;
+  line-height: 24px;
+  color: var(--gc-text-muted);
+  text-align: center;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+.noticeText strong {
+  font-weight: 400;
+}
+
+/* Copyright bar */
+.copyright {
+  position: relative;
+  display: flex;
+  flex: none;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 56px;
+  min-width: 83%;
+  overflow: hidden;
+  padding: 8px 0;
+  width: 100%;
+  background-color: var(--gc-surface);
+}
+
+.copyrightInner {
+  position: relative;
+  display: flex;
+  flex: none;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  height: 18px;
+  max-width: 1200px;
+  overflow: visible;
+  width: 83%;
+}
+
+.copyrightBox {
+  position: relative;
+  display: flex;
+  flex: 1 0 0px;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  overflow: visible;
+  width: 1px;
+}
+
+.copyrightText {
+  position: relative;
+  flex: 1 0 0px;
+  width: 1px;
+  font-family: "Poppins", "Poppins Placeholder", sans-serif;
+  font-size: 14px;
+  line-height: 24px;
+  color: var(--gc-text-muted);
+  text-align: center;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Which badge drawing shows depends on the layout (Framer has one per breakpoint). */
+.badgeTablet,
+.badgePhone {
+  display: none;
+}
+
+/* ---------- Tablet (810–1199px) ---------- */
+@media (min-width: 810px) and (max-width: 1199.98px) {
+  .container {
+    gap: 0;
+  }
+
+  .logo {
+    width: 187px;
+  }
+
+  .badge {
+    width: 149px;
+  }
+
+  .badgeDesktop {
+    display: none;
+  }
+
+  .badgeTablet {
+    display: block;
+  }
+
+  .body {
+    flex-direction: column;
+  }
+
+  .addresses {
+    padding: 40px 0 0;
+    width: 100%;
+  }
+
+  .columns {
+    gap: 100px;
+    padding: 0 0 32px;
+    width: 100%;
+  }
+
+  .linksColumn {
+    flex: 1 0 0px;
+    flex-direction: row;
+    gap: 34px;
+    justify-content: center;
+    padding: 40px 0 0;
+    width: 1px;
+  }
+
+  .linkSection {
+    flex: 1 0 0px;
+    width: 1px;
+  }
+
+  .sitemap {
+    gap: 16px;
+  }
+
+  .registered {
+    align-self: unset;
+    flex: 1 0 0px;
+    gap: 50px;
+    height: min-content;
+    padding: 40px 0 0;
+    width: 1px;
+  }
+
+  .registeredHead .label {
+    width: 360px;
+  }
+
+  .elevate {
+    height: auto;
+  }
+
+  .legalLinks {
+    align-items: flex-start;
+    gap: 26px;
+    height: min-content;
+    justify-content: flex-start;
+    min-width: 600px;
+    width: 89%;
+  }
+
+  .legalItemFixed {
+    height: auto;
+    width: 15%;
+  }
+
+  .noticeText {
+    min-width: unset;
+    text-align: left;
+  }
+
+  .copyrightInner {
+    height: min-content;
+  }
+
+  .copyrightBox {
+    justify-content: flex-start;
+  }
+
+  .copyrightText {
+    flex: none;
+    width: 424px;
+    text-align: left;
+  }
+}
+
+/* ---------- Phone (<810px) ---------- */
+@media (max-width: 809.98px) {
+  .container {
+    gap: 0;
+    width: 90%;
+  }
+
+  .top {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 32px;
+    justify-content: flex-start;
+  }
+
+  .logo {
+    width: 181px;
+  }
+
+  .badge {
+    height: 45px;
+    width: 139px;
+  }
+
+  .badgeDesktop {
+    display: none;
+  }
+
+  .badgePhone {
+    display: block;
+  }
+
+  .body {
+    flex-direction: column;
+  }
+
+  .addresses {
+    padding: 40px 0 0;
+    width: 100%;
+  }
+
+  .columns {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .linksColumn {
+    gap: 34px;
+    justify-content: center;
+    padding: 40px 0 0;
+    width: 100%;
+  }
+
+  .sitemap {
+    gap: 16px;
+  }
+
+  .registered {
+    align-self: unset;
+    gap: 16px;
+    height: min-content;
+    width: 100%;
+  }
+
+  .registeredLogos {
+    flex-direction: row;
+    gap: 18px;
+    padding: 0 16px;
+  }
+
+  .elevate {
+    width: 169px;
+  }
+
+  .atlantease {
+    flex: 1 0 0px;
+    width: 1px;
+  }
+
+  .legalLinks {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 26px;
+    height: min-content;
+    min-width: unset;
+    width: 90%;
+  }
+
+  .legalItemFixed {
+    width: auto;
+  }
+
+  .legalItemFixed .legalLink {
+    width: min-content;
+  }
+
+  .noticeText {
+    min-width: unset;
+    width: 90%;
+    text-align: left;
+  }
+
+  .copyright {
+    min-width: unset;
+  }
+
+  .copyrightInner {
+    height: min-content;
+    width: 90%;
+  }
+
+  .copyrightText {
+    text-align: left;
+  }
+}

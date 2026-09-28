@@ -1,0 +1,47 @@
+/* Framer "Header text" component — nav/sitemap links (Default / Active / Disable). */
+
+.item {
+  flex: none;
+  height: 24px;
+  position: relative;
+  width: auto;
+}
+
+.link {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  height: 100%;
+  width: min-content;
+  cursor: pointer;
+}
+
+.disable {
+  cursor: unset;
+}
+
+.text {
+  font-family: "Poppins", "Poppins Placeholder", sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 24px;
+  color: #fff;
+  white-space: pre;
+  transition: color var(--gc-spring-duration) var(--gc-spring-ease);
+}
+
+.link:not(.disable):not(.active):hover .text,
+.link:not(.disable):not(.active):active .text {
+  color: var(--gc-gold-light);
+}
+
+.active .text {
+  color: var(--gc-gold);
+}
+
+.disable .text {
+  color: var(--gc-text-muted);
+}

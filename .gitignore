@@ -46,3 +46,10 @@ next-env.d.ts
 rohit-gc-kn-hub
 rohit-gc-kn-hub.pub
 
+
+# Framer reference screenshots (regenerate with tools/framer/snapshot.mjs)
+/reference/framer/screenshots/
+/reference/compare/
+/reference/framer/scroll/
+# Prettier-formatted copies of reference/framer/js (regenerate with npx prettier)
+/reference/framer/js-pretty/

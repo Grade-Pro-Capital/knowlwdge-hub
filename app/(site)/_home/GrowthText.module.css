@@ -1,0 +1,151 @@
+/* Framer "text" component: "Growth [animated icon] you See". */
+
+/* The page sizes this component to its 138px slot (height 100%); the taller text
+   is centred in it and overflows, as in Framer. */
+.root {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: min-content;
+  height: 100%;
+  padding: 0;
+  overflow: hidden;
+}
+
+.row {
+  position: relative;
+  display: flex;
+  flex: none;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  width: min-content;
+  height: min-content;
+  padding: 0;
+  overflow: visible;
+}
+
+.word {
+  position: relative;
+  flex: none;
+  width: auto;
+  height: 174px;
+  white-space: pre;
+  font-family: "Poppins", "Poppins Placeholder", sans-serif;
+  font-size: 104px;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 172px;
+  text-align: center;
+}
+
+/* Gradient text (Framer [data-text-fill]); padding is 0 at these line heights. */
+.fill {
+  display: inline-block;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.growth {
+  background-image: linear-gradient(96deg, rgb(255, 255, 255) -20%, var(--gc-text-secondary) 75%);
+}
+
+.youSee {
+  background-image: linear-gradient(279deg, var(--gc-grey) -14.000000000000002%, var(--gc-text-secondary) 51%);
+}
+
+/* Tile: base -10°, loops +18° and back (mirror), spring { bounce 0, duration 1.2 } per leg. */
+.tile {
+  position: relative;
+  display: flex;
+  flex: none;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: min-content;
+  height: min-content;
+  padding: 4px;
+  overflow: hidden;
+  border-radius: 16px;
+  background: linear-gradient(128deg, var(--gc-gold-light) 0%, var(--gc-gold) 100%);
+  transform: rotate(-10deg);
+  will-change: transform;
+  animation: tile-rock 2400ms infinite;
+}
+
+.lottie {
+  position: relative;
+  flex: none;
+  width: 73px;
+  height: 67px;
+}
+
+@keyframes tile-rock {
+  0% {
+    transform: rotate(-10deg);
+    animation-timing-function: linear(0, 0.0229, 0.0788, 0.1532, 0.2361, 0.3208, 0.403, 0.4802, 0.5509, 0.6146, 0.6711, 0.7207, 0.7638, 0.801, 0.8329, 0.8601, 0.8832, 0.9027, 0.9191, 0.9329, 0.9445, 0.9541, 0.9621, 0.9688, 0.9743, 0.9789, 0.9827, 0.9858, 0.9884, 0.9905, 0.9922, 0.9936, 0.9948, 0.9958, 0.9965, 0.9972, 0.9977, 0.9981, 0.9985, 0.9988, 1);
+  }
+  50% {
+    transform: rotate(8deg);
+    animation-timing-function: linear(0, 0.0229, 0.0788, 0.1532, 0.2361, 0.3208, 0.403, 0.4802, 0.5509, 0.6146, 0.6711, 0.7207, 0.7638, 0.801, 0.8329, 0.8601, 0.8832, 0.9027, 0.9191, 0.9329, 0.9445, 0.9541, 0.9621, 0.9688, 0.9743, 0.9789, 0.9827, 0.9858, 0.9884, 0.9905, 0.9922, 0.9936, 0.9948, 0.9958, 0.9965, 0.9972, 0.9977, 0.9981, 0.9985, 0.9988, 1);
+  }
+  100% {
+    transform: rotate(-10deg);
+  }
+}
+
+@media (min-width: 810px) and (max-width: 1199.98px) {
+  .root {
+    justify-content: flex-start;
+  }
+
+  .row {
+    gap: 10px;
+  }
+
+  .word {
+    height: auto;
+    font-size: 72px;
+    line-height: 102px;
+  }
+
+  .lottie {
+    width: 64px;
+    height: 59px;
+  }
+}
+
+@media (max-width: 809.98px) {
+  .root {
+    overflow: visible;
+  }
+
+  .row {
+    gap: 4px;
+  }
+
+  .word {
+    height: auto;
+    font-size: 40px;
+    line-height: 52px;
+  }
+
+  .growthWord {
+    height: 50px;
+  }
+
+  .tile {
+    border-radius: 8px;
+  }
+
+  .lottie {
+    width: 31px;
+    height: 29px;
+  }
+}
