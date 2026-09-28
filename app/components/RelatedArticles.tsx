@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ImageWithFallback } from "./ImageWithFallback";
 import { resolvePostImage } from "@/app/lib/images";
+import { postPath } from "@/app/lib/blogPaths";
 
 export type RelatedArticle = {
   slug: string;
@@ -31,7 +32,7 @@ export function RelatedArticles({
           return (
             <Link
               key={article.slug}
-              href={`/blog/${article.slug}`}
+              href={postPath(article.slug)}
               className="group overflow-hidden rounded-lg border border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.06)] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)] transition-all hover:border-[rgba(212,175,55,0.3)] hover:bg-[rgba(255,255,255,0.09)]"
             >
               <div className="relative aspect-[16/10] w-full overflow-hidden">

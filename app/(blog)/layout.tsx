@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Script from "next/script";
 import { Poppins } from "next/font/google";
-import "./globals.css";
+import "../globals.css";
 import { SITE_TITLE, SITE_DESCRIPTION, SITE_NAME_OG } from "@/app/lib/siteConfig";
 
 const poppins = Poppins({

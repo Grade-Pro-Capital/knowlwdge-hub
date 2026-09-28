@@ -17,7 +17,7 @@ export function SiteFooter() {
   return (
     <footer className="footer">
       <div className="footer-brand">
-        <Link className="logo flex items-center" href="/" aria-label="Grade Capital home">
+        <Link className="logo flex items-center" href="/blogs" aria-label="Grade Capital home">
           <Image
             src="/logo.png"
             alt="Grade Capital"

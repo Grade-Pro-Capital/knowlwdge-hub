@@ -4,9 +4,10 @@ import { getBaseUrl } from "@/app/lib/seo";
 import { SITE_TITLE, SITE_NAME_OG } from "@/app/lib/siteConfig";
 import { JsonLdScript } from "@/app/components/JsonLdScript";
 import { organizationJsonLd, webSiteJsonLd } from "@/app/lib/jsonLd";
+import { BLOG_BASE } from "@/app/lib/blogPaths";
 
 const base = getBaseUrl();
-const canonical = `${base}/`;
+const canonical = `${base}${BLOG_BASE}`;
 const ogImage = `${base}/og-homepage.png`;
 const homeDescription =
   "Research, analysis, and market intelligence for crypto investors in India. Expert insights on Bitcoin, Ethereum, and digital asset regulations.";

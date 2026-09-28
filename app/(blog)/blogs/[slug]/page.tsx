@@ -11,7 +11,8 @@ import { AuthorAvatar } from "@/app/components/AuthorAvatar";
 import { FaqAccordion } from "@/app/components/FaqAccordion";
 import { RelatedArticles } from "@/app/components/RelatedArticles";
 import { NewsletterForm } from "@/app/components/NewsletterForm";
-import { RecordView } from "@/app/blog/RecordView";
+import { RecordView } from "../RecordView";
+import { BLOG_BASE, authorPath, categoryPath, postPath } from "@/app/lib/blogPaths";
 import { JsonLdScript } from "@/app/components/JsonLdScript";
 import { prisma } from "@/app/lib/db";
 import {
@@ -105,7 +106,7 @@ export async function generateMetadata({
   const title = sanitizeTitleForBrand(rawTitle) || rawTitle;
   const description =
     validateMetaDescription(row.metaDescription) ?? row.excerpt;
-  const canonical = `${baseUrl}/blog/${row.slug}`;
+  const canonical = `${baseUrl}${postPath(row.slug)}`;
   const robotsIndex = row.metaRobotsIndex?.trim() || "index";
   const robotsFollow = row.metaRobotsFollow?.trim() || "follow";
   const robots = {
@@ -216,9 +217,9 @@ export default async function BlogPage({
 
   const breadcrumbItems = [
     { name: "Home", url: "/" },
-    { name: "Insights", url: "/#insights" },
-    { name: row.category, url: `/category/${categorySlug}` },
-    { name: row.title, url: `/blog/${row.slug}` },
+    { name: "Insights", url: `${BLOG_BASE}#insights` },
+    { name: row.category, url: categoryPath(categorySlug) },
+    { name: row.title, url: postPath(row.slug) },
   ];
 
   const safeModifiedIso = safeDateModified(
@@ -235,9 +236,9 @@ export default async function BlogPage({
     dateModified: safeModifiedIso,
     author: {
       name: row.authorName,
-      url: row.authorSlug ? `/author/${row.authorSlug}` : undefined,
+      url: row.authorSlug ? authorPath(row.authorSlug) : undefined,
     },
-    url: `${baseUrl}/blog/${row.slug}`,
+    url: `${baseUrl}${postPath(row.slug)}`,
   });
 
   const breadcrumbLd = breadcrumbJsonLd(breadcrumbItems);
@@ -245,7 +246,7 @@ export default async function BlogPage({
 
   const imageSrc = resolvePostImage(row.imageUrl ?? row.imageKey);
 
-  const canonical = `${baseUrl}/blog/${row.slug}`;
+  const canonical = `${baseUrl}${postPath(row.slug)}`;
 
   return (
     <div className="min-h-screen bg-[#020100] text-white">

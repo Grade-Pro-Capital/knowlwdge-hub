@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { Search } from "lucide-react";
+import { postPath } from "@/app/lib/blogPaths";
 
 export type SearchPost = {
   id: string;
@@ -78,7 +79,7 @@ export function SearchDropdown({
       setFocusedIndex((i) => (i <= 0 ? results.length - 1 : i - 1));
     } else if (e.key === "Enter" && focusedIndex >= 0 && results[focusedIndex]) {
       e.preventDefault();
-      window.location.href = `/blog/${results[focusedIndex].slug}`;
+      window.location.href = postPath(results[focusedIndex].slug);
     } else if (e.key === "Escape") {
       setOpen(false);
       setFocusedIndex(-1);
@@ -117,7 +118,7 @@ export function SearchDropdown({
               {results.map((post, i) => (
                 <li key={post.id} role="option" aria-selected={focusedIndex === i}>
                   <Link
-                    href={`/blog/${post.slug}`}
+                    href={postPath(post.slug)}
                     onClick={() => setOpen(false)}
                     className={`block border-l-2 px-4 py-3 transition-colors ${
                       focusedIndex === i

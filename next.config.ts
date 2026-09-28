@@ -1,6 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Keeps the dev badge out of screenshot comparisons (tools/framer/).
+  devIndicators: false,
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "**.digitaloceanspaces.com", pathname: "/**" },
@@ -8,6 +10,15 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "source.unsplash.com", pathname: "/**" },
       { protocol: "https", hostname: "images.unsplash.com", pathname: "/**" },
     ],
+  },
+  async redirects() {
+    // The blog moved from the site root to /blogs; keep old internal paths working.
+    return [
+      { source: "/blog/:slug", destination: "/blogs/:slug", permanent: true },
+      { source: "/category/:slug", destination: "/blogs/category/:slug", permanent: true },
+      { source: "/tag/:slug", destination: "/blogs/tag/:slug", permanent: true },
+      { source: "/author/:slug", destination: "/blogs/author/:slug", permanent: true },
+    ];
   },
   async headers() {
     // Content-Security-Policy: 'self' for scripts, plus Google Tag Manager /

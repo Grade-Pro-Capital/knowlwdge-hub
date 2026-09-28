@@ -1,6 +1,7 @@
 import { MetadataRoute } from "next";
 import { prisma } from "@/app/lib/db";
 import { getBaseUrl } from "@/app/lib/seo";
+import { BLOG_BASE, postPath } from "@/app/lib/blogPaths";
 
 // Always generate sitemap from current DB (no cache) so deleted/unpublished posts drop off immediately
 export const dynamic = "force-dynamic";
@@ -11,7 +12,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const staticRoutes: MetadataRoute.Sitemap = [
     {
-      url: base,
+      url: `${base}${BLOG_BASE}`,
       lastModified: new Date(),
       changeFrequency: "daily" as const,
       priority: 1,
@@ -28,7 +29,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   });
 
   const articleUrls: MetadataRoute.Sitemap = posts.map((p) => ({
-    url: `${base}/blog/${p.slug}`,
+    url: `${base}${postPath(p.slug)}`,
     lastModified: p.contentFreshnessDate ?? p.updatedAt,
     changeFrequency: "weekly" as const,
     priority: 0.8,

@@ -96,13 +96,13 @@ export function MobileNav({ links }: { links: NavLink[] }) {
           </ul>
 
           <div className="px-4 pt-2">
-            <a
-              href="/#newsletter"
+            <Link
+              href="/blogs#newsletter"
               onClick={close}
               className={`${goldButtonClass} h-11 w-full px-4 text-sm`}
             >
               Subscribe
-            </a>
+            </Link>
           </div>
         </div>
         </nav>

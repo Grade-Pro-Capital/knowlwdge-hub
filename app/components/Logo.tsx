@@ -5,14 +5,14 @@ type LogoProps = {
   className?: string;
   /** When false, renders without link. Default true */
   linkToHome?: boolean;
-  /** Custom link href. Default "/" for main site, use "/admin" for dashboard */
+  /** Custom link href. Default "/blogs" (blog home), use "/admin" for dashboard */
   href?: string;
 };
 
 export function Logo({
   className = "",
   linkToHome = true,
-  href = "/",
+  href = "/blogs",
 }: LogoProps) {
   const img = (
     <Image

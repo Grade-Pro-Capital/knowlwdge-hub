@@ -44,7 +44,7 @@ export default function AdminLayout({
               Editor guide
             </Link>
             <a
-              href="/"
+              href="/blogs"
               target="_blank"
               rel="noopener noreferrer"
               className="text-sm text-[rgba(255,255,255,0.6)] hover:text-white"

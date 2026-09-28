@@ -9,6 +9,7 @@
 import Link from "next/link";
 import { AuthorAvatar } from "@/app/components/AuthorAvatar";
 import type { Citation, ExpertiseSignals } from "@/app/lib/types";
+import { authorPath } from "@/app/lib/blogPaths";
 
 type ArticleGeoProps = {
   aiSummary?: string | null;
@@ -133,7 +134,7 @@ export function ArticleGeo({
             <h3 className="text-xl text-white">
               {authorSlug ? (
                 <Link
-                  href={`/author/${authorSlug}`}
+                  href={authorPath(authorSlug)}
                   className="text-white transition-colors hover:text-[#FDBE35]"
                 >
                   {authorName}

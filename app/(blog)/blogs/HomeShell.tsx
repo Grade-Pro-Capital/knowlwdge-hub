@@ -9,6 +9,7 @@ import { SearchDropdown } from "@/app/components/SearchDropdown";
 import { resolvePostImage } from "@/app/lib/images";
 import { goldButtonClass } from "@/app/lib/ui";
 import type { BlogPost } from "@/app/data/blogData";
+import { postPath } from "@/app/lib/blogPaths";
 
 const POSTS_PER_PAGE = 6;
 
@@ -179,7 +180,7 @@ export function HomeShell({ initialPosts, initialTab, children }: HomeShellProps
               {visiblePosts.map((post) => (
                 <Link
                   key={post.id}
-                  href={`/blog/${post.slug}`}
+                  href={postPath(post.slug)}
                   className="group overflow-hidden rounded-lg border border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.06)] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)] transition-all hover:border-[rgba(212,175,55,0.3)] hover:bg-[rgba(255,255,255,0.09)]"
                 >
                   <div className="relative aspect-[16/10] w-full overflow-hidden">

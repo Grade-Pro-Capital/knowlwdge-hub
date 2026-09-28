@@ -1,37 +1,45 @@
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import Link from "next/link";
 import { SiteHeader } from "@/app/components/SiteHeader";
 // import { SiteFooter } from "@/app/components/SiteFooter";
 import type { Metadata } from "next";
 import { prisma } from "@/app/lib/db";
-import { getBaseUrl, slugify } from "@/app/lib/seo";
+import { slugify, getBaseUrl } from "@/app/lib/seo";
 import { resolvePostImage } from "@/app/lib/images";
 import { SITE_TITLE_SUFFIX, SITE_NAME_OG, sanitizeTitleForBrand } from "@/app/lib/siteConfig";
 import { calculateReadingTime } from "@/app/lib/readingTime";
 import { Breadcrumb } from "@/app/components/Breadcrumb";
 import { ImageWithFallback } from "@/app/components/ImageWithFallback";
+import { BLOG_BASE, categoryPath, postPath } from "@/app/lib/blogPaths";
 
 type Props = { params: Promise<{ slug: string }> };
 
-function canonicalTagSlug(slug: string): string {
-  const normalizedSlug = slugify(slug);
-  if (normalizedSlug === "alue-averaging") return "value-averaging";
-  return normalizedSlug;
+function categoryNameFromSlug(slug: string): string {
+  return slug
+    .split("-")
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(" ");
 }
 
 export async function generateMetadata({
   params,
 }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const normalizedSlug = canonicalTagSlug(slug);
-  const name = normalizedSlug.charAt(0).toUpperCase() + normalizedSlug.slice(1).replace(/-/g, " ");
+  const name = categoryNameFromSlug(slug);
 
-  const rawTitle = `${name} | ${SITE_TITLE_SUFFIX}`;
-  const title = sanitizeTitleForBrand(rawTitle) || rawTitle;
-  const description = `Explore articles tagged with ${name} on crypto, finance, and institutional adoption.`;
+  const categoryRow = await prisma.category.findFirst({
+    where: { slug },
+  });
+
+  const rawTitle =
+    categoryRow?.categorySeoTitle?.trim() || `${name} | ${SITE_TITLE_SUFFIX}`;
+  const title = sanitizeTitleForBrand(rawTitle) || `${name} | ${SITE_TITLE_SUFFIX}`;
+  const description =
+    categoryRow?.categorySeoDescription?.trim() ||
+    `Explore ${name} articles and insights on crypto, finance, and institutional adoption.`;
 
   const base = getBaseUrl();
-  const canonical = `${base}/tag/${normalizedSlug}`;
+  const canonical = `${base}${categoryPath(slug)}`;
   const defaultOgImage = `${base}/og-default.png`;
 
   return {
@@ -58,28 +66,36 @@ export async function generateMetadata({
   };
 }
 
-export default async function TagPage({ params }: Props) {
+export default async function CategoryPage({ params }: Props) {
   const { slug } = await params;
-  const normalizedSlug = canonicalTagSlug(slug);
-  if (normalizedSlug !== slug) redirect(`/tag/${normalizedSlug}`);
 
-  // DB stores tags with spaces (e.g. "Crypto Basket"); URL uses slug (e.g. crypto-basket)
-  const allWithTags = await prisma.post.findMany({
-    where: { published: true, tags: { isEmpty: false } },
+  const allCategories = await prisma.post.findMany({
+    where: { published: true },
+    select: { category: true },
+    distinct: ["category"],
+  });
+
+  const categoryMatch = allCategories.find(
+    (c) => slugify(c.category) === slug
+  );
+  if (!categoryMatch) notFound();
+
+  const name = categoryMatch.category;
+
+  const posts = await prisma.post.findMany({
+    where: {
+      published: true,
+      category: name,
+    },
     orderBy: { publishedAt: "desc" },
   });
-  const posts = allWithTags.filter((post) =>
-    post.tags.some((t) => canonicalTagSlug(t) === normalizedSlug)
-  );
 
   if (posts.length === 0) notFound();
 
-  const name = normalizedSlug.charAt(0).toUpperCase() + normalizedSlug.slice(1).replace(/-/g, " ");
-
   const breadcrumbItems = [
     { name: "Home", url: "/" },
-    { name: "Insights", url: "/#insights" },
-    { name: `Tag: ${name}`, url: `/tag/${normalizedSlug}` },
+    { name: "Insights", url: `${BLOG_BASE}#insights` },
+    { name, url: categoryPath(slug) },
   ];
 
   return (
@@ -89,7 +105,7 @@ export default async function TagPage({ params }: Props) {
       <Breadcrumb items={breadcrumbItems} />
 
       <main className="mx-auto max-w-[1400px] px-4 py-12 sm:px-8">
-        <h1 className="mb-8 text-3xl font-semibold sm:text-4xl">#{name}</h1>
+        <h1 className="mb-8 text-3xl font-semibold sm:text-4xl">{name}</h1>
 
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {posts.map((post) => {
@@ -97,7 +113,7 @@ export default async function TagPage({ params }: Props) {
             return (
               <Link
                 key={post.id}
-                href={`/blog/${post.slug}`}
+                href={postPath(post.slug)}
                 className="group overflow-hidden rounded-lg border border-[rgba(255,255,255,0.05)] bg-[rgba(255,255,255,0.03)] transition-all hover:border-[rgba(212,175,55,0.3)]"
               >
                 <div className="relative aspect-video w-full overflow-hidden">

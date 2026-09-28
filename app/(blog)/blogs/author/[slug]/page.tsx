@@ -13,6 +13,7 @@ import { JsonLdScript } from "@/app/components/JsonLdScript";
 import { Breadcrumb } from "@/app/components/Breadcrumb";
 import { ImageWithFallback } from "@/app/components/ImageWithFallback";
 import { calculateReadingTime } from "@/app/lib/readingTime";
+import { BLOG_BASE, authorPath, postPath } from "@/app/lib/blogPaths";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -33,7 +34,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     `Read articles by ${name} on crypto, finance, and institutional adoption.`;
 
   const base = getBaseUrl();
-  const canonical = `${base}/author/${slug}`;
+  const canonical = `${base}${authorPath(slug)}`;
   const defaultOgImage = `${base}/og-default.png`;
 
   return {
@@ -79,13 +80,13 @@ export default async function AuthorPage({ params }: Props) {
 
   const breadcrumbItems = [
     { name: "Home", url: "/" },
-    { name: "Insights", url: "/#insights" },
-    { name, url: `/author/${slug}` },
+    { name: "Insights", url: `${BLOG_BASE}#insights` },
+    { name, url: authorPath(slug) },
   ];
 
   const authorLd = authorJsonLd({
     name,
-    url: `/author/${slug}`,
+    url: authorPath(slug),
     bio: bio ?? undefined,
     image: resolveAuthorAvatar(avatar) ?? undefined,
   });
@@ -147,7 +148,7 @@ export default async function AuthorPage({ params }: Props) {
             return (
               <Link
                 key={post.id}
-                href={`/blog/${post.slug}`}
+                href={postPath(post.slug)}
                 className="group overflow-hidden rounded-lg border border-[rgba(255,255,255,0.05)] bg-[rgba(255,255,255,0.03)] transition-all hover:border-[rgba(212,175,55,0.3)]"
               >
                 <div className="relative aspect-video w-full overflow-hidden">

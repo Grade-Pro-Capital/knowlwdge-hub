@@ -5,9 +5,9 @@ import { goldButtonClass } from "@/app/lib/ui";
 
 /** Primary site navigation links. Labels/targets kept as-is; only styling is new. */
 const NAV_LINKS = [
-  { label: "Insights", href: "/#insights" },
-  { label: "Research", href: "/" },
-  { label: "For Professionals", href: "/?tab=professionals#insights" },
+  { label: "Insights", href: "/blogs#insights" },
+  { label: "Research", href: "/blogs" },
+  { label: "For Professionals", href: "/blogs?tab=professionals#insights" },
 ];
 
 /**
@@ -34,12 +34,12 @@ export function SiteHeader() {
             ))}
           </nav>
 
-          <a
-            href="/#newsletter"
+          <Link
+            href="/blogs#newsletter"
             className={`${goldButtonClass} h-9 px-4 text-sm tracking-[-0.15px]`}
           >
             Subscribe
-          </a>
+          </Link>
 
           <MobileNav links={NAV_LINKS} />
         </div>
