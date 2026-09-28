@@ -10,6 +10,9 @@ import { FreeConsultationAnchor, TalkToAnExpert } from "./_home/TalkToAnExpert";
 import { WhatsAppButton } from "./_home/WhatsAppButton";
 import { WhyGradeCapital } from "./_home/WhyGradeCapital";
 import styles from "./_home/HomePage.module.css";
+import { pageMetadata, SITE_PAGES } from "./seo";
+
+export const metadata = pageMetadata(SITE_PAGES.home);
 
 export default function HomePage() {
   return (

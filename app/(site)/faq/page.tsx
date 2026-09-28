@@ -1,27 +1,17 @@
-import type { Metadata } from "next";
+import { faqJsonLd } from "@/app/lib/jsonLd";
 import { Footer, FOOTER_SVG_IDS } from "../components/Footer";
 import { Header } from "../components/Header";
 import { SvgTemplates } from "../components/SvgTemplates";
-import { FAQ_PAGE_JSON_LD } from "../structured-data";
+import { pageBreadcrumbJsonLd, pageMetadata, SITE_PAGES } from "../seo";
 import styles from "./FaqPage.module.css";
 
-const TITLE = "FAQs - Grade Capital Crypto Derivatives Fund India";
-const DESCRIPTION =
-  "Answers to common questions about Grade Capital: how it works, security, withdrawals, compliance, and crypto derivatives tax in India.";
-const OG_IMAGE = "https://framerusercontent.com/images/W6XAt6XNeTDRk5Kb4gHLLIRoZM.png";
-
-export const metadata: Metadata = {
-  title: TITLE,
-  description: DESCRIPTION,
-  alternates: { canonical: "/faq" },
-  openGraph: { type: "website", url: "/faq", title: TITLE, description: DESCRIPTION, images: OG_IMAGE },
-  twitter: { card: "summary_large_image", title: TITLE, description: DESCRIPTION, images: OG_IMAGE },
-};
+export const metadata = pageMetadata(SITE_PAGES.faq);
 
 type Faq = { n: string; q: string; a: string; link: string; href: string; note?: string };
 
 // Framer injects this list with custom code after load; here it is server-rendered.
 // Text and links are copied verbatim (including the /education link, which 404s on Framer too).
+// The FAQPage structured data is generated from this same list, so the two always match.
 const FAQS: Faq[] = [
   {
     n: "01",
@@ -83,10 +73,16 @@ const FAQS: Faq[] = [
   },
 ];
 
+const FAQ_JSON_LD = faqJsonLd(FAQS.map((faq) => ({ question: faq.q, answer: faq.a })));
+
 export default function FaqPage() {
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(FAQ_PAGE_JSON_LD) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(FAQ_JSON_LD) }} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(pageBreadcrumbJsonLd(SITE_PAGES.faq)) }}
+      />
       <div className={styles.page}>
         <div className={styles.banner}>
           <h1 className={`preset-94fo1t ${styles.title}`}>Frequently Asked Questions</h1>

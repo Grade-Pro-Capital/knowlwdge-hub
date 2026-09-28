@@ -17,6 +17,7 @@ import { JsonLdScript } from "@/app/components/JsonLdScript";
 import { prisma } from "@/app/lib/db";
 import {
   absoluteUrl,
+  DEFAULT_OG_IMAGE,
   getBaseUrl,
   slugify,
   normalizeMetaTitle,
@@ -24,6 +25,7 @@ import {
   validateMetaDescription,
   parseSecondaryKeywords,
   safeDateModified,
+  externalCanonicalUrl,
 } from "@/app/lib/seo";
 import { SITE_NAME_OG, sanitizeTitleForBrand } from "@/app/lib/siteConfig";
 import {
@@ -106,7 +108,8 @@ export async function generateMetadata({
   const title = sanitizeTitleForBrand(rawTitle) || rawTitle;
   const description =
     validateMetaDescription(row.metaDescription) ?? row.excerpt;
-  const canonical = `${baseUrl}${postPath(row.slug)}`;
+  // This page, unless the editor set a canonical on another site (see externalCanonicalUrl).
+  const canonical = externalCanonicalUrl(row.canonicalUrl) ?? `${baseUrl}${postPath(row.slug)}`;
   const robotsIndex = row.metaRobotsIndex?.trim() || "index";
   const robotsFollow = row.metaRobotsFollow?.trim() || "follow";
   const robots = {
@@ -145,7 +148,7 @@ export async function generateMetadata({
       url: canonical,
       images: [
         {
-          url: ogImageUrl || `${baseUrl}/og-default.png`,
+          url: ogImageUrl || `${baseUrl}${DEFAULT_OG_IMAGE}`,
           width: 1200,
           height: 630,
           alt: ogTitle,
@@ -304,7 +307,7 @@ export default async function BlogPage({
             <div className="relative mb-12 aspect-video w-full overflow-hidden rounded-xl sm:aspect-auto sm:h-[400px] lg:h-[500px]">
               <ImageWithFallback
                 src={imageSrc}
-                alt={row.title}
+                alt={row.imageAlt?.trim() || row.title}
                 className="h-full w-full object-cover"
                 sizes="(max-width: 1024px) 100vw, 900px"
                 priority

@@ -1,28 +1,21 @@
-import type { Metadata } from "next";
 import { Footer, FOOTER_SVG_IDS } from "../components/Footer";
 import { Header } from "../components/Header";
 import { SocialLinks } from "../components/SocialLinks";
 import { SvgTemplates } from "../components/SvgTemplates";
+import { pageBreadcrumbJsonLd, pageMetadata, SITE_PAGES } from "../seo";
 import { LightRays } from "./LightRays";
 import { SupportForm } from "./SupportForm";
 import styles from "./SupportPage.module.css";
 
-const TITLE = "Contact Grade Capital - Support & Free Consultation";
-const DESCRIPTION =
-  "Reach Grade Capital's team via email or call. Office in Sector 49, Gurugram. Get a free consultation on crypto derivatives investing in India.";
-const OG_IMAGE = "https://framerusercontent.com/images/W6XAt6XNeTDRk5Kb4gHLLIRoZM.png";
-
-export const metadata: Metadata = {
-  title: TITLE,
-  description: DESCRIPTION,
-  alternates: { canonical: "/support" },
-  openGraph: { type: "website", url: "/support", title: TITLE, description: DESCRIPTION, images: OG_IMAGE },
-  twitter: { card: "summary_large_image", title: TITLE, description: DESCRIPTION, images: OG_IMAGE },
-};
+export const metadata = pageMetadata(SITE_PAGES.support);
 
 export default function SupportPage() {
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(pageBreadcrumbJsonLd(SITE_PAGES.support)) }}
+      />
       <div className={styles.page}>
         <div className={styles.content}>
           <div className={styles.left}>

@@ -6,7 +6,7 @@ import { AuthorAvatar } from "@/app/components/AuthorAvatar";
 import type { Metadata } from "next";
 import { prisma } from "@/app/lib/db";
 import { resolvePostImage, resolveAuthorAvatar } from "@/app/lib/images";
-import { getBaseUrl } from "@/app/lib/seo";
+import { getBaseUrl, DEFAULT_OG_IMAGE } from "@/app/lib/seo";
 import { SITE_TITLE_SUFFIX, SITE_NAME_OG, sanitizeTitleForBrand } from "@/app/lib/siteConfig";
 import { authorJsonLd } from "@/app/lib/jsonLd";
 import { JsonLdScript } from "@/app/components/JsonLdScript";
@@ -35,7 +35,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const base = getBaseUrl();
   const canonical = `${base}${authorPath(slug)}`;
-  const defaultOgImage = `${base}/og-default.png`;
+  const defaultOgImage = `${base}${DEFAULT_OG_IMAGE}`;
 
   return {
     title,

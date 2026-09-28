@@ -1,5 +1,6 @@
 import { MetadataRoute } from "next";
 import { getBaseUrl } from "@/app/lib/seo";
+import { BLOG_BASE } from "@/app/lib/blogPaths";
 
 // Crawlers we serve the same rules to: the generic group plus AI bots we
 // explicitly welcome for content discovery / citations.
@@ -13,14 +14,14 @@ const USER_AGENTS = [
   "anthropic-ai",
 ];
 
-// Index-worthy sections only.
-const ALLOW = ["/", "/blog/", "/author/"];
+// Everything public is crawlable: the main site pages, /blogs and its posts,
+// categories and authors (those two are noindex, but crawlable so Google can see
+// that and follow their links).
+const ALLOW = ["/"];
 
-// Tag archives are noindex'd and excluded from sitemap.xml; blocked here too
-// so crawl budget goes to real /blog/ posts. /admin/ and /api/ stay blocked
-// for security. /category/ and /author/ are left crawlable so Google can
-// discover their noindex tags.
-const DISALLOW = ["/tag/", "/admin/", "/api/"];
+// Tag archives are noindex and excluded from sitemap.xml; blocked here too so
+// crawl budget goes to real posts. /admin/ and /api/ stay blocked.
+const DISALLOW = [`${BLOG_BASE}/tag/`, "/admin/", "/api/"];
 
 export default function robots(): MetadataRoute.Robots {
   const base = getBaseUrl();

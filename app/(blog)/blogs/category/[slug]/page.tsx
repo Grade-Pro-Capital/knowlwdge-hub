@@ -4,7 +4,7 @@ import { SiteHeader } from "@/app/components/SiteHeader";
 // import { SiteFooter } from "@/app/components/SiteFooter";
 import type { Metadata } from "next";
 import { prisma } from "@/app/lib/db";
-import { slugify, getBaseUrl } from "@/app/lib/seo";
+import { slugify, getBaseUrl, DEFAULT_OG_IMAGE } from "@/app/lib/seo";
 import { resolvePostImage } from "@/app/lib/images";
 import { SITE_TITLE_SUFFIX, SITE_NAME_OG, sanitizeTitleForBrand } from "@/app/lib/siteConfig";
 import { calculateReadingTime } from "@/app/lib/readingTime";
@@ -40,7 +40,7 @@ export async function generateMetadata({
 
   const base = getBaseUrl();
   const canonical = `${base}${categoryPath(slug)}`;
-  const defaultOgImage = `${base}/og-default.png`;
+  const defaultOgImage = `${base}${DEFAULT_OG_IMAGE}`;
 
   return {
     title,

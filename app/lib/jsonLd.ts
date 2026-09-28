@@ -2,17 +2,12 @@
  * JSON-LD structured data generators for SEO and AI crawlers.
  * All schemas follow schema.org types.
  */
-import { absoluteUrl, getBaseUrl } from "./seo";
-import { SITE_NAME_OG, SITE_DESCRIPTION } from "./siteConfig";
+import { absoluteUrl } from "./seo";
+import { logoUrl, organizationId } from "./siteSchema";
 
 export type AuthorInput = {
   name: string;
   url?: string;
-};
-
-export type PublisherInput = {
-  name: string;
-  logo?: string;
 };
 
 export type ArticleJsonLdInput = {
@@ -22,17 +17,10 @@ export type ArticleJsonLdInput = {
   datePublished: string;
   dateModified: string;
   author: AuthorInput;
-  publisher?: PublisherInput;
   url: string;
 };
 
 export function articleJsonLd(input: ArticleJsonLdInput): object {
-  const base = getBaseUrl();
-  const publisher: PublisherInput = input.publisher ?? { name: "Grade Capital" };
-  const logoUrl = publisher.logo
-    ? absoluteUrl(publisher.logo)
-    : `${base}/og-default.png`;
-
   return {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
@@ -46,12 +34,14 @@ export function articleJsonLd(input: ArticleJsonLdInput): object {
       name: input.author.name,
       url: input.author.url ? absoluteUrl(input.author.url) : undefined,
     },
+    // The sitewide Organization (siteSchema.ts), referenced by @id.
     publisher: {
       "@type": "Organization",
-      name: publisher.name,
+      "@id": organizationId(),
+      name: "Grade Capital",
       logo: {
         "@type": "ImageObject",
-        url: logoUrl,
+        url: logoUrl(),
       },
     },
     mainEntityOfPage: {
@@ -109,39 +99,5 @@ export function authorJsonLd(input: AuthorJsonLdInput): object {
     url: absoluteUrl(input.url),
     description: input.bio,
     image: input.image ? absoluteUrl(input.image) : undefined,
-  };
-}
-
-export function webSiteJsonLd(): object {
-  const base = getBaseUrl();
-  return {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    name: SITE_NAME_OG,
-    url: base,
-    description: SITE_DESCRIPTION,
-  };
-}
-
-export function organizationJsonLd(): object {
-  const base = getBaseUrl();
-  return {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    name: "Grade Capital",
-    url: "https://www.grade.capital",
-    logo: `${base}/logo.png`,
-    description:
-      "India's leading crypto investment platform offering professionally managed crypto baskets and portfolios.",
-    sameAs: [
-      "https://twitter.com/GradeCapital",
-      "https://www.linkedin.com/company/gradecapital",
-      "https://www.instagram.com/gradecapital",
-    ],
-    contactPoint: {
-      "@type": "ContactPoint",
-      contactType: "customer service",
-      url: "https://www.grade.capital/contact",
-    },
   };
 }

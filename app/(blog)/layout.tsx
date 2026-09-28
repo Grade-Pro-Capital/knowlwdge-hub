@@ -3,6 +3,7 @@ import Script from "next/script";
 import { Poppins } from "next/font/google";
 import "../globals.css";
 import { SITE_TITLE, SITE_DESCRIPTION, SITE_NAME_OG } from "@/app/lib/siteConfig";
+import { DEFAULT_OG_IMAGE, getBaseUrl } from "@/app/lib/seo";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -13,23 +14,10 @@ const poppins = Poppins({
 
 const GTM_ID = "GTM-MWXB6RB3";
 
-const FALLBACK_SITE_URL = "https://blogs.grade.capital";
-// Tolerate a scheme-less NEXT_PUBLIC_SITE_URL (e.g. "blogs.grade.capital"): default
-// to https:// rather than throwing "Invalid URL" and 500-ing every route.
-const rawSiteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim();
-const normalizedSiteUrl = rawSiteUrl
-  ? /^https?:\/\//i.test(rawSiteUrl)
-    ? rawSiteUrl
-    : `https://${rawSiteUrl}`
-  : FALLBACK_SITE_URL;
-let metadataBase: URL;
-try {
-  metadataBase = new URL(normalizedSiteUrl);
-} catch {
-  metadataBase = new URL(FALLBACK_SITE_URL);
-}
-const base = metadataBase.origin;
-const defaultOgImage = `${base}/og-default.png`;
+// NEXT_PUBLIC_SITE_URL, normalised (and validated) in app/lib/seo.ts.
+const base = getBaseUrl();
+const metadataBase = new URL(base);
+const defaultOgImage = `${base}${DEFAULT_OG_IMAGE}`;
 
 export const metadata: Metadata = {
   metadataBase,

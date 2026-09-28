@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ChevronRight } from "lucide-react";
 import { ImageWithFallback } from "@/app/components/ImageWithFallback";
 import { Logo } from "@/app/components/Logo";
 import { SearchDropdown } from "@/app/components/SearchDropdown";
@@ -69,6 +68,11 @@ export function HomeShell({ initialPosts, initialTab, children }: HomeShellProps
   });
   const visiblePosts = filteredPosts.slice(0, visiblePostCount);
   const hasMorePosts = visiblePostCount < filteredPosts.length;
+  // Every post is rendered so all article links are in the server HTML (crawlers
+  // don't click "Load more" or switch tabs); posts outside the current view are
+  // hidden until revealed. Their images are lazy, so they don't load until shown.
+  const visibleIds = new Set(visiblePosts.map((post) => post.id));
+  const feedPosts = [...visiblePosts, ...initialPosts.filter((post) => !visibleIds.has(post.id))];
 
   return (
     <>
@@ -177,9 +181,10 @@ export function HomeShell({ initialPosts, initialTab, children }: HomeShellProps
             </div>
           ) : (
             <div className="grid grid-cols-1 gap-4 min-[400px]:grid-cols-2 min-[400px]:gap-3 sm:gap-6 lg:grid-cols-3 lg:gap-8">
-              {visiblePosts.map((post) => (
+              {feedPosts.map((post) => (
                 <Link
                   key={post.id}
+                  hidden={!visibleIds.has(post.id)}
                   href={postPath(post.slug)}
                   className="group overflow-hidden rounded-lg border border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.06)] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)] transition-all hover:border-[rgba(212,175,55,0.3)] hover:bg-[rgba(255,255,255,0.09)]"
                 >

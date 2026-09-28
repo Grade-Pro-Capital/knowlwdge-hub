@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Script from "next/script";
-import { SITE_JSON_LD } from "./structured-data";
+import { getBaseUrl } from "@/app/lib/seo";
+import { siteGraphJsonLd } from "@/app/lib/siteSchema";
 import "./fonts.css";
 import "./text-presets.css";
 import "./site.css";
@@ -9,7 +10,7 @@ import "./site.css";
 const GTM_ID = "GTM-5F27HQZQ";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://grade.capital"),
+  metadataBase: new URL(getBaseUrl()),
   icons: {
     icon: [
       { url: "/site/images/7IFJ4rkSHQKKm0F2AxG35k4Hc4k.png", media: "(prefers-color-scheme: light)" },
@@ -37,10 +38,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
 })(window,document,'script','dataLayer','${GTM_ID}');`}
         </Script>
-        {/* Structured data from the Framer site; valid anywhere in the document for search engines. */}
-        {SITE_JSON_LD.map((data, i) => (
-          <script key={i} type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }} />
-        ))}
+        {/* Sitewide Organization/WebSite structured data (valid anywhere in the document). */}
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(siteGraphJsonLd()) }} />
         <noscript>
           <iframe
             src={`https://www.googletagmanager.com/ns.html?id=${GTM_ID}`}

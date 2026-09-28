@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { getBaseUrl } from "@/app/lib/seo";
+import { DEFAULT_OG_IMAGE, getBaseUrl } from "@/app/lib/seo";
 import { SITE_TITLE, SITE_NAME_OG } from "@/app/lib/siteConfig";
 import { JsonLdScript } from "@/app/components/JsonLdScript";
-import { organizationJsonLd, webSiteJsonLd } from "@/app/lib/jsonLd";
+import { siteGraphJsonLd } from "@/app/lib/siteSchema";
 import { BLOG_BASE } from "@/app/lib/blogPaths";
 
 const base = getBaseUrl();
 const canonical = `${base}${BLOG_BASE}`;
-const ogImage = `${base}/og-homepage.png`;
+const ogImage = `${base}${DEFAULT_OG_IMAGE}`;
 const homeDescription =
   "Research, analysis, and market intelligence for crypto investors in India. Expert insights on Bitcoin, Ethereum, and digital asset regulations.";
 
@@ -61,8 +61,7 @@ export default function HomeLayout({
 }) {
   return (
     <>
-      <JsonLdScript data={organizationJsonLd()} />
-      <JsonLdScript data={webSiteJsonLd()} />
+      <JsonLdScript data={siteGraphJsonLd()} />
       <Suspense fallback={null}>{children}</Suspense>
     </>
   );

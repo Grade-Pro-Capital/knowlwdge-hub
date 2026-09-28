@@ -1,3 +1,4 @@
+import { SOCIAL_PROFILES } from "@/app/lib/siteSchema";
 import styles from "./SocialLinks.module.css";
 
 function Social({ href, iconClass, label }: { href: string; iconClass: string; label: string }) {
@@ -14,9 +15,9 @@ function Social({ href, iconClass, label }: { href: string; iconClass: string; l
 export function SocialLinks() {
   return (
     <div className={styles.root}>
-      <Social href="https://x.com/gradecapital" iconClass={styles.iconX} label="X" />
-      <Social href="https://www.linkedin.com/company/grade-capital/" iconClass={styles.iconLinkedin} label="LinkedIn" />
-      <Social href="https://www.instagram.com/gradecapital/" iconClass={styles.iconInstagram} label="Instagram" />
+      <Social href={SOCIAL_PROFILES.x} iconClass={styles.iconX} label="X" />
+      <Social href={SOCIAL_PROFILES.linkedin} iconClass={styles.iconLinkedin} label="LinkedIn" />
+      <Social href={SOCIAL_PROFILES.instagram} iconClass={styles.iconInstagram} label="Instagram" />
     </div>
   );
 }

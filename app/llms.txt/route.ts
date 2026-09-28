@@ -1,12 +1,14 @@
 import { prisma } from "@/app/lib/db";
 import { getBaseUrl } from "@/app/lib/seo";
+import { BLOG_BASE, postPath } from "@/app/lib/blogPaths";
+import { SOCIAL_PROFILES } from "@/app/lib/siteSchema";
 
 // Generate from the live DB on every request so new/unpublished posts are reflected immediately.
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-// Static branding header. Mirrors the hand-written intro of the old public/llms.txt.
-const HEADER = `# Grade Capital Knowledge Hub
+// Branding header. Mirrors the hand-written intro of the old public/llms.txt.
+const header = (base: string) => `# Grade Capital Knowledge Hub
 
 > Intelligence-driven research, analysis, and market insights for crypto investors in India.
 
@@ -14,19 +16,19 @@ Grade Capital is India's leading managed crypto investment platform. This knowle
 
 ## About Grade Capital
 
-- Platform: https://www.grade.capital
-- Blog: https://blogs.grade.capital
+- Platform: ${base}
+- Blog: ${base}${BLOG_BASE}
 - Focus: Professionally managed crypto baskets, portfolios, and derivatives-based strategies for Indian investors
 - Audience: Indian retail investors, HNIs, and institutional allocators
 - Regulatory context: Indian Income Tax Act (Section 115BBH, Section 43(5)), SEBI, RBI guidelines`;
 
-const FOOTER = `## Contact & Platform
+const footer = (base: string) => `## Contact & Platform
 
-- Website: https://www.grade.capital
-- Contact: https://www.grade.capital/contact
-- Twitter/X: https://twitter.com/GradeCapital
-- LinkedIn: https://www.linkedin.com/company/grade-capital/
-- Instagram: https://www.instagram.com/gradecapital`;
+- Website: ${base}
+- Contact: ${base}/support
+- Twitter/X: ${SOCIAL_PROFILES.x}
+- LinkedIn: ${SOCIAL_PROFILES.linkedin}
+- Instagram: ${SOCIAL_PROFILES.instagram}`;
 
 /** Collapse newlines/extra whitespace so each entry stays on a single Markdown line. */
 function oneLine(text: string): string {
@@ -65,7 +67,7 @@ export async function GET() {
   const sections = Array.from(groups.entries()).map(([category, items]) => {
     const lines = items.map((p) => {
       const summary = oneLine(p.aiSummary || p.excerpt || "");
-      const url = `${base}/blog/${p.slug}`;
+      const url = `${base}${postPath(p.slug)}`;
       return summary
         ? `- [${oneLine(p.title)}](${url}): ${summary}`
         : `- [${oneLine(p.title)}](${url})`;
@@ -73,7 +75,7 @@ export async function GET() {
     return `## ${category}\n\n${lines.join("\n")}`;
   });
 
-  const body = [HEADER, ...sections, FOOTER].join("\n\n") + "\n";
+  const body = [header(base), ...sections, footer(base)].join("\n\n") + "\n";
 
   return new Response(body, {
     headers: {
