@@ -42,7 +42,6 @@ Work that depends on an answer. Current default in brackets.
 
 ## Now
 
-- [ ] Commit + push the Phase 0 SEO fixes and the redirect manager (done in code, not committed yet).
 - [ ] **Content task:** add cover-image alt text to the 3 articles flagged "Missing alt text" in admin → Posts (they can't be saved until then).
 - [ ] **Content task:** 14 of the 28 articles have a meta description Google cuts on desktop (the editor now shows it in red under the field). Worth shortening, SEO team.
 - [ ] T0.8 robots.txt editable in the admin: **recommended skip** (rarely changes; one wrong line de-indexes the site; correct in code now). Confirm.
@@ -142,10 +141,11 @@ Hreflang/multi-language (#46–50, T1.4), sitemap splitting (#30), review/rating
 
 ## Done
 
-- 2026-09-28: Google width warnings under the SEO title/description, measured on the text the page actually outputs (not yet committed)
-- 2026-09-28: Alt text required for every image (cover + images in the text), enforced in the editor and on the server; Posts list flags articles still missing it (not yet committed)
-- 2026-09-28: Redirect manager (admin → Redirects) + automatic redirects on article URL changes; middleware.ts → proxy.ts (Next.js 16). Tested end to end (not yet committed)
-- 2026-09-28: Phase 0 SEO fixes B2–B8, B10–B12, and B1 for home/Support/FAQ (not yet committed)
+- 2026-09-28: Phase 0 fixes, redirect manager, alt text and width warnings committed and pushed on `feat/framer-rebuild`
+- 2026-09-28: Google width warnings under the SEO title/description, measured on the text the page actually outputs
+- 2026-09-28: Alt text required for every image (cover + images in the text), enforced in the editor and on the server; Posts list flags articles still missing it
+- 2026-09-28: Redirect manager (admin → Redirects) + automatic redirects on article URL changes; middleware.ts → proxy.ts (Next.js 16). Tested end to end
+- 2026-09-28: Phase 0 SEO fixes B2–B8, B10–B12, and B1 for home/Support/FAQ
 - 2026-09-28: Support and FAQ pages built; Blogs link opens in the same tab
 - 2026-09-28: Home page complete (all sections, WhatsApp button); pushed on `feat/framer-rebuild`
 - 2026-09-28: Blog moved under `/blogs`; pushed on `feat/framer-rebuild`
