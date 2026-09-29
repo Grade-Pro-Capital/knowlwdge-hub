@@ -3,10 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { ImageWithFallback } from "@/app/components/ImageWithFallback";
-import { Logo } from "@/app/components/Logo";
 import { SearchDropdown } from "@/app/components/SearchDropdown";
 import { resolvePostImage } from "@/app/lib/images";
-import { goldButtonClass } from "@/app/lib/ui";
 import type { BlogPost } from "@/app/data/blogData";
 import { postPath } from "@/app/lib/blogPaths";
 
@@ -76,15 +74,47 @@ export function HomeShell({ initialPosts, initialTab, children }: HomeShellProps
 
   return (
     <>
-      {/* Header — frosted translucent bar (styling shared with SiteHeader) */}
-      <header className="sticky top-0 z-50 bg-[rgba(32,32,32,0.2)] backdrop-blur-md">
-        <div className="mx-auto max-w-[1600px] px-4 py-4 sm:px-8 lg:px-16">
-          <div className="flex flex-row items-center justify-between gap-3 sm:gap-6">
-            <div className="shrink-0">
-              <Logo />
-            </div>
+      {/* Hero Section (server-rendered, passed through as children) */}
+      {children}
 
-            <div className="flex min-w-0 flex-1 items-center justify-end gap-3 sm:w-auto sm:flex-none sm:gap-6">
+      {/* Insights Section */}
+      <section id="insights" className="pt-4 pb-12 sm:pt-6 sm:pb-16">
+        <div className="mx-auto max-w-[1600px] px-4 sm:px-8 lg:px-16">
+          <h2 className="sr-only">Latest Insights</h2>
+          {/* Tabs, with the search box on the right (above the tabs on phones). The
+              search sits outside the scrolling tab row so its dropdown isn't clipped. */}
+          <div className="mb-8 flex flex-col-reverse gap-4 border-b border-[rgba(255,255,255,0.1)] sm:flex-row sm:items-end sm:justify-between">
+            <div className="flex items-center gap-2 overflow-x-auto sm:gap-4">
+              <button
+                type="button"
+                onClick={() => handleTabChange("all")}
+                className={`relative shrink-0 whitespace-nowrap px-4 pb-3 transition-all sm:px-6 ${
+                  activeTab === "all"
+                    ? "text-[#FDBE35]"
+                    : "text-[rgba(255,255,255,0.6)] hover:text-white"
+                }`}
+              >
+                All Insights
+                {activeTab === "all" && (
+                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#d4af37]" />
+                )}
+              </button>
+              <button
+                type="button"
+                onClick={() => handleTabChange("professionals")}
+                className={`relative shrink-0 whitespace-nowrap px-4 pb-3 transition-all sm:px-6 ${
+                  activeTab === "professionals"
+                    ? "text-[#FDBE35]"
+                    : "text-[rgba(255,255,255,0.6)] hover:text-white"
+                }`}
+              >
+                For Professionals
+                {activeTab === "professionals" && (
+                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#d4af37]" />
+                )}
+              </button>
+            </div>
+            <div className="flex sm:pb-3">
               <SearchDropdown
                 posts={initialPosts}
                 query={searchQuery}
@@ -94,53 +124,7 @@ export function HomeShell({ initialPosts, initialTab, children }: HomeShellProps
                 }
                 placeholder="Search by title or tags…"
               />
-              <a
-                href="#newsletter"
-                className={`${goldButtonClass} h-9 whitespace-nowrap px-4 text-sm tracking-[-0.15px]`}
-              >
-                Subscribe
-              </a>
             </div>
-          </div>
-        </div>
-      </header>
-
-      {/* Hero Section (server-rendered, passed through as children) */}
-      {children}
-
-      {/* Insights Section */}
-      <section id="insights" className="pt-4 pb-12 sm:pt-6 sm:pb-16">
-        <div className="mx-auto max-w-[1600px] px-4 sm:px-8 lg:px-16">
-          <h2 className="sr-only">Latest Insights</h2>
-          <div className="mb-8 flex items-center gap-2 overflow-x-auto border-b border-[rgba(255,255,255,0.1)] sm:gap-4">
-            <button
-              type="button"
-              onClick={() => handleTabChange("all")}
-              className={`relative shrink-0 whitespace-nowrap px-4 pb-3 transition-all sm:px-6 ${
-                activeTab === "all"
-                  ? "text-[#FDBE35]"
-                  : "text-[rgba(255,255,255,0.6)] hover:text-white"
-              }`}
-            >
-              All Insights
-              {activeTab === "all" && (
-                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#d4af37]" />
-              )}
-            </button>
-            <button
-              type="button"
-              onClick={() => handleTabChange("professionals")}
-              className={`relative shrink-0 whitespace-nowrap px-4 pb-3 transition-all sm:px-6 ${
-                activeTab === "professionals"
-                  ? "text-[#FDBE35]"
-                  : "text-[rgba(255,255,255,0.6)] hover:text-white"
-              }`}
-            >
-              For Professionals
-              {activeTab === "professionals" && (
-                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#d4af37]" />
-              )}
-            </button>
           </div>
 
           {categories.length > 0 && (

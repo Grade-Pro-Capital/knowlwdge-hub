@@ -2,8 +2,6 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { Clock, Calendar } from "lucide-react";
 import { ImageWithFallback } from "@/app/components/ImageWithFallback";
-import { SiteHeader } from "@/app/components/SiteHeader";
-// import { SiteFooter } from "@/app/components/SiteFooter";
 import { ShareButtons } from "@/app/components/ShareButtons";
 import { Breadcrumb } from "@/app/components/Breadcrumb";
 import { ArticleGeo } from "@/app/components/ArticleGeo";
@@ -259,7 +257,6 @@ export default async function BlogPage({
       <JsonLdScript data={breadcrumbLd} />
       {faqLd && <JsonLdScript data={faqLd} />}
 
-      <SiteHeader />
       <Breadcrumb items={breadcrumbItems} withJsonLd={false} />
 
       <article>
@@ -429,7 +426,6 @@ export default async function BlogPage({
       </article>
 
       <NewsletterSection />
-      {/* <SiteFooter /> */}
       <ArticleStyles />
     </div>
   );

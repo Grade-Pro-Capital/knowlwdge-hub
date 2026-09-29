@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
   LayoutGroup,
@@ -26,6 +27,8 @@ type HeaderProps = {
   slideUpAtFooter?: boolean;
   /** Framer's `sizes` for the desktop logo on this page, if it differs from the default. */
   logoSizes?: string;
+  /** Nav link shown in the active (gold) style. Framer never sets one; the blog does. */
+  current?: "/support" | "/faq" | "/blogs";
 };
 
 /**
@@ -46,9 +49,14 @@ function useSlideUpAtFooter(enabled: boolean) {
     update();
     window.addEventListener("scroll", update, { passive: true });
     window.addEventListener("resize", update);
+    // The footer also moves when the page grows without a scroll: streamed-in
+    // content (the blog renders this header before its page arrives), "Load more".
+    const observer = new ResizeObserver(update);
+    observer.observe(document.body);
     return () => {
       window.removeEventListener("scroll", update);
       window.removeEventListener("resize", update);
+      observer.disconnect();
     };
   }, [enabled, y]);
   return y;
@@ -60,9 +68,16 @@ export function Header({
   appear = false,
   slideUpAtFooter = false,
   logoSizes,
+  current,
 }: HeaderProps) {
-  const [open, setOpen] = useState(false);
+  // The menu is open for the page it was opened on, so it closes after navigating
+  // (the blog keeps one header mounted across its pages).
+  const pathname = usePathname();
+  const [openOn, setOpenOn] = useState<string | null>(null);
+  const open = openOn === pathname;
+  const setOpen = (value: boolean) => setOpenOn(value ? pathname : null);
   const scrollY = useSlideUpAtFooter(slideUpAtFooter);
+  const variant = (href: string) => (href === current ? "active" : "default");
   // The finished appear animation stays attached (as Framer's does); it affects how
   // Chrome rasterises the header layer.
   const className = [
@@ -93,10 +108,10 @@ export function Header({
           </Link>
           <nav className={styles.nav}>
             <div className={styles.navSpacer} />
-            <NavText href="/support" label="Support" />
-            <NavText href="/faq" label="FAQ" />
+            <NavText href="/support" label="Support" variant={variant("/support")} />
+            <NavText href="/faq" label="FAQ" variant={variant("/faq")} />
             {/* Framer opens the blog in a new tab; here it opens in the same tab (by request). */}
-            <NavText href="/blogs" label="Blogs" />
+            <NavText href="/blogs" label="Blogs" variant={variant("/blogs")} />
           </nav>
           <Link className={styles.cta} href="/#talk-to-an-expert-1">
             <p className={styles.ctaText}>Free Consultation</p>
@@ -158,7 +173,9 @@ export function Header({
                     <NavText href="/" label="Education" />
                     <SoonBadge />
                   </div>
-                  <NavText href="/support" label="Support" />
+                  <NavText href="/support" label="Support" variant={variant("/support")} />
+                  {/* Not in Framer's phone menu; added so phones can reach the blog (by request). */}
+                  <NavText href="/blogs" label="Blogs" variant={variant("/blogs")} />
                 </div>
                 {/* In Framer this pill is not a link (tapping it does nothing) — kept as-is. */}
                 <div className={styles.burgerCta}>

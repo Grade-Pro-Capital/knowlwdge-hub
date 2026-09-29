@@ -5,6 +5,14 @@ import { SITE_TITLE, SITE_NAME_OG } from "@/app/lib/siteConfig";
 import { JsonLdScript } from "@/app/components/JsonLdScript";
 import { siteGraphJsonLd } from "@/app/lib/siteSchema";
 import { BLOG_BASE } from "@/app/lib/blogPaths";
+import { Header } from "@/app/(site)/components/Header";
+import { Footer, FOOTER_SVG_IDS } from "@/app/(site)/components/Footer";
+import { SvgTemplates } from "@/app/(site)/components/SvgTemplates";
+// The main site's colour tokens, for its Header and Footer. Not site.css: its
+// page-wide base styles would override the blog's own. Not fonts.css either: the
+// blog's next/font Poppins (app/(blog)/layout.tsx) is registered as "Poppins" too,
+// so loading both would download every Poppins file twice.
+import "@/app/(site)/tokens.css";
 
 const base = getBaseUrl();
 const canonical = `${base}${BLOG_BASE}`;
@@ -62,7 +70,13 @@ export default function HomeLayout({
   return (
     <>
       <JsonLdScript data={siteGraphJsonLd()} />
+      {/* The main site's header and footer, so the blog reads as part of grade.capital. */}
+      <Header zIndex={50} slideUpAtFooter current="/blogs" />
+      {/* The header is fixed (it floats over the page), so keep its height clear. */}
+      <div aria-hidden className="h-[68px] min-[1200px]:h-[78px]" />
       <Suspense fallback={null}>{children}</Suspense>
+      <Footer />
+      <SvgTemplates ids={FOOTER_SVG_IDS} />
     </>
   );
 }

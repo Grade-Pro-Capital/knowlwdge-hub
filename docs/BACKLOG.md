@@ -14,7 +14,7 @@ Everything still to do for grade.capital (main site + blog + admin), in one plac
 - **🔌 3rd-party required** marks items that need an outside provider's service, account or API
   key (optional ones say so). All of them are summarised under **Third-party services**.
 
-_Last updated: 2026-09-28_
+_Last updated: 2026-09-29_
 
 ---
 
@@ -130,7 +130,6 @@ Everything that needs an outside provider, what it needs, and roughly what it co
 
 ## Later / optional
 
-- [ ] "Option A": blog pages use the main site's header and footer so it feels like one website
 - [ ] Real paginated blog pages (`/blogs/page/2`) if the article count reaches the hundreds
 
 ## Not planned
@@ -141,6 +140,7 @@ Hreflang/multi-language (#46–50, T1.4), sitemap splitting (#30), review/rating
 
 ## Done
 
+- 2026-09-29: blog uses the main site's header and footer ("Option A"): one shared Header/Footer in the `/blogs` layout; blog search moved next to the All Insights / For Professionals tabs; the blog's Subscribe button and Insights/Research/For Professionals links dropped; "Blogs" added to the phone menu on every page (not in Framer); old SiteHeader/SiteFooter/MobileNav deleted. Committed and pushed on `feat/framer-rebuild`
 - 2026-09-28: Phase 0 fixes, redirect manager, alt text and width warnings committed and pushed on `feat/framer-rebuild`
 - 2026-09-28: Google width warnings under the SEO title/description, measured on the text the page actually outputs
 - 2026-09-28: Alt text required for every image (cover + images in the text), enforced in the editor and on the server; Posts list flags articles still missing it

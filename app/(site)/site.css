@@ -4,42 +4,10 @@
  * a pixel-identical match (see docs/FRAMER-REBUILD-PLAN.md).
  */
 
-/* Framer colour tokens actually used by the site. --gc-text-primary switches in
-   dark mode exactly like Framer's token does. */
+/* Colour tokens and transition curves live in tokens.css (shared with the blog). */
 :root {
-  --gc-bg: #151516;
-  --gc-surface: #202227;
-  --gc-surface-2: #19191b;
-  --gc-gold: #fdbd30;
-  --gc-gold-light: #fddb97;
-  --gc-text-primary: #fff;
-  --gc-text-secondary: #b2b3bd;
-  --gc-text-muted: #797b86;
-  --gc-grey: #343844;
-  --gc-grey-2: #46484f;
-  --gc-pink-light: #fcebef;
-
-  /* The SEO snippet in Framer's custom code lifts #797b86 text to #9a9cab for
-     contrast; that override is what visitors actually see. */
-  --gc-text-muted-visible: #9a9cab;
-
-  /* Framer's default component transition — spring { bounce: 0.2, duration: 0.4 } —
-     sampled from Motion's spring solver so CSS transitions (hover colours) match. */
-  --gc-spring-duration: 400ms;
-  /* Same curve for every { bounce: 0.2 } spring — only the duration changes. */
-  --gc-spring-ease: linear(0, 0.0224, 0.0794, 0.1581, 0.2486, 0.3435, 0.4375, 0.5269, 0.6093, 0.6833, 0.7484, 0.8044, 0.8518, 0.8911, 0.9231, 0.9487, 0.9688, 0.9841, 0.9954, 1.0036, 1.0091, 1.0125, 1.0144, 1.0151, 1.015, 1.0142, 1.0131, 1.0118, 1.0104, 1.0089, 1.0076, 1.0063, 1.0051, 1.0041, 1.0032, 1.0024, 1.0018, 1.0013, 1.0009, 1.0006, 1);
-  /* spring { stiffness: 400, damping: 71, mass: 1 } — settles in 950ms. */
-  --gc-spring-stiff-duration: 950ms;
-  --gc-spring-stiff-ease: linear(0, 0.068, 0.1804, 0.289, 0.3852, 0.4689, 0.5412, 0.6038, 0.6578, 0.7044, 0.7447, 0.7795, 0.8096, 0.8355, 0.8579, 0.8773, 0.894, 0.9085, 0.9209, 0.9317, 0.941, 0.9491, 0.956, 0.962, 0.9672, 0.9717, 0.9755, 0.9789, 0.9817, 0.9842, 0.9864, 0.9882, 0.9898, 0.9912, 0.9924, 0.9935, 0.9943, 0.9951, 0.9958, 0.9964, 1);
-
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --gc-text-primary: #eeeef0;
-  }
 }
 
 html,

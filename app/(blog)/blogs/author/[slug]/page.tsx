@@ -1,8 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { SiteHeader } from "@/app/components/SiteHeader";
 import { AuthorAvatar } from "@/app/components/AuthorAvatar";
-// import { SiteFooter } from "@/app/components/SiteFooter";
 import type { Metadata } from "next";
 import { prisma } from "@/app/lib/db";
 import { resolvePostImage, resolveAuthorAvatar } from "@/app/lib/images";
@@ -95,8 +93,6 @@ export default async function AuthorPage({ params }: Props) {
     <div className="min-h-screen bg-[#020100] text-white">
       <JsonLdScript data={authorLd} />
 
-      <SiteHeader />
-
       <Breadcrumb items={breadcrumbItems} />
 
       <main className="mx-auto max-w-[1400px] px-4 py-12 sm:px-8">
@@ -177,8 +173,6 @@ export default async function AuthorPage({ params }: Props) {
           })}
         </div>
       </main>
-
-      {/* <SiteFooter /> */}
     </div>
   );
 }

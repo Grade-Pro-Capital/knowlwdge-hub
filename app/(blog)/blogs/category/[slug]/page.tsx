@@ -1,7 +1,5 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { SiteHeader } from "@/app/components/SiteHeader";
-// import { SiteFooter } from "@/app/components/SiteFooter";
 import type { Metadata } from "next";
 import { prisma } from "@/app/lib/db";
 import { slugify, getBaseUrl, DEFAULT_OG_IMAGE } from "@/app/lib/seo";
@@ -100,8 +98,6 @@ export default async function CategoryPage({ params }: Props) {
 
   return (
     <div className="min-h-screen bg-[#020100] text-white">
-      <SiteHeader />
-
       <Breadcrumb items={breadcrumbItems} />
 
       <main className="mx-auto max-w-[1400px] px-4 py-12 sm:px-8">
@@ -142,8 +138,6 @@ export default async function CategoryPage({ params }: Props) {
           })}
         </div>
       </main>
-
-      {/* <SiteFooter /> */}
     </div>
   );
 }

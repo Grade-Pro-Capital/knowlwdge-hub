@@ -4,6 +4,7 @@ import { getBaseUrl } from "@/app/lib/seo";
 import { siteGraphJsonLd } from "@/app/lib/siteSchema";
 import "./fonts.css";
 import "./text-presets.css";
+import "./tokens.css";
 import "./site.css";
 
 /** Framer's Google Tag Manager container for the main site. */
