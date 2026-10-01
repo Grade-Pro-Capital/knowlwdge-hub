@@ -17,7 +17,7 @@ export const FOOTER_SVG_IDS = [
   "svg766702060_7467", // Google Play — phone
 ];
 
-type LegalPage = "privacy-policy" | "terms-of-use" | "investor-agreement" | "anti-laundering";
+export type LegalPage = "privacy-policy" | "terms-of-use" | "investor-agreement" | "anti-laundering";
 
 const LEGAL_LINKS: { page: LegalPage; label: string }[] = [
   { page: "privacy-policy", label: "Privacy Policy" },

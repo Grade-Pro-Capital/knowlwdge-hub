@@ -1,0 +1,202 @@
+/* Legal pages: Framer's page layout, plus the parts of Framer's rich-text CSS these
+   texts use (paragraph spacing, list markers, link colours). */
+
+.page {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0;
+  width: auto;
+  min-height: 100vh;
+  height: min-content;
+  padding: 0;
+  overflow: clip;
+  background-color: var(--gc-bg);
+}
+
+.banner {
+  position: relative;
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  width: 100%;
+  height: min-content;
+  padding: 160px 0 80px;
+  overflow: hidden;
+  background: linear-gradient(359deg, var(--gc-surface) 0%, var(--gc-bg) 100%);
+}
+
+/* Framer appear on load: opacity 0.001 → 1, spring { bounce 0.2, duration 0.4 }.
+   Framer's finished animation (which also animates transform) stays attached with
+   fill "both"; Chrome then gives the text column below its own layer, which renders
+   the text with greyscale anti-aliasing. Kept the same so the text looks identical. */
+.title {
+  position: relative;
+  flex: none;
+  width: 83%;
+  height: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  text-align: left;
+  color: #fff;
+  will-change: transform;
+  animation: legal-appear var(--gc-spring-duration) var(--gc-spring-ease) both;
+}
+
+@keyframes legal-appear {
+  from {
+    opacity: 0.001;
+    transform: none;
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.content {
+  position: relative;
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 40px;
+  width: 83%;
+  height: min-content;
+  padding: 80px 0 120px;
+  overflow: hidden;
+}
+
+.section {
+  position: relative;
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 16px;
+  width: 100%;
+  height: min-content;
+  padding: 0;
+  overflow: hidden;
+}
+
+.centered {
+  align-items: center;
+}
+
+/* Framer's per-breakpoint copies of a heading or paragraph. */
+.notPhone,
+.phoneOnly {
+  display: contents;
+}
+
+@media (max-width: 809.98px) {
+  .notPhone {
+    display: none;
+  }
+}
+
+@media (min-width: 810px) {
+  .phoneOnly {
+    display: none;
+  }
+}
+
+/* ---------- Rich text ---------- */
+
+.text {
+  position: relative;
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  justify-content: flex-start;
+  width: 100%;
+  height: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  outline: none;
+  color: var(--gc-text-secondary);
+}
+
+.text :where(p, div, h5, ul, ol) {
+  margin: 0;
+  padding: 0;
+}
+
+/* Paragraph spacing of the text styles that have any (the body style has none). */
+.text > :global(.preset-po693k):not(:first-child) {
+  margin-top: 20px;
+}
+
+.text > :global(.preset-1cj3d9m):not(:first-child) {
+  margin-top: 40px;
+}
+
+.text :where(ul, ol) {
+  position: relative;
+  padding-inline-start: 0;
+}
+
+.text :where(li) {
+  counter-increment: list-item;
+  padding-inline-start: 2ch;
+  list-style: none;
+}
+
+.text :where(ul) > li::before {
+  content: "•";
+  position: absolute;
+  inset-inline-start: 0;
+}
+
+.text :where(ol) > li::before {
+  content: counter(list-item) ".";
+  font-variant-numeric: tabular-nums;
+  position: absolute;
+  inset-inline-start: 0;
+}
+
+/* Two-digit numbers get a wider indent (from Framer's list CSS). */
+.text :where(ol) > li:nth-last-child(n + 10),
+.text :where(ol) > li:nth-last-child(n + 10) ~ li {
+  padding-inline-start: 3ch;
+}
+
+.secondary {
+  color: var(--gc-text-secondary);
+}
+
+.white {
+  color: #fff;
+}
+
+/* Framer's link text style: gold, underlined in the brighter gold on hover. */
+.link {
+  color: var(--gc-gold-light);
+  text-decoration: none;
+}
+
+.link:hover {
+  color: var(--gc-gold);
+  text-decoration: underline;
+}
+
+/* Links without a text style take the text box's link colour, or the text colour. */
+.linkBlue {
+  color: #09f;
+  text-decoration: underline;
+}
+
+.linkText {
+  color: inherit;
+  text-decoration: none;
+}

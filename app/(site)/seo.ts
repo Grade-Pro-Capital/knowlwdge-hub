@@ -37,6 +37,34 @@ export const SITE_PAGES = {
     description:
       "Answers to common questions about Grade Capital: how it works, security, withdrawals, compliance, and crypto derivatives tax in India.",
   },
+  privacyPolicy: {
+    path: "/privacy-policy",
+    name: "Privacy Policy",
+    title: "Privacy Policy - Grade Capital Data Protection",
+    description:
+      "How Grade Capital collects, uses, and protects your personal data. GDPR-aligned privacy practices for Indian crypto derivative investors.",
+  },
+  termsOfUse: {
+    path: "/terms-of-use",
+    name: "Terms of Use",
+    title: "Terms of Use - Grade Capital Platform Agreement",
+    description:
+      "Terms governing use of Grade Capital's crypto derivatives platform. Read before using Grade Capital's investment baskets and services.",
+  },
+  investorAgreement: {
+    path: "/investor-agreement",
+    name: "Investor Agreement",
+    title: "Investor Agreement - Grade Capital Terms & Risk Disclosure",
+    description:
+      "Read Grade Capital's full investor agreement, platform terms, and risk disclosures for crypto derivatives basket investing in India.",
+  },
+  antiLaundering: {
+    path: "/anti-laundering",
+    name: "AML & KYC Policy",
+    title: "AML & KYC Policy - Grade Capital Compliance Framework",
+    description:
+      "Grade Capital's Anti-Money Laundering, KYC, and CTF compliance policy. PMLA 2002 compliant, monthly sanctions screening.",
+  },
 } satisfies Record<string, SitePage>;
 
 /** Share image for main-site pages (1200×630, the one Framer serves). */
