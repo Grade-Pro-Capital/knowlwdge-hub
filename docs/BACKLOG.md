@@ -44,7 +44,7 @@ Work that depends on an answer. Current default in brackets.
 
 - [ ] **Content task:** add cover-image alt text to the 3 articles flagged "Missing alt text" in admin → Posts (they can't be saved until then).
 - [ ] **Content task:** 14 of the 28 articles have a meta description Google cuts on desktop (the editor now shows it in red under the field). Worth shortening, SEO team.
-- [ ] **Legal pages** (rebuild Step 3): privacy-policy, terms-of-use, investor-agreement, anti-laundering. Text word-for-word, footer highlights the active page, Framer metadata + breadcrumb data (finishes **B1**).
+- [ ] **Legal pages** (rebuild Step 3): privacy-policy, terms-of-use, investor-agreement, anti-laundering. Text word-for-word, footer highlights the active page, Framer metadata + breadcrumb data (finishes **B1**). _Pushed 2026-10-01; still to do: the screenshot comparison against Framer before ticking this off._
 
 ## Next: finish the rebuild
 
@@ -142,11 +142,11 @@ Hreflang/multi-language (#46–50, T1.4), sitemap splitting (#30), review/rating
 
 ## Done
 
-- 2026-10-01: SEO version history with restore (T2.9); old internal links (`blogs.grade.capital/blog/…`, `www.`, `/blog/…`, admin redirects) shown with their current address when an article is shown; article editor can now clear saved SEO, social, GEO, tag and citation fields (not yet committed; restart the dev server after pulling, the database client changed)
-- 2026-09-30: unknown blog URLs (article, category, tag, author) answered 200 "not found" (soft 404) since the move under /blogs; they now answer 404 (not yet committed)
-- 2026-09-30: 404 monitor (Admin → 404s), SEO reports (Admin → SEO reports) with internal-link suggestions, "Last updated" column in Posts, custom head code (Admin → Head code + per article), bulk SEO grid, mock Google result in the editor (T1.2, T1.3, T1.5–T1.9, T2.6) (not yet committed; restart the dev server after pulling, the database client changed)
+- 2026-10-01: SEO version history with restore (T2.9); old internal links (`blogs.grade.capital/blog/…`, `www.`, `/blog/…`, admin redirects) shown with their current address when an article is shown; article editor can now clear saved SEO, social, GEO, tag and citation fields (pushed on `feat/framer-rebuild` 2026-10-01; restart the dev server after pulling, the database client changed)
+- 2026-09-30: unknown blog URLs (article, category, tag, author) answered 200 "not found" (soft 404) since the move under /blogs; they now answer 404 (pushed on `feat/framer-rebuild` 2026-10-01)
+- 2026-09-30: 404 monitor (Admin → 404s), SEO reports (Admin → SEO reports) with internal-link suggestions, "Last updated" column in Posts, custom head code (Admin → Head code + per article), bulk SEO grid, mock Google result in the editor (T1.2, T1.3, T1.5–T1.9, T2.6) (pushed on `feat/framer-rebuild` 2026-10-01; restart the dev server after pulling, the database client changed)
 - 2026-09-29: blog uses the main site's header and footer ("Option A"): one shared Header/Footer in the `/blogs` layout; blog search moved next to the All Insights / For Professionals tabs; the blog's Subscribe button and Insights/Research/For Professionals links dropped; "Blogs" added to the phone menu on every page (not in Framer); old SiteHeader/SiteFooter/MobileNav deleted. Committed and pushed on `feat/framer-rebuild`
-- 2026-09-28: robots.txt editor (admin → robots.txt): live checks, key-page protection with confirmation, URL tester, 20-version history with restore, safe fallback (not yet committed)
+- 2026-09-28: robots.txt editor (admin → robots.txt): live checks, key-page protection with confirmation, URL tester, 20-version history with restore, safe fallback (pushed on `feat/framer-rebuild` 2026-10-01)
 - 2026-09-28: Phase 0 fixes, redirect manager, alt text and width warnings committed and pushed on `feat/framer-rebuild`
 - 2026-09-28: Google width warnings under the SEO title/description, measured on the text the page actually outputs
 - 2026-09-28: Alt text required for every image (cover + images in the text), enforced in the editor and on the server; Posts list flags articles still missing it
