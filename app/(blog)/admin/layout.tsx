@@ -38,6 +38,12 @@ export default function AdminLayout({
               Redirects
             </Link>
             <Link
+              href="/admin/robots"
+              className="text-sm text-[rgba(255,255,255,0.7)] hover:text-white"
+            >
+              robots.txt
+            </Link>
+            <Link
               href="/admin/templates"
               className="text-sm text-[rgba(255,255,255,0.7)] hover:text-white"
             >

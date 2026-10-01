@@ -116,6 +116,29 @@ model Redirect {
   updatedAt   DateTime  @updatedAt
 }
 
+/// Site-wide settings edited in the admin, one document per key (e.g. "robots.txt").
+/// A missing key means "use the built-in default".
+model SiteSetting {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  key       String   @unique
+  value     String
+  updatedBy String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+/// History of a site setting: every save/reset, newest kept (restore from the admin).
+model SiteSettingVersion {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  key       String
+  value     String
+  note      String?  // "Saved", "Reset to default", …
+  savedBy   String?
+  createdAt DateTime @default(now())
+
+  @@index([key, createdAt])
+}
+
 model NewsletterSubscription {
   id             String    @id @default(auto()) @map("_id") @db.ObjectId
   email          String    @unique
