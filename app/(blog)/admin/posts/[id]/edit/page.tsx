@@ -66,6 +66,7 @@ export default async function EditPostPage({
     twitterCardTitle: post.twitterCardTitle ?? "",
     twitterCardDescription: post.twitterCardDescription ?? "",
     twitterCardImage: post.twitterCardImage ?? "",
+    customHead: post.customHead ?? "",
     aiSummary: post.aiSummary ?? "",
     keyTakeaways: Array.isArray(post.keyTakeaways) ? post.keyTakeaways.join("\n") : "",
     authoritativeCitations:

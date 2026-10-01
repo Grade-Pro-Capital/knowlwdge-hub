@@ -1,4 +1,3 @@
-import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { prisma } from "@/app/lib/db";
@@ -9,6 +8,7 @@ import { calculateReadingTime } from "@/app/lib/readingTime";
 import { Breadcrumb } from "@/app/components/Breadcrumb";
 import { ImageWithFallback } from "@/app/components/ImageWithFallback";
 import { BLOG_BASE, categoryPath, postPath } from "@/app/lib/blogPaths";
+import { notFoundAndLog } from "@/app/lib/notFoundLog";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -76,7 +76,7 @@ export default async function CategoryPage({ params }: Props) {
   const categoryMatch = allCategories.find(
     (c) => slugify(c.category) === slug
   );
-  if (!categoryMatch) notFound();
+  if (!categoryMatch) return notFoundAndLog(categoryPath(slug));
 
   const name = categoryMatch.category;
 
@@ -88,7 +88,7 @@ export default async function CategoryPage({ params }: Props) {
     orderBy: { publishedAt: "desc" },
   });
 
-  if (posts.length === 0) notFound();
+  if (posts.length === 0) return notFoundAndLog(categoryPath(slug));
 
   const breadcrumbItems = [
     { name: "Home", url: "/" },

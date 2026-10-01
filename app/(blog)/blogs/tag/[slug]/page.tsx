@@ -1,4 +1,4 @@
-import { notFound, redirect } from "next/navigation";
+import { redirect } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { prisma } from "@/app/lib/db";
@@ -9,6 +9,7 @@ import { calculateReadingTime } from "@/app/lib/readingTime";
 import { Breadcrumb } from "@/app/components/Breadcrumb";
 import { ImageWithFallback } from "@/app/components/ImageWithFallback";
 import { BLOG_BASE, postPath, tagPath } from "@/app/lib/blogPaths";
+import { notFoundAndLog } from "@/app/lib/notFoundLog";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -71,7 +72,7 @@ export default async function TagPage({ params }: Props) {
     post.tags.some((t) => canonicalTagSlug(t) === normalizedSlug)
   );
 
-  if (posts.length === 0) notFound();
+  if (posts.length === 0) return notFoundAndLog(tagPath(slug));
 
   const name = normalizedSlug.charAt(0).toUpperCase() + normalizedSlug.slice(1).replace(/-/g, " ");
 

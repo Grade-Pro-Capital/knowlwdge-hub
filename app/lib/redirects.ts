@@ -4,6 +4,9 @@
  * renders, from an in-memory copy of the rules.
  */
 import { prisma } from "./db";
+import { normalizeSource } from "./urlPaths";
+
+export { normalizeSource };
 
 export type RedirectRule = { id: string; destination: string; permanent: boolean };
 
@@ -15,26 +18,6 @@ const CACHE_TTL_MS = 60_000;
 
 /** Longest redirect chain accepted when checking for loops. */
 const MAX_CHAIN = 20;
-
-/**
- * Normalise a source path for storage and matching: path only (a full URL is
- * reduced to its path), leading slash, no trailing slash, lowercase. Matching is
- * case-insensitive, so /Blogs/Old and /blogs/old are the same rule.
- */
-export function normalizeSource(input: string): string {
-  let path = input.trim();
-  if (/^https?:\/\//i.test(path)) {
-    try {
-      path = new URL(path).pathname;
-    } catch {
-      return "";
-    }
-  }
-  path = path.split(/[?#]/)[0];
-  if (!path.startsWith("/")) path = `/${path}`;
-  if (path.length > 1) path = path.replace(/\/+$/, "");
-  return path.toLowerCase();
-}
 
 /** Destination as stored: a site path (leading slash) or an absolute http(s) URL. */
 export function normalizeDestination(input: string): string {
@@ -108,10 +91,10 @@ async function loadRules(version: number): Promise<Cache> {
 }
 
 /**
- * The redirect for a request path, if any. Never throws: if the rules can't be read
- * the site keeps working without redirects (and uses the last copy it had).
+ * The current rules (cached). Never throws: if the rules can't be read the site keeps
+ * working without redirects (and uses the last copy it had).
  */
-export async function findRedirect(pathname: string): Promise<RedirectRule | undefined> {
+async function currentRules(): Promise<Map<string, RedirectRule> | undefined> {
   const version = store.__redirectVersion ?? 0;
   let cache = store.__redirectCache;
   if (!cache || cache.version !== version || Date.now() - cache.loadedAt > CACHE_TTL_MS) {
@@ -124,7 +107,30 @@ export async function findRedirect(pathname: string): Promise<RedirectRule | und
       console.error("Redirects: could not load rules", e);
     }
   }
-  return cache?.rules.get(normalizeSource(pathname));
+  return cache?.rules;
+}
+
+/** The redirect for a request path, if any. */
+export async function findRedirect(pathname: string): Promise<RedirectRule | undefined> {
+  return (await currentRules())?.get(normalizeSource(pathname));
+}
+
+/** Every rule as source → destination, for resolving links inside articles. */
+export async function getRedirectMap(): Promise<Map<string, string>> {
+  const rules = (await currentRules()) ?? new Map<string, RedirectRule>();
+  return new Map([...rules].map(([source, rule]) => [source, rule.destination]));
+}
+
+/**
+ * These URLs now redirect or have a page again: drop them from the 404 monitor.
+ * Best-effort, so it never blocks saving an article or a redirect.
+ */
+export async function clearNotFound(...paths: string[]): Promise<void> {
+  try {
+    await prisma.notFoundHit.deleteMany({ where: { path: { in: paths.map(normalizeSource) } } });
+  } catch (e) {
+    console.error("404 monitor: could not clear", paths, e);
+  }
 }
 
 /** Count a use of a rule (fire-and-forget from the proxy). */
@@ -157,10 +163,12 @@ export async function recordArticleMove(oldPath: string, newPath: string): Promi
     await prisma.redirect.create({ data: { source, destination: newPath, permanent: true, note } });
   }
   invalidateRedirects();
+  await clearNotFound(source, target);
 }
 
 /** A new/renamed article now lives at `path`: a redirect from it would hide the page. */
 export async function releasePath(path: string): Promise<void> {
   const { count } = await prisma.redirect.deleteMany({ where: { source: normalizeSource(path) } });
   if (count) invalidateRedirects();
+  await clearNotFound(path);
 }

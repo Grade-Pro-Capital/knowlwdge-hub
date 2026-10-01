@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { requireAdmin } from "@/app/lib/admin";
 import { prisma } from "@/app/lib/db";
 import {
+  clearNotFound,
   invalidateRedirects,
   normalizeDestination,
   normalizeSource,
@@ -47,5 +48,6 @@ export async function POST(request: Request) {
     },
   });
   invalidateRedirects();
+  await clearNotFound(created.source);
   return NextResponse.json(created, { status: 201 });
 }

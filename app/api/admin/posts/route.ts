@@ -7,6 +7,8 @@ import { ensureAuthor } from "@/app/lib/authors";
 import { postPath } from "@/app/lib/blogPaths";
 import { releasePath } from "@/app/lib/redirects";
 import { altTextGaps, describeAltTextGaps } from "@/app/lib/altText";
+import { parseCustomHead } from "@/app/lib/customHead";
+import { pickSeo, recordSeoVersion } from "@/app/lib/seoHistory";
 
 export async function GET(request: Request) {
   const auth = await requireAdmin(request);
@@ -54,6 +56,7 @@ export async function POST(request: Request) {
       twitterCardTitle,
       twitterCardDescription,
       twitterCardImage,
+      customHead,
       aiSummary,
       keyTakeaways,
       authoritativeCitations,
@@ -83,6 +86,11 @@ export async function POST(request: Request) {
         { error: "Canonical URL must be a full http(s) URL, or left empty" },
         { status: 400 }
       );
+    }
+
+    const headError = typeof customHead === "string" ? parseCustomHead(customHead).errors[0] : undefined;
+    if (headError) {
+      return NextResponse.json({ error: `Custom head code: ${headError}` }, { status: 400 });
     }
 
     const existing = await prisma.post.findUnique({ where: { slug } });
@@ -147,6 +155,7 @@ export async function POST(request: Request) {
         twitterCardTitle: twitterCardTitle ?? null,
         twitterCardDescription: twitterCardDescription ?? null,
         twitterCardImage: twitterCardImage ?? null,
+        customHead: typeof customHead === "string" && customHead.trim() ? customHead.trim() : null,
         aiSummary: aiSummary ?? null,
         keyTakeaways: keyTakeawaysArr,
         authoritativeCitations:
@@ -182,6 +191,7 @@ export async function POST(request: Request) {
     });
     // The article now lives at this URL; a redirect from it would hide the page.
     await releasePath(postPath(post.slug));
+    await recordSeoVersion(post.id, null, pickSeo(post), auth.username, "Created");
     return NextResponse.json(post);
   } catch (e) {
     console.error("Create post error:", e);

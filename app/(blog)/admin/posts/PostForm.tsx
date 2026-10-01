@@ -3,8 +3,9 @@
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import Link from "next/link";
 import { RichTextEditorDynamic } from "../components/RichTextEditorDynamic";
-import { SerpWidthHint } from "../components/SerpWidthHint";
+import { SerpPreview, SerpWidthHint } from "../components/SerpWidthHint";
 import { BLOG_CONTENT_TEMPLATE } from "@/app/data/blogContentTemplate";
 import { BLOG_BASE } from "@/app/lib/blogPaths";
 import { altTextGaps, describeAltTextGaps, hasAltTextGaps } from "@/app/lib/altText";
@@ -48,6 +49,7 @@ type PostFormData = {
   twitterCardTitle: string;
   twitterCardDescription: string;
   twitterCardImage: string;
+  customHead: string;
   aiSummary: string;
   keyTakeaways: string;
   authoritativeCitations: string;
@@ -87,6 +89,7 @@ const defaults: PostFormData = {
   twitterCardTitle: "",
   twitterCardDescription: "",
   twitterCardImage: "",
+  customHead: "",
   aiSummary: "",
   keyTakeaways: "",
   authoritativeCitations: "",
@@ -344,7 +347,7 @@ export function PostForm({
       const url = postId ? `/api/admin/posts/${postId}` : "/api/admin/posts";
       const method = postId ? "PATCH" : "POST";
       const citations = (() => {
-        if (!form.authoritativeCitations?.trim()) return undefined;
+        if (!form.authoritativeCitations?.trim()) return null; // clears saved citations
         try {
           const parsed = JSON.parse(form.authoritativeCitations);
           return Array.isArray(parsed) ? parsed : undefined;
@@ -364,6 +367,11 @@ export function PostForm({
       // persist. (undefined would be omitted by JSON.stringify, and the API
       // treats a missing faqs field as "leave unchanged" — the original bug.)
       const faqsPayload = faqs.filter((f) => f.question.trim() && f.answer.trim());
+      // Same for optional text fields: an emptied field is sent as null (or [] for lists)
+      // so it clears the saved value; undefined would leave the old value in place.
+      const orNull = (value: string) => value.trim() || null;
+      const list = (value: string, separator: string) =>
+        value.split(separator).map((s) => s.trim()).filter(Boolean);
 
       const body = {
         slug: form.slug,
@@ -381,31 +389,26 @@ export function PostForm({
         content: form.content || undefined,
         isProfessional: form.isProfessional,
         published: form.published,
-        tags: form.tags
-          ? form.tags.split(",").map((t) => t.trim()).filter(Boolean)
-          : undefined,
-        metaTitle: form.metaTitle || undefined,
-        metaDescription: form.metaDescription || undefined,
-        focusKeyword: form.focusKeyword || undefined,
-        secondaryKeywords: form.secondaryKeywords || undefined,
-        canonicalUrl: form.canonicalUrl || undefined,
+        tags: list(form.tags, ","),
+        metaTitle: orNull(form.metaTitle),
+        metaDescription: orNull(form.metaDescription),
+        focusKeyword: orNull(form.focusKeyword),
+        secondaryKeywords: orNull(form.secondaryKeywords),
+        canonicalUrl: orNull(form.canonicalUrl),
         metaRobotsIndex: form.metaRobotsIndex?.trim() || "index",
         metaRobotsFollow: form.metaRobotsFollow?.trim() || "follow",
-        ogTitle: form.ogTitle || undefined,
-        ogDescription: form.ogDescription || undefined,
-        ogImage: form.ogImage || undefined,
-        twitterCardTitle: form.twitterCardTitle || undefined,
-        twitterCardDescription: form.twitterCardDescription || undefined,
-        twitterCardImage: form.twitterCardImage || undefined,
-        aiSummary: form.aiSummary || undefined,
-        keyTakeaways: form.keyTakeaways
-          ? form.keyTakeaways.split("\n").map((k) => k.trim()).filter(Boolean)
-          : undefined,
+        ogTitle: orNull(form.ogTitle),
+        ogDescription: orNull(form.ogDescription),
+        ogImage: orNull(form.ogImage),
+        twitterCardTitle: orNull(form.twitterCardTitle),
+        twitterCardDescription: orNull(form.twitterCardDescription),
+        twitterCardImage: orNull(form.twitterCardImage),
+        customHead: form.customHead,
+        aiSummary: orNull(form.aiSummary),
+        keyTakeaways: list(form.keyTakeaways, "\n"),
         authoritativeCitations: citations,
-        entityTags: form.entityTags
-          ? form.entityTags.split(",").map((e) => e.trim()).filter(Boolean)
-          : undefined,
-        contentFreshnessDate: form.contentFreshnessDate || undefined,
+        entityTags: list(form.entityTags, ","),
+        contentFreshnessDate: orNull(form.contentFreshnessDate),
         expertiseSignals:
           form.expertiseMethodology || form.expertiseResearchNotes
             ? {
@@ -884,7 +887,17 @@ export function PostForm({
       </div>
 
       <div className="rounded-xl border border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.02)] p-6">
-        <h3 className="mb-4 text-base font-medium text-white">SEO (per article)</h3>
+        <div className="mb-4 flex items-center justify-between gap-4">
+          <h3 className="text-base font-medium text-white">SEO (per article)</h3>
+          {postId && (
+            <Link
+              href={`/admin/posts/${postId}/seo-history`}
+              className="text-sm text-[rgba(255,255,255,0.6)] hover:text-[#FDBE35]"
+            >
+              SEO history
+            </Link>
+          )}
+        </div>
         <div className="space-y-4">
           <div>
             <label className="mb-1 block text-sm text-[rgba(255,255,255,0.7)]">
@@ -927,6 +940,11 @@ export function PostForm({
               kind="description"
               text={form.metaDescription.trim() || form.excerpt}
               fallbackLabel={form.metaDescription.trim() ? undefined : "the excerpt"}
+            />
+            <SerpPreview
+              title={sanitizeTitleForBrand(normalizeMetaTitle(form.metaTitle) || normalizeMetaTitle(form.title))}
+              description={form.metaDescription.trim() || form.excerpt}
+              path={`${BLOG_BASE}/${form.slug || "article-url"}`}
             />
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
@@ -1089,6 +1107,23 @@ export function PostForm({
               />
             </div>
           </div>
+        </div>
+        <div className="mt-6 border-t border-[rgba(255,255,255,0.08)] pt-6">
+          <h4 className="mb-1 text-sm font-medium text-[rgba(255,255,255,0.9)]">Custom head code (advanced)</h4>
+          <p className="mb-3 text-xs text-[rgba(255,255,255,0.5)]">
+            Extra tags for this article only, for things the fields above don&apos;t cover (e.g.
+            one-off structured data). Allowed: <code>&lt;meta&gt;</code>, <code>&lt;link&gt;</code>{" "}
+            and <code>&lt;script type=&quot;application/ld+json&quot;&gt;</code>. Code for every page
+            goes in Admin → Head code.
+          </p>
+          <textarea
+            value={form.customHead}
+            onChange={(e) => update({ customHead: e.target.value })}
+            rows={4}
+            spellCheck={false}
+            placeholder={'<script type="application/ld+json">{ "@context": "https://schema.org", … }</script>'}
+            className="w-full rounded-lg border border-[rgba(255,255,255,0.2)] bg-[rgba(255,255,255,0.05)] px-4 py-2 font-mono text-xs text-white focus:border-[#FDBE35] focus:outline-none"
+          />
         </div>
       </div>
 

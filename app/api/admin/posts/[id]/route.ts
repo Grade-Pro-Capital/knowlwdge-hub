@@ -8,6 +8,8 @@ import { ensureAuthor } from "@/app/lib/authors";
 import { postPath } from "@/app/lib/blogPaths";
 import { recordArticleMove, releasePath } from "@/app/lib/redirects";
 import { altTextGaps, describeAltTextGaps } from "@/app/lib/altText";
+import { parseCustomHead } from "@/app/lib/customHead";
+import { pickSeo, recordSeoVersion } from "@/app/lib/seoHistory";
 
 export async function GET(
   request: Request,
@@ -71,6 +73,7 @@ export async function PATCH(
       twitterCardTitle,
       twitterCardDescription,
       twitterCardImage,
+      customHead,
       aiSummary,
       keyTakeaways,
       authoritativeCitations,
@@ -127,6 +130,11 @@ export async function PATCH(
         { error: "Canonical URL must be a full http(s) URL, or left empty" },
         { status: 400 }
       );
+    }
+
+    const headError = typeof customHead === "string" ? parseCustomHead(customHead).errors[0] : undefined;
+    if (headError) {
+      return NextResponse.json({ error: `Custom head code: ${headError}` }, { status: 400 });
     }
 
     if (slug !== undefined) {
@@ -190,6 +198,9 @@ export async function PATCH(
         ...(twitterCardTitle !== undefined && { twitterCardTitle: twitterCardTitle ?? null }),
         ...(twitterCardDescription !== undefined && { twitterCardDescription: twitterCardDescription ?? null }),
         ...(twitterCardImage !== undefined && { twitterCardImage: twitterCardImage ?? null }),
+        ...(customHead !== undefined && {
+          customHead: typeof customHead === "string" && customHead.trim() ? customHead.trim() : null,
+        }),
         ...(aiSummary !== undefined && { aiSummary: aiSummary ?? null }),
         ...(keyTakeawaysArr !== undefined && { keyTakeaways: keyTakeawaysArr }),
         ...(authoritativeCitations !== undefined && {
@@ -219,6 +230,8 @@ export async function PATCH(
     });
     // URL changed: a published article's old URL redirects to the new one; either
     // way the new URL must not be shadowed by an existing redirect.
+    // SEO history (also covers saves from the bulk SEO editor).
+    await recordSeoVersion(id, pickSeo(post), pickSeo(updated), auth.username, "Saved");
     if (updated.slug !== post.slug) {
       if (post.published || updated.published) {
         await recordArticleMove(postPath(post.slug), postPath(updated.slug));
@@ -286,6 +299,7 @@ export async function DELETE(
       }
     }
     await prisma.post.delete({ where: { id } });
+    await prisma.postSeoVersion.deleteMany({ where: { postId: id } });
     return NextResponse.json({ success: true });
   } catch (e) {
     console.error("Delete post error:", e);

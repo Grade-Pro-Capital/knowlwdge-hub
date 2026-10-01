@@ -3,6 +3,7 @@
  * H2s with id use it; others get an id from slugified title. Links the sidebar ToC to the content.
  */
 import { slugify } from "@/app/lib/seo";
+import { currentAddress, resolveInternalLink } from "@/app/lib/internalLinks";
 
 export type TocItem = { id: string; title: string };
 
@@ -146,16 +147,6 @@ export function wrapContentTables(html: string): string {
   });
 }
 
-function isOwnDomain(href: string): boolean {
-  try {
-    const url = new URL(href, "https://blogs.grade.capital");
-    const host = url.hostname.toLowerCase().replace(/^www\./, "");
-    return host === "grade.capital" || host === "blogs.grade.capital";
-  } catch {
-    return false;
-  }
-}
-
 const A_TAG_REGEX = /<a\s+([^>]*)>/gi;
 
 /** Read the existing rel="..." token list off an anchor's attribute string. */
@@ -178,6 +169,11 @@ function withRel(attrs: string, tokens: string[]): string {
  * - Own-domain (grade.capital) links: forced to HTTPS and rel="noopener" only.
  *   Any author-set "nofollow" is intentionally dropped so Google passes link
  *   equity to our own site — internal links should always be followed.
+ *   Links to an old address (blogs.grade.capital, www., /blog/…, or a URL with a
+ *   redirect in `redirects`) are shown with the current address, so visitors and
+ *   Google skip the redirect. Relative links stay as written.
+ *
+ * - In-page anchors (#…), mailto: and tel: links are left as they are.
  *
  * - External links: the author's follow/no-follow choice is authoritative. We
  *   preserve a "nofollow" token if the author set one in the editor, and always
@@ -185,30 +181,29 @@ function withRel(attrs: string, tokens: string[]): string {
  *   This is what makes a no-follow link actually behave as no-follow for the
  *   reader's browser and for crawlers. See docs/seo-nofollow-links.md.
  */
-export function normalizeArticleLinks(html: string): string {
+export function normalizeArticleLinks(html: string, redirects: Map<string, string> = new Map()): string {
   if (!html || typeof html !== "string") return html;
 
   return html.replace(A_TAG_REGEX, (match, attrs) => {
     const hrefMatch = attrs.match(/href\s*=\s*["']([^"']*)["']/i);
     const href = hrefMatch ? hrefMatch[1].trim() : "";
-    if (!href) return match;
+    if (!href || href.startsWith("#") || /^(mailto|tel):/i.test(href)) return match;
 
-    if (isOwnDomain(href)) {
-      try {
-        const url = new URL(href, "https://blogs.grade.capital");
-        const secureHref =
-          url.protocol === "https:"
-            ? url.toString()
-            : `https://${url.hostname}${url.pathname}${url.search}${url.hash}`;
-
-        const newAttrs = withRel(
-          attrs.replace(/\bhref\s*=\s*["'][^"']*["']/gi, `href="${secureHref}"`),
-          ["noopener"]
-        );
-        return `<a ${newAttrs.trim()}>`;
-      } catch {
-        return match;
-      }
+    const link = resolveInternalLink(href, redirects);
+    if (link) {
+      const isRelative = !/^[a-z][a-z0-9+.-]*:|^\/\//i.test(href);
+      const target = link.viaRedirect
+        ? currentAddress(link)
+        : isRelative
+          ? href
+          : link.url.hostname.endsWith("grade.capital")
+            ? link.url.toString().replace(/^http:/, "https:")
+            : link.url.toString();
+      const newAttrs = withRel(
+        attrs.replace(/\bhref\s*=\s*["'][^"']*["']/gi, `href="${target}"`),
+        ["noopener"]
+      );
+      return `<a ${newAttrs.trim()}>`;
     }
 
     // External link: keep the author's nofollow choice, enforce security rel.

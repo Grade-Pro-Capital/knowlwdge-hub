@@ -24,9 +24,9 @@ There are two parts, and they handle SEO differently:
 
 | | Count |
 |---|---|
-| Done | 23 |
+| Done | 24 |
 | Partial | 14 |
-| Missing | 20 |
+| Missing | 19 |
 | Not needed now | 7 |
 | **Total** | **64** |
 
@@ -124,7 +124,7 @@ These are problems in what already exists, separate from the missing features:
 
 | # | Requirement | What it means | Status | What we have / the gap |
 |---|---|---|---|---|
-| 28 | robots.txt editable in the CMS | The file telling crawlers what they may visit, editable without a developer. | **Missing** | Generated from code; also out of date (B2). |
+| 28 | robots.txt editable in the CMS | The file telling crawlers what they may visit, editable without a developer. | **Done** | Admin → robots.txt: syntax checks, key pages tested with Google's matching rules (blocking any needs an explicit confirmation), URL tester, 20-version history with restore, default served if the database fails. |
 | 29 | XML sitemap, updated on publish/unpublish | The list of URLs we want Google to index, kept current automatically. | **Done** | Built live from the database (articles appear/disappear immediately), plus the main pages; noindexed articles and articles canonicalised to another site are left out. |
 | 30 | Sitemap index past ~50k URLs | Split the sitemap into several files once it's very large. | **Not needed now** | We have tens of articles. The framework supports splitting when needed. |
 | 31 | Per-page "exclude from sitemap" toggle | Keep a page live and indexable but not promoted in the sitemap. | **Missing** | |
@@ -218,7 +218,7 @@ lists look adapted from another client's brief; worth confirming with the SEO te
 | T0.5 | Open Graph + Twitter fields with fallbacks | [6, 7] | **Done** |
 | T0.6 | Alt text on every uploaded image, enforced | [34] | **Done** |
 | T0.7 | XML sitemap, auto-updated on publish | [29] | **Done** |
-| T0.8 | robots.txt editable in the CMS | [28] | **Missing** (correct now, but code-only). Phase 1. |
+| T0.8 | robots.txt editable in the CMS | [28] | **Done** (Admin → robots.txt, with safety checks). |
 | T0.9 | 301/302 redirect manager with search | [23] | **Done** (Admin → Redirects). |
 | T0.10 | Automatic breadcrumbs with breadcrumb schema | [20] | **Done**: visible trail + schema on articles; schema on main pages (their design has no visible trail). |
 
@@ -227,14 +227,14 @@ lists look adapted from another client's brief; worth confirming with the SEO te
 | # | Requirement | What it means | Status |
 |---|---|---|---|
 | T1.1 | Structured-data templates as dropdowns, auto-filled | [40, 41] Pick "FAQ", "Article"… and the schema fills itself from the page. | **Partial**: fully automatic per content type (no one pastes JSON); no picker. Product, Review and LocalBusiness don't apply to us. |
-| T1.2 | Bulk spreadsheet editing | [62] | **Missing**. Phase 3. |
-| T1.3 | Live Google-result preview, desktop + mobile | [8] A mock search result that updates as you type, cut exactly where Google would cut. | **Partial**: width warnings with the cut-off text exist; no mock result card. |
+| T1.2 | Bulk spreadsheet editing | [62] | **Done** (Admin → Posts → Edit SEO in bulk): SEO title + description of every article in one table, with Google width warnings, filters ("Cut by Google", "Empty field") and one save. |
+| T1.3 | Live Google-result preview, desktop + mobile | [8] A mock search result that updates as you type, cut exactly where Google would cut. | **Done**: mock Google result, desktop and phone, under the SEO fields in the article editor (plus the width warnings). |
 | T1.4 | Hreflang manager (region × language grid) | [47] Tells Google which language/country version to show whom. | **Not needed now**: English-only site. |
-| T1.5 | 404 monitor with one-click redirect | **New.** Log every URL that returns "not found" (how often, and from which page or site), with a button to turn it into a redirect. Catches broken inbound links and old URLs after the migration. | **Missing**. Added to Phase 1 (built on the redirect manager). |
-| T1.6 | Duplicate title/description detector | [55] | **Missing**. Phase 3. |
-| T1.7 | Orphan page detector | [58] | **Missing**. Phase 3. |
-| T1.8 | Custom `<head>` injection | [13] | **Missing**. Phase 2. |
-| T1.9 | Visible, sortable "last updated" | [59] | **Partial**: stored, not shown in the admin list. Phase 3. |
+| T1.5 | 404 monitor with one-click redirect | **New.** Log every URL that returns "not found" (how often, and from which page or site), with a button to turn it into a redirect. Catches broken inbound links and old URLs after the migration. | **Done** (Admin → 404s): counts per URL (search-engine hits separately), last 5 referring pages, suggested article for a one-click 301, "leave as 404". Also fixed unknown blog URLs answering 200 (soft 404) instead of 404. |
+| T1.6 | Duplicate title/description detector | [55] | **Done** (Admin → SEO reports), checked against the title/description the pages actually output. |
+| T1.7 | Orphan page detector | [58] | **Done** (Admin → SEO reports): links written inside other articles per article, fewest first; plus broken internal links and links still using an old URL. |
+| T1.8 | Custom `<head>` injection | [13] | **Done**: sitewide (Admin → Head code) and per article. Only `<meta>`, `<link>` and JSON-LD; robots, canonical, description, stylesheets and scripts are refused. |
+| T1.9 | Visible, sortable "last updated" | [59] | **Done**: "Last updated" column in Admin → Posts (the date the page gives Google), sortable; also in SEO reports. |
 
 ### Tier 2: advanced
 
@@ -245,10 +245,10 @@ lists look adapted from another client's brief; worth confirming with the SEO te
 | T2.3 | AI drafting of titles, descriptions and FAQs from the page content | **New.** A button that proposes an SEO title, description and FAQs based on the article itself; the editor reviews before saving. | **Missing**. Feasible with an AI API call (small cost per use). Phase 4. |
 | T2.4 | A/B testing titles/descriptions, CTR measured from Search Console | **New.** Try two titles and keep the one that gets more clicks from Google. | **Not recommended now**: Google shows one title per URL at a time, so tests compare groups of pages or before/after periods, which needs a lot of traffic to be meaningful. Once T2.1 exists we can show each page's click-through rate before and after a title change. |
 | T2.5 | Topic-cluster / pillar-page map | **New.** Mark the main "pillar" guides and the articles supporting each; see gaps and missing links in a diagram. | **Missing**. Phase 4 (builds on categories, a "pillar" field and the link graph). |
-| T2.6 | Semantic internal-link suggestions | **New.** "These 8 articles are about the same thing and don't link to this one." | **Missing**. Phase 4 (text similarity between articles, plus the existing link graph). |
+| T2.6 | Semantic internal-link suggestions | **New.** "These 8 articles are about the same thing and don't link to this one." | **Done** (Admin → SEO reports → "Add a link from"): the 3 most related articles that don't link to each article yet, by shared topic words (no AI service needed). |
 | T2.7 | Core Web Vitals per page/template | **New.** Google's speed and stability scores (loading, responsiveness, layout shift) shown per page in the CMS. | **Missing**. Phase 4: measure real visitors with Next.js's built-in web-vitals reporting and store it; optionally Google's CrUX/PageSpeed APIs (Google only has per-page data for pages with enough traffic). |
 | T2.8 | Approval workflow for SEO fields | [64] | **Missing**. Phase 3. |
-| T2.9 | Version history for SEO fields | [61] | **Missing**. Phase 3. |
+| T2.9 | Version history for SEO fields | [61] | **Done** (article editor → "SEO history"): every save that changes an SEO field (also from the bulk editor), with who/when/before→after and one-click restore; newest 30 per article. The slug is not included (changing it creates redirects). Full content history (#61) is still open. |
 | T2.10 | Variant-aware indexability | [21] Decide which URL variants (e.g. `?size=`, `?color=`) are real pages and which are just filters. | **Not needed now**: we have no product variants. Our only variant, `/blogs?tab=professionals`, already canonicalises to `/blogs`. |
 
 ## Plan

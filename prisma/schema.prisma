@@ -51,6 +51,7 @@ model Post {
   twitterCardTitle       String?
   twitterCardDescription String?
   twitterCardImage       String?
+  customHead             String?    // extra <meta>/<link>/JSON-LD for this article (app/lib/customHead.ts)
   // GEO / AI optimization
   aiSummary              String?    // 2-3 sentence AI crawler summary
   keyTakeaways           String[]   @default([])
@@ -114,6 +115,34 @@ model Redirect {
   lastHitAt   DateTime?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+}
+
+/// History of an article's SEO fields: one row per save that changed them (newest 30 kept
+/// per article), viewable and restorable at /admin/posts/[id]/seo-history.
+model PostSeoVersion {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  postId    String   @db.ObjectId
+  fields    Json     // the SEO fields after this save (app/lib/seoHistory.ts SEO_FIELDS)
+  changed   String[] @default([]) // the fields this save changed
+  note      String?  // "Created", "Saved", "Restored …", "Before history started"
+  savedBy   String?
+  createdAt DateTime @default(now())
+
+  @@index([postId, createdAt])
+}
+
+/// 404 monitor: one row per URL that answered "not found", counted as visitors and crawlers
+/// hit it. Shown in /admin/not-found, where a row can become a redirect. Rows are removed
+/// when the URL gets a redirect or a page, and pruned after 90 days without a hit.
+model NotFoundHit {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  path        String   @unique // normalised like Redirect.source, e.g. "/blogs/old-slug"
+  hits        Int      @default(1)
+  botHits     Int      @default(0) // of which from search engines and other crawlers
+  referrers   String[] @default([]) // pages that linked here, newest first (up to 5)
+  ignored     Boolean  @default(false) // "leave as 404": hidden from the main list
+  firstSeenAt DateTime @default(now())
+  lastSeenAt  DateTime @default(now())
 }
 
 /// Site-wide settings edited in the admin, one document per key (e.g. "robots.txt").

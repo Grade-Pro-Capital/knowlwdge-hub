@@ -1,4 +1,3 @@
-import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { Clock, Calendar } from "lucide-react";
 import { ImageWithFallback } from "@/app/components/ImageWithFallback";
@@ -11,21 +10,23 @@ import { RelatedArticles } from "@/app/components/RelatedArticles";
 import { NewsletterForm } from "@/app/components/NewsletterForm";
 import { RecordView } from "../RecordView";
 import { BLOG_BASE, authorPath, categoryPath, postPath } from "@/app/lib/blogPaths";
+import { notFoundAndLog } from "@/app/lib/notFoundLog";
+import { getRedirectMap } from "@/app/lib/redirects";
 import { JsonLdScript } from "@/app/components/JsonLdScript";
+import { CustomHeadTags } from "@/app/components/CustomHeadTags";
+import { customHeadTags } from "@/app/lib/customHead";
 import { prisma } from "@/app/lib/db";
 import {
   absoluteUrl,
   DEFAULT_OG_IMAGE,
   getBaseUrl,
   slugify,
-  normalizeMetaTitle,
-  validateMetaTitle,
-  validateMetaDescription,
   parseSecondaryKeywords,
   safeDateModified,
   externalCanonicalUrl,
 } from "@/app/lib/seo";
-import { SITE_NAME_OG, sanitizeTitleForBrand } from "@/app/lib/siteConfig";
+import { SITE_NAME_OG } from "@/app/lib/siteConfig";
+import { articleMetaDescription, articleMetaTitle } from "@/app/lib/articleMeta";
 import {
   articleJsonLd,
   breadcrumbJsonLd,
@@ -101,11 +102,8 @@ export async function generateMetadata({
   });
   if (!row) return { title: "Article not found" };
 
-  const rawTitle =
-    validateMetaTitle(row.metaTitle) ?? (normalizeMetaTitle(row.title) || row.title);
-  const title = sanitizeTitleForBrand(rawTitle) || rawTitle;
-  const description =
-    validateMetaDescription(row.metaDescription) ?? row.excerpt;
+  const title = articleMetaTitle(row);
+  const description = articleMetaDescription(row);
   // This page, unless the editor set a canonical on another site (see externalCanonicalUrl).
   const canonical = externalCanonicalUrl(row.canonicalUrl) ?? `${baseUrl}${postPath(row.slug)}`;
   const robotsIndex = row.metaRobotsIndex?.trim() || "index";
@@ -175,7 +173,7 @@ export default async function BlogPage({
   const row = await prisma.post.findFirst({
     where: { slug, published: true },
   });
-  if (!row) notFound();
+  if (!row) return notFoundAndLog(postPath(slug));
 
   const readTime =
     row.readTime ||
@@ -205,8 +203,9 @@ export default async function BlogPage({
 
   const content = row.content ?? "";
   const contentWithIds = ensureHeadingIds(content);
+  // Links to old addresses are shown with their current one (same redirects as the site).
   const contentForRender = wrapContentTables(
-    lazyLoadContentImages(normalizeArticleLinks(contentWithIds))
+    lazyLoadContentImages(normalizeArticleLinks(contentWithIds, await getRedirectMap()))
   );
   const tocItems = getTocFromContent(contentWithIds);
   const citations = parseCitations(row.authoritativeCitations);
@@ -256,6 +255,7 @@ export default async function BlogPage({
       <JsonLdScript data={articleLd} />
       <JsonLdScript data={breadcrumbLd} />
       {faqLd && <JsonLdScript data={faqLd} />}
+      <CustomHeadTags tags={customHeadTags(row.customHead)} />
 
       <Breadcrumb items={breadcrumbItems} withJsonLd={false} />
 

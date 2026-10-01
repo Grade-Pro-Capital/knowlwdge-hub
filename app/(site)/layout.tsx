@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Script from "next/script";
 import { getBaseUrl } from "@/app/lib/seo";
 import { siteGraphJsonLd } from "@/app/lib/siteSchema";
+import { CustomHeadTags } from "@/app/components/CustomHeadTags";
+import { getSitewideHeadTags } from "@/app/lib/customHead";
 import "./fonts.css";
 import "./text-presets.css";
 import "./tokens.css";
@@ -25,7 +27,9 @@ export const metadata: Metadata = {
   robots: { "max-image-preview": "large" },
 };
 
-export default function SiteLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default async function SiteLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  // Read when a page is built; saving the code in the admin rebuilds the pages.
+  const headTags = await getSitewideHeadTags();
   return (
     <html lang="en">
       {/* Nothing is rendered into <head> by hand: browser extensions inject their own
@@ -41,6 +45,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         </Script>
         {/* Sitewide Organization/WebSite structured data (valid anywhere in the document). */}
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(siteGraphJsonLd()) }} />
+        {/* Sitewide custom head code (Admin → Head code); React moves <meta>/<link> into <head>. */}
+        <CustomHeadTags tags={headTags} />
         <noscript>
           <iframe
             src={`https://www.googletagmanager.com/ns.html?id=${GTM_ID}`}

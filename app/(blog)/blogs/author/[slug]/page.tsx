@@ -1,4 +1,3 @@
-import { notFound } from "next/navigation";
 import Link from "next/link";
 import { AuthorAvatar } from "@/app/components/AuthorAvatar";
 import type { Metadata } from "next";
@@ -12,6 +11,7 @@ import { Breadcrumb } from "@/app/components/Breadcrumb";
 import { ImageWithFallback } from "@/app/components/ImageWithFallback";
 import { calculateReadingTime } from "@/app/lib/readingTime";
 import { BLOG_BASE, authorPath, postPath } from "@/app/lib/blogPaths";
+import { notFoundAndLog } from "@/app/lib/notFoundLog";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -68,7 +68,7 @@ export default async function AuthorPage({ params }: Props) {
     orderBy: { publishedAt: "desc" },
   });
 
-  if (posts.length === 0 && !author) notFound();
+  if (posts.length === 0 && !author) return notFoundAndLog(authorPath(slug));
 
   const name = author?.name ?? posts[0]?.authorName ?? slug;
   const bio = author?.bio?.trim();

@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Suspense } from "react";
 import { DEFAULT_OG_IMAGE, getBaseUrl } from "@/app/lib/seo";
 import { SITE_TITLE, SITE_NAME_OG } from "@/app/lib/siteConfig";
 import { JsonLdScript } from "@/app/components/JsonLdScript";
@@ -8,6 +7,8 @@ import { BLOG_BASE } from "@/app/lib/blogPaths";
 import { Header } from "@/app/(site)/components/Header";
 import { Footer, FOOTER_SVG_IDS } from "@/app/(site)/components/Footer";
 import { SvgTemplates } from "@/app/(site)/components/SvgTemplates";
+import { CustomHeadTags } from "@/app/components/CustomHeadTags";
+import { getSitewideHeadTags } from "@/app/lib/customHead";
 // The main site's colour tokens, for its Header and Footer. Not site.css: its
 // page-wide base styles would override the blog's own. Not fonts.css either: the
 // blog's next/font Poppins (app/(blog)/layout.tsx) is registered as "Poppins" too,
@@ -62,7 +63,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default function HomeLayout({
+export default async function HomeLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -70,11 +71,14 @@ export default function HomeLayout({
   return (
     <>
       <JsonLdScript data={siteGraphJsonLd()} />
+      <CustomHeadTags tags={await getSitewideHeadTags()} />
       {/* The main site's header and footer, so the blog reads as part of grade.capital. */}
       <Header zIndex={50} slideUpAtFooter current="/blogs" />
       {/* The header is fixed (it floats over the page), so keep its height clear. */}
       <div aria-hidden className="h-[68px] min-[1200px]:h-[78px]" />
-      <Suspense fallback={null}>{children}</Suspense>
+      {/* No <Suspense> around the page: it would send the 200 status before an unknown
+          article's notFound() runs, turning real 404s into soft 404s. */}
+      {children}
       <Footer />
       <SvgTemplates ids={FOOTER_SVG_IDS} />
     </>

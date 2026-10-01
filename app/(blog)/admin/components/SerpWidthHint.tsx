@@ -41,7 +41,18 @@ function truncateTo(text: string, font: string, limit: number): string {
   return `${cut.trimEnd()}${ELLIPSIS}`;
 }
 
+/** Whether Google would likely cut this text on desktop. Browser only (measures with a canvas). */
+export function isCutByGoogle(kind: keyof typeof SPECS, text: string): boolean {
+  const value = text.trim();
+  return !!value && measure(value, SPECS[kind].font) > SPECS[kind].limits.desktop;
+}
+
 const subscribe = () => () => {};
+
+/** True once running in the browser (widths can only be measured there). */
+export function useIsClient(): boolean {
+  return useSyncExternalStore(subscribe, () => true, () => false);
+}
 
 type Props = {
   kind: keyof typeof SPECS;
@@ -51,9 +62,60 @@ type Props = {
   fallbackLabel?: string;
 };
 
+/** The text cut where Google would cut it at `limit` px, or unchanged if it fits. */
+function fitTo(kind: keyof typeof SPECS, text: string, limit: number): string {
+  const { font } = SPECS[kind];
+  return measure(text, font) > limit ? truncateTo(text, font, limit) : text;
+}
+
+/**
+ * A mock Google result for the article, desktop and phone, cut where Google would cut
+ * it. Approximate: Google sometimes rewrites titles and descriptions.
+ */
+export function SerpPreview({ title, description, path }: { title: string; description: string; path: string }) {
+  const isClient = useIsClient();
+  const t = title.trim();
+  const d = description.trim();
+  if (!isClient || !t) return null;
+  const crumbs = ["https://grade.capital", ...path.split("/").filter(Boolean)].join(" › ");
+
+  const result = (width: number, titleText: string, descriptionText: string, titleClass: string) => (
+    <div className="rounded-lg bg-white p-4 font-[Arial,sans-serif]" style={{ width }}>
+      <div className="mb-1 flex items-center gap-3">
+        {/* eslint-disable-next-line @next/next/no-img-element -- tiny static favicon in a mock */}
+        <img src="/favicon.png" alt="" width={26} height={26} className="rounded-full border border-[#dadce0] bg-white p-0.5" />
+        <div className="min-w-0 leading-tight">
+          <div className="text-[14px] text-[#202124]">Grade Capital</div>
+          <div className="truncate text-[12px] text-[#4d5156]">{crumbs}</div>
+        </div>
+      </div>
+      <div className={`${titleClass} text-[#1a0dab]`}>{titleText}</div>
+      {d && <div className="mt-1 text-[14px] leading-[22px] text-[#4d5156]">{descriptionText}</div>}
+    </div>
+  );
+
+  return (
+    <div className="mt-4">
+      <p className="mb-2 text-xs text-[rgba(255,255,255,0.6)]">
+        How it may look in Google (approximate; Google sometimes rewrites titles and descriptions)
+      </p>
+      <div className="flex flex-wrap items-start gap-4 overflow-x-auto">
+        <div>
+          <p className="mb-1 text-xs text-[rgba(255,255,255,0.5)]">Desktop</p>
+          {result(600, fitTo("title", t, SPECS.title.limits.desktop), fitTo("description", d, SPECS.description.limits.desktop), "text-[20px] leading-[26px]")}
+        </div>
+        <div>
+          <p className="mb-1 text-xs text-[rgba(255,255,255,0.5)]">Phone</p>
+          {result(360, t, fitTo("description", d, SPECS.description.limits.mobile), "line-clamp-2 text-[18px] leading-[24px]")}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function SerpWidthHint({ kind, text, fallbackLabel }: Props) {
   // Measuring needs a canvas, so render only in the browser.
-  const isClient = useSyncExternalStore(subscribe, () => true, () => false);
+  const isClient = useIsClient();
   const value = text.trim();
   if (!isClient || !value) return null;
 

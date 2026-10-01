@@ -38,10 +38,28 @@ export default function AdminLayout({
               Redirects
             </Link>
             <Link
+              href="/admin/not-found"
+              className="text-sm text-[rgba(255,255,255,0.7)] hover:text-white"
+            >
+              404s
+            </Link>
+            <Link
+              href="/admin/reports"
+              className="text-sm text-[rgba(255,255,255,0.7)] hover:text-white"
+            >
+              SEO reports
+            </Link>
+            <Link
               href="/admin/robots"
               className="text-sm text-[rgba(255,255,255,0.7)] hover:text-white"
             >
               robots.txt
+            </Link>
+            <Link
+              href="/admin/head-code"
+              className="text-sm text-[rgba(255,255,255,0.7)] hover:text-white"
+            >
+              Head code
             </Link>
             <Link
               href="/admin/templates"
