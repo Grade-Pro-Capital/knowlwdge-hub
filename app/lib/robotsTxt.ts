@@ -244,3 +244,64 @@ export function analyzeRobotsTxt(text: string, options: { baseUrl: string; keyPa
     blocksKeyPages: keyPages.some((p) => p.blockedFor.length > 0),
   };
 }
+
+// ---------- Comparing two versions (history, approval email) ----------
+
+export type DiffLine = { type: "same" | "add" | "remove"; text: string };
+
+const toLines = (text: string) => {
+  const t = text.replace(/\r\n?/g, "\n").replace(/\n+$/, "");
+  return t ? t.split("\n") : [];
+};
+
+/** Line-by-line differences between two versions (longest common subsequence). */
+export function diffLines(before: string, after: string): DiffLine[] {
+  const a = toLines(before);
+  const b = toLines(after);
+  // robots.txt files are small; give up on line matching for absurdly large ones.
+  if (a.length * b.length > 4_000_000) {
+    return [...a.map((text) => ({ type: "remove" as const, text })), ...b.map((text) => ({ type: "add" as const, text }))];
+  }
+  const lcs = Array.from({ length: a.length + 1 }, () => new Uint32Array(b.length + 1));
+  for (let i = a.length - 1; i >= 0; i--) {
+    for (let j = b.length - 1; j >= 0; j--) {
+      lcs[i][j] = a[i] === b[j] ? lcs[i + 1][j + 1] + 1 : Math.max(lcs[i + 1][j], lcs[i][j + 1]);
+    }
+  }
+  const out: DiffLine[] = [];
+  let i = 0;
+  let j = 0;
+  while (i < a.length && j < b.length) {
+    if (a[i] === b[j]) {
+      out.push({ type: "same", text: a[i] });
+      i++;
+      j++;
+    } else if (lcs[i + 1][j] >= lcs[i][j + 1]) {
+      out.push({ type: "remove", text: a[i++] });
+    } else {
+      out.push({ type: "add", text: b[j++] });
+    }
+  }
+  while (i < a.length) out.push({ type: "remove", text: a[i++] });
+  while (j < b.length) out.push({ type: "add", text: b[j++] });
+  return out;
+}
+
+/** A key page whose crawler access a change alters ("before"/"after": who it's blocked for). */
+export type KeyPageChange = { label: string; path: string; before: string[]; after: string[] };
+
+export function keyPageChanges(before: KeyPageResult[], after: KeyPageResult[]): KeyPageChange[] {
+  return after
+    .map((page) => ({
+      label: page.label,
+      path: page.path,
+      before: before.find((b) => b.path === page.path)?.blockedFor ?? [],
+      after: page.blockedFor,
+    }))
+    .filter((c) => c.before.join("|") !== c.after.join("|"));
+}
+
+/** "allowed" or "blocked for Google and all other crawlers". */
+export function accessLabel(blockedFor: string[]): string {
+  return blockedFor.length ? `blocked for ${blockedFor.join(" and ")}` : "allowed";
+}

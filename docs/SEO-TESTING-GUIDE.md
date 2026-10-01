@@ -126,17 +126,37 @@ you saw, and a screenshot.
    - **Checks** (Errors / Warnings)
    - **Key pages** (home, blog, an article, Support, FAQ) with Allowed/Blocked
    - **Test a URL**
-   - **History**
+   - **History** and **Approval codes**
 2. Without saving, add the line `Disallow: /blogs` under `User-agent: *`.
    **Expect:**
    - Key pages shows the blog as **Blocked**.
    - The checks warn you.
-   - Saving needs the extra tick: *I understand the blocked pages… will disappear from Google
-     search.*
+   - Continuing needs the extra tick: *I understand the blocked pages… will disappear from
+     Google search.*
 3. Use **Test a URL** with any article URL and different crawlers (Googlebot, Bingbot, GPTBot).
    **Expect:** Allowed or Blocked, and which rule decided it.
-4. Remove the line again. Don't save the test change.
-   (If something was saved by mistake: **History** → load the previous version → Save.)
+4. Remove the line again.
+5. Every change needs approval by an emailed code. Make a harmless edit (e.g. add a
+   `# test` comment line).
+   **Expect:** **Send approval code** stays greyed out until **Reason for this change** is
+   filled in.
+6. ⚠️ Fill in a reason and click **Send approval code**. (The code goes to
+   mahaveer@grade.capital, so coordinate with Mahaveer for this step.)
+   **Expect:**
+   - "Approval code sent to m•••@grade.capital", and the text is locked.
+   - The email shows the code, who asked, the reason, and the lines that change.
+7. Enter a wrong code.
+   **Expect:** *Wrong code. 4 tries left.* After 5 wrong codes the request is cancelled.
+8. ⚠️ Enter the right code and click **Approve and save**.
+   **Expect:**
+   - The change is live at `[site]/robots.txt`.
+   - **History** has a new entry: date and time, edited by, reason, approved with the code sent
+     to Mahaveer, lines +/−, key pages affected, and *Show what changed*.
+   - **Approval codes** lists the request as *Approved and saved*.
+9. **Expect:** a code only works once, expires after 10 minutes, and stops working when a newer
+   code is requested. **Reset to default** and restoring from **History** (Load into editor →
+   send code) need a code too.
+   **Undo:** load the previous version from History and approve it with a new code.
 
 ### 9. Redirect manager (T0.9)
 1. ⚠️ In Admin → **Redirects**, add From `/seo-test-redirect`, To `/blogs`, Type

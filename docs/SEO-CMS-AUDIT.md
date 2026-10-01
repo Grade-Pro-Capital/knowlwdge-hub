@@ -218,7 +218,7 @@ lists look adapted from another client's brief; worth confirming with the SEO te
 | T0.5 | Open Graph + Twitter fields with fallbacks | [6, 7] | **Done** |
 | T0.6 | Alt text on every uploaded image, enforced | [34] | **Done** |
 | T0.7 | XML sitemap, auto-updated on publish | [29] | **Done** |
-| T0.8 | robots.txt editable in the CMS | [28] | **Done** (Admin → robots.txt, with safety checks). |
+| T0.8 | robots.txt editable in the CMS | [28] | **Done** (Admin → robots.txt, with safety checks). Every change needs a code emailed to mahaveer@grade.capital, and the history records who, when, why, the approval and what changed. |
 | T0.9 | 301/302 redirect manager with search | [23] | **Done** (Admin → Redirects). |
 | T0.10 | Automatic breadcrumbs with breadcrumb schema | [20] | **Done**: visible trail + schema on articles; schema on main pages (their design has no visible trail). |
 

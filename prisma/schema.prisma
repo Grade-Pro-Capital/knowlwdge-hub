@@ -156,16 +156,48 @@ model SiteSetting {
   updatedAt DateTime @updatedAt
 }
 
-/// History of a site setting: every save/reset, newest kept (restore from the admin).
+/// History of a site setting: every save/reset, all kept (restore from the admin).
+/// robots.txt changes also record how they were approved and what they changed.
 model SiteSettingVersion {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  key       String
-  value     String
-  note      String?  // "Saved", "Reset to default", …
-  savedBy   String?
-  createdAt DateTime @default(now())
+  id             String    @id @default(auto()) @map("_id") @db.ObjectId
+  key            String
+  value          String
+  note           String?   // "Saved", "Reset to default", …
+  savedBy        String?
+  createdAt      DateTime  @default(now())
+  action         String?   // "saved" | "reset" | "restored"
+  reason         String?   // why, as typed by the editor
+  restoredFrom   DateTime? // for a restore: the date of the version brought back
+  approvedVia    String?   // the email address the approval code was sent to
+  approvedAt     DateTime?
+  ip             String?   // where the change was requested from
+  linesAdded     Int?
+  linesRemoved   Int?
+  keyPageChanges Json?     // [{ label, path, before: [...], after: [...] }] crawlers blocked
 
   @@index([key, createdAt])
+}
+
+/// A robots.txt change waiting for its emailed approval code (app/lib/robotsApproval.ts).
+/// Kept after it ends (approved, expired, wrong code…) as the security log.
+model RobotsChangeRequest {
+  id           String    @id @map("_id") @db.ObjectId
+  action       String    // "save" | "reset"
+  text         String    // the robots.txt that goes live if approved
+  baseText     String    // the live robots.txt when requested; approval is refused if it changed
+  reason       String
+  restoredFrom DateTime? // when the change restores a version from the history
+  codeHash     String    // HMAC of the code; the code itself is never stored
+  sentTo       String
+  expiresAt    DateTime
+  attempts     Int       @default(0)
+  status       String    @default("pending") // pending | approved | expired | failed | cancelled | superseded
+  requestedBy  String?
+  requestedIp  String?
+  createdAt    DateTime  @default(now())
+  resolvedAt   DateTime?
+
+  @@index([createdAt])
 }
 
 model NewsletterSubscription {

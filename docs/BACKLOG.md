@@ -128,6 +128,7 @@ Everything that needs an outside provider, what it needs, and roughly what it co
 | AI drafting (Phase 4) | Anthropic, OpenAI or Google Gemini | API key with billing | ~1–5 US cents per draft |
 | Smarter internal-link suggestions (Phase 4, optional) | Same AI provider (embeddings) | Same API key | Negligible |
 | Google's Core Web Vitals data (Phase 4, optional) | Google PageSpeed / CrUX API | Free API key | Free |
+| robots.txt approval codes by email (done, set up) | Resend | Resend account + API key; grade.capital verified in Resend (DNS records on the `send.` and `resend._domainkey` names only, not the root MX/TXT used by Google Workspace) | Free tier (3,000 emails/month) |
 | Form submissions (launch) | Google Workspace SMTP or Resend (+ CRM, if used) | Sending account/credentials | Free–low |
 
 ## Later / optional
@@ -142,6 +143,7 @@ Hreflang/multi-language (#46–50, T1.4), sitemap splitting (#30), review/rating
 
 ## Done
 
+- 2026-10-01: robots.txt changes approved by an emailed code (🔌 Resend, `RESEND_API_KEY`; grade.capital verified): Save, Reset and Restore send a 6-digit code to mahaveer@grade.capital (`ROBOTS_APPROVAL_EMAIL`); the change goes live only after the code is entered (one use, 10 min, 5 wrong tries, 6 codes/hour, no direct-save API). Required reason. History keeps every version with edited on/by, reason, approval (sent to, at), IP, lines +/−, key pages allowed/blocked, and a folded diff; plus an "Approval codes" security log. Tested end to end with a real email to Resend's test inbox. (pushed on `feat/seo-cms` 2026-10-01; restart the dev server after pulling, the database client changed)
 - 2026-10-01: SEO version history with restore (T2.9); old internal links (`blogs.grade.capital/blog/…`, `www.`, `/blog/…`, admin redirects) shown with their current address when an article is shown; article editor can now clear saved SEO, social, GEO, tag and citation fields (pushed on `feat/framer-rebuild` 2026-10-01; restart the dev server after pulling, the database client changed)
 - 2026-09-30: unknown blog URLs (article, category, tag, author) answered 200 "not found" (soft 404) since the move under /blogs; they now answer 404 (pushed on `feat/framer-rebuild` 2026-10-01)
 - 2026-09-30: 404 monitor (Admin → 404s), SEO reports (Admin → SEO reports) with internal-link suggestions, "Last updated" column in Posts, custom head code (Admin → Head code + per article), bulk SEO grid, mock Google result in the editor (T1.2, T1.3, T1.5–T1.9, T2.6) (pushed on `feat/framer-rebuild` 2026-10-01; restart the dev server after pulling, the database client changed)
